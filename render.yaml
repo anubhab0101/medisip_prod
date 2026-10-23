@@ -1,0 +1,100 @@
+# Render Blueprint for the three isolated MediShop services.
+# Secret values are entered in Render; never commit production credentials.
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: medishop-staff
+    runtime: docker
+    region: singapore
+    plan: 1c-2g
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: LOCAL_PREVIEW
+        value: "false"
+      - key: ALLOW_DEMO_SEED
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: AUTH_URL
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: RECEIPT_PUBLIC_URL
+        sync: false
+      - key: RECEIPT_TOKEN_SECRET
+        sync: false
+      - key: SMSGATE_URL
+        value: https://api.sms-gate.app/3rdparty/v1
+      - key: SMSGATE_USERNAME
+        sync: false
+      - key: SMSGATE_PASSWORD
+        sync: false
+      - key: SMSGATE_DEVICE_ID
+        sync: false
+      - key: SMS_SEND_ENABLED
+        value: "false"
+
+  - type: worker
+    name: medishop-worker
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: node --conditions=react-server --import tsx scripts/worker.ts
+    disk:
+      name: medishop-backups
+      mountPath: /app/backups
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: RECEIPT_PUBLIC_URL
+        sync: false
+      - key: SMSGATE_URL
+        value: https://api.sms-gate.app/3rdparty/v1
+      - key: SMSGATE_USERNAME
+        sync: false
+      - key: SMSGATE_PASSWORD
+        sync: false
+      - key: SMSGATE_DEVICE_ID
+        sync: false
+      - key: SMS_SEND_ENABLED
+        value: "false"
+      - key: DAILY_BACKUP_ENABLED
+        value: "true"
+      - key: BACKUP_DIRECTORY
+        value: /app/backups
+      - key: BACKUP_KEY
+        sync: false
+
+  - type: web
+    name: medishop-receipts
+    runtime: docker
+    region: singapore
+    plan: 0.5c-512mb
+    dockerfilePath: ./Dockerfile.receipts
+    dockerContext: .
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: RECEIPT_BIND
+        value: 0.0.0.0
+      - key: RECEIPT_PUBLIC_URL
+        sync: false
+      - key: RECEIPT_DATABASE_URL
+        sync: false

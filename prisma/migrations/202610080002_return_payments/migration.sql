@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `SaleReturn` ADD COLUMN `cashRefundPaise` INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN `creditRefundPaise` INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN `refundMethod` ENUM('CASH', 'UPI', 'CARD', 'CREDIT') NOT NULL DEFAULT 'CASH';

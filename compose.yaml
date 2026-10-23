@@ -1,0 +1,27 @@
+services:
+  staff:
+    build: .
+    env_file: .env.production
+    ports: ["127.0.0.1:3000:3000"]
+    restart: unless-stopped
+    init: true
+  worker:
+    build: .
+    env_file: .env.production
+    environment:
+      BACKUP_DIRECTORY: /app/backups
+    volumes:
+      - backup-data:/app/backups
+    command: ["node", "--conditions=react-server", "--import", "tsx", "scripts/worker.ts"]
+    restart: unless-stopped
+    init: true
+  receipts:
+    build:
+      context: .
+      dockerfile: Dockerfile.receipts
+    env_file: .env.receipts.production
+    ports: ["127.0.0.1:3002:3002"]
+    restart: unless-stopped
+    init: true
+volumes:
+  backup-data:

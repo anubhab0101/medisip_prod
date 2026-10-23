@@ -1,0 +1,2161 @@
+{
+  "— add 1, then check quantity": [
+    "src/features/billing/ocr-panel.tsx:178"
+  ],
+  ", then return to this setup page.": [
+    "src/app/(workspace)/settings/setup/page.tsx:107"
+  ],
+  ". Pay at the shop.": [
+    "src/app/booking/[token]/page.tsx:119"
+  ],
+  ". SMS tests expire after 15 minutes.": [
+    "src/features/notifications/message-form.tsx:111"
+  ],
+  ". The customer name and shop are filled automatically when preparing a message.": [
+    "src/features/notifications/template-editor.tsx:59"
+  ],
+  "· Credit reduced": [
+    "src/app/(workspace)/bills/[id]/page.tsx:171"
+  ],
+  "· Drug licence:": [
+    "src/app/(workspace)/bills/[id]/page.tsx:75"
+  ],
+  "· Inactive": [
+    "src/app/(workspace)/notifications/templates/page.tsx:35"
+  ],
+  "· Refund by": [
+    "src/app/(workspace)/bills/[id]/page.tsx:172"
+  ],
+  "· Total": [
+    "src/app/(workspace)/bills/[id]/page.tsx:169"
+  ],
+  "· Visit fee:": [
+    "src/app/booking/[token]/page.tsx:117"
+  ],
+  "· You": [
+    "src/app/(workspace)/settings/staff/page.tsx:97"
+  ],
+  "{name}, {shop}, {date}, {time}, {doctor}, {amount}": [
+    "src/features/notifications/template-editor.tsx:56"
+  ],
+  "+ Add another medicine": [
+    "src/features/stock/purchase-form.tsx:121"
+  ],
+  "+ Add another shop": [
+    "src/app/(workspace)/settings/page.tsx:38"
+  ],
+  "+ Add customer": [
+    "src/app/(workspace)/customers/page.tsx:46"
+  ],
+  "+ Add doctor": [
+    "src/app/(workspace)/appointments/page.tsx:99"
+  ],
+  "+ Add hours": [
+    "src/features/appointments/edit-form.tsx:162"
+  ],
+  "+ Add medicine": [
+    "src/app/(workspace)/medicines/page.tsx:69"
+  ],
+  "+ Add purchase": [
+    "src/app/(workspace)/purchases/page.tsx:88"
+  ],
+  "+ Add staff": [
+    "src/app/(workspace)/settings/staff/page.tsx:28"
+  ],
+  "+ Add stock": [
+    "src/app/(workspace)/stock/page.tsx:62"
+  ],
+  "+ Add supplier": [
+    "src/app/(workspace)/purchases/page.tsx:67"
+  ],
+  "+ Book appointment": [
+    "src/app/(workspace)/appointments/page.tsx:91"
+  ],
+  "+ Broadcast": [
+    "src/app/(workspace)/notifications/page.tsx:83"
+  ],
+  "+ New bill": [
+    "src/app/(workspace)/bills/page.tsx:66",
+    "src/app/(workspace)/dashboard/page.tsx:67"
+  ],
+  "+ New template": [
+    "src/app/(workspace)/notifications/templates/page.tsx:27"
+  ],
+  "+ Send stock": [
+    "src/app/(workspace)/stock/transfers/page.tsx:55"
+  ],
+  "+ Suggested order": [
+    "src/app/(workspace)/purchases/orders/page.tsx:36"
+  ],
+  "−2 or 2": [
+    "src/app/(workspace)/stock/page.tsx:163"
+  ],
+  "10-digit mobile number": [
+    "src/app/(workspace)/customers/page.tsx:59",
+    "src/features/billing/customer-picker.tsx:93"
+  ],
+  "500 mg": [
+    "src/features/stock/medicine-fields.tsx:36"
+  ],
+  "7 days": [
+    "src/app/(workspace)/appointments/page.tsx:183"
+  ],
+  "80mm receipt": [
+    "src/components/shared/print-button.tsx:42"
+  ],
+  "A little billing practice": [
+    "src/components/billing-preview.tsx:29"
+  ],
+  "A previous draft is saved on this device.": [
+    "src/features/billing/billing-form.tsx:56"
+  ],
+  "A4 / PDF": [
+    "src/components/shared/print-button.tsx:39"
+  ],
+  "Access": [
+    "src/app/(workspace)/settings/staff/page.tsx:84"
+  ],
+  "Action": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:50",
+    "src/app/(workspace)/notifications/reminders/page.tsx:67",
+    "src/app/(workspace)/stock/low/page.tsx:73",
+    "src/app/(workspace)/stock/page.tsx:112"
+  ],
+  "Action / details": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:141"
+  ],
+  "Active": [
+    "src/app/(workspace)/appointments/doctors/page.tsx:28",
+    "src/app/(workspace)/medicines/page.tsx:78"
+  ],
+  "Add a doctor and a customer before booking.": [
+    "src/features/appointments/booking-form.tsx:70"
+  ],
+  "Add a supplier and at least one medicine first.": [
+    "src/app/(workspace)/purchases/page.tsx:92"
+  ],
+  "Add another shop you manage to transfer stock.": [
+    "src/app/(workspace)/stock/transfers/page.tsx:59"
+  ],
+  "Add customer": [
+    "src/app/(workspace)/customers/page.tsx:48"
+  ],
+  "Add delivery": [
+    "src/features/delivery/create-form.tsx:11"
+  ],
+  "Add doctor": [
+    "src/app/(workspace)/appointments/page.tsx:101"
+  ],
+  "Add medicine": [
+    "src/app/(workspace)/medicines/page.tsx:71"
+  ],
+  "Add medicine and continue": [
+    "src/app/(workspace)/settings/setup/page.tsx:98"
+  ],
+  "add more medicines": [
+    "src/app/(workspace)/settings/setup/page.tsx:174"
+  ],
+  "Add one medicine to get started. This creates the catalogue entry; the next step adds its quantity and price.": [
+    "src/app/(workspace)/settings/setup/page.tsx:92"
+  ],
+  "Add opening stock": [
+    "src/app/(workspace)/dashboard/page.tsx:123"
+  ],
+  "Add shop": [
+    "src/app/(workspace)/settings/page.tsx:40"
+  ],
+  "add staff": [
+    "src/app/(workspace)/settings/setup/page.tsx:170"
+  ],
+  "Add stock": [
+    "src/app/(workspace)/stock/low/page.tsx:85"
+  ],
+  "Add supplier": [
+    "src/app/(workspace)/purchases/page.tsx:69"
+  ],
+  "Add your first medicine": [
+    "src/app/(workspace)/dashboard/page.tsx:117"
+  ],
+  "Add your first supplier from Purchases.": [
+    "src/app/(workspace)/suppliers/page.tsx:46"
+  ],
+  "Add your own contact and consent first": [
+    "src/features/notifications/message-form.tsx:109"
+  ],
+  "Add your supplier first": [
+    "src/app/(workspace)/settings/setup/page.tsx:123"
+  ],
+  "Address": [
+    "src/app/(workspace)/settings/page.tsx:47",
+    "src/features/settings/shop-fields.tsx:26"
+  ],
+  "Adjust": [
+    "src/app/(workspace)/stock/page.tsx:142"
+  ],
+  "Adjustment type": [
+    "src/app/(workspace)/stock/page.tsx:174"
+  ],
+  "Alert level": [
+    "src/app/(workspace)/stock/low/page.tsx:70"
+  ],
+  "All": [
+    "src/app/(workspace)/deliveries/page.tsx:60",
+    "src/app/(workspace)/stock/page.tsx:69"
+  ],
+  "All broadcasts": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:56"
+  ],
+  "All channels": [
+    "src/app/(workspace)/notifications/page.tsx:111"
+  ],
+  "All customers who agreed to this channel": [
+    "src/features/notifications/broadcast-form.tsx:202"
+  ],
+  "All statuses": [
+    "src/app/(workspace)/notifications/page.tsx:122"
+  ],
+  "Amount": [
+    "src/app/(workspace)/bills/[id]/page.tsx:96"
+  ],
+  "Amount received (₹)": [
+    "src/app/(workspace)/customers/[id]/page.tsx:87"
+  ],
+  "Announcement": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:82",
+    "src/features/notifications/broadcast-form.tsx:85"
+  ],
+  "Apply": [
+    "src/components/shared/language-switch.tsx:22"
+  ],
+  "Appointments": [
+    "src/app/(workspace)/appointments/doctors/page.tsx:19",
+    "src/app/(workspace)/appointments/page.tsx:70",
+    "src/app/(workspace)/layout.tsx:27"
+  ],
+  "Archive": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:60"
+  ],
+  "Archive medicine": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:56"
+  ],
+  "Archived": [
+    "src/app/(workspace)/medicines/page.tsx:81"
+  ],
+  "Archived in this shop": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:35"
+  ],
+  "Arrange home delivery": [
+    "src/features/delivery/create-form.tsx:9"
+  ],
+  "Assigned to": [
+    "src/app/(workspace)/deliveries/page.tsx:100",
+    "src/features/delivery/create-form.tsx:19"
+  ],
+  "At least 12 characters. Share privately.": [
+    "src/app/(workspace)/settings/staff/page.tsx:50"
+  ],
+  "available": [
+    "src/app/(workspace)/stock/transfers/page.tsx:84",
+    "src/features/billing/medicine-search.tsx:108",
+    "src/features/offline/prepare-form.tsx:83"
+  ],
+  "Available": [
+    "src/app/(workspace)/medicines/page.tsx:105",
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:57",
+    "src/app/(workspace)/stock/low/page.tsx:67",
+    "src/app/(workspace)/stock/page.tsx:105"
+  ],
+  "Available day": [
+    "src/app/(workspace)/appointments/page.tsx:136"
+  ],
+  "Available for new bookings": [
+    "src/features/appointments/edit-form.tsx:102"
+  ],
+  "Available for new messages": [
+    "src/features/notifications/template-editor.tsx:98"
+  ],
+  "Available for new purchases": [
+    "src/app/(workspace)/suppliers/page.tsx:82"
+  ],
+  "Available time": [
+    "src/features/appointments/booking-form.tsx:107"
+  ],
+  "Available, unexpired units at or below your alert level.": [
+    "src/app/(workspace)/stock/low/page.tsx:46"
+  ],
+  "Back": [
+    "src/app/(workspace)/appointments/doctors/[id]/page.tsx:38",
+    "src/app/(workspace)/customers/[id]/page.tsx:72",
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:37",
+    "src/app/(workspace)/settings/staff/page.tsx:22"
+  ],
+  "Back to medicine": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:19"
+  ],
+  "Back to medicines": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:94"
+  ],
+  "Back to overview": [
+    "src/app/login/page.tsx:36"
+  ],
+  "Back to purchases": [
+    "src/app/(workspace)/suppliers/page.tsx:39"
+  ],
+  "Back to stock": [
+    "src/app/(workspace)/stock/history/page.tsx:46",
+    "src/app/(workspace)/stock/low/page.tsx:49"
+  ],
+  "Barcode": [
+    "src/features/stock/medicine-fields.tsx:100"
+  ],
+  "Batch": [
+    "src/app/(workspace)/stock/transfers/page.tsx:76",
+    "src/features/billing/cart-table.tsx:40"
+  ],
+  "Batch no.": [
+    "src/features/stock/purchase-form.tsx:70"
+  ],
+  "Batch number": [
+    "src/app/(workspace)/stock/[id]/page.tsx:38"
+  ],
+  "batches expiring soon": [
+    "src/app/(workspace)/dashboard/page.tsx:139"
+  ],
+  "batches expiring within 30 days and": [
+    "src/app/(workspace)/dashboard/page.tsx:161"
+  ],
+  "Bill discount (₹)": [
+    "src/features/billing/billing-form.tsx:126"
+  ],
+  "Bill saved": [
+    "src/app/(workspace)/bills/[id]/page.tsx:38"
+  ],
+  "Bills": [
+    "src/app/(workspace)/bills/page.tsx:63",
+    "src/app/(workspace)/deliveries/page.tsx:54",
+    "src/app/(workspace)/layout.tsx:24"
+  ],
+  "Bills today": [
+    "src/app/(workspace)/dashboard/page.tsx:81"
+  ],
+  "Book a doctor visit": [
+    "src/app/booking/[token]/page.tsx:11",
+    "src/app/booking/[token]/page.tsx:70"
+  ],
+  "Book a time and keep the day organised.": [
+    "src/app/(workspace)/appointments/page.tsx:71"
+  ],
+  "Book appointment": [
+    "src/features/appointments/booking-form.tsx:145"
+  ],
+  "Book visit": [
+    "src/app/booking/[token]/page.tsx:127"
+  ],
+  "Booking link (optional)": [
+    "src/features/notifications/broadcast-form.tsx:159"
+  ],
+  "Booking link unavailable": [
+    "src/app/booking/[token]/page.tsx:51"
+  ],
+  "Booking…": [
+    "src/features/appointments/booking-form.tsx:145"
+  ],
+  "Bookings appear in Appointments. Phone numbers are not verified; confirm the visit with the customer. Public requests do not enable messaging consent or send automatic SMS.": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:44"
+  ],
+  "Branch transfers": [
+    "src/app/(workspace)/stock/page.tsx:53",
+    "src/app/(workspace)/stock/transfers/page.tsx:45"
+  ],
+  "Broadcast": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:45"
+  ],
+  "button": [
+    "src/components/ui/button.tsx:9"
+  ],
+  "Calculation only": [
+    "src/components/billing-preview.tsx:33"
+  ],
+  "Cancel": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:93"
+  ],
+  "Cancel order": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:104",
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:106"
+  ],
+  "Cancel this order without changing stock.": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:111"
+  ],
+  "Capsule": [
+    "src/features/stock/medicine-fields.tsx:46"
+  ],
+  "Card": [
+    "src/app/(workspace)/customers/[id]/page.tsx:98",
+    "src/features/billing/payment-fields.tsx:39",
+    "src/features/billing/payment-fields.tsx:68",
+    "src/features/billing/return-form.tsx:68"
+  ],
+  "Cash": [
+    "src/app/(workspace)/customers/[id]/page.tsx:94",
+    "src/features/billing/payment-fields.tsx:35",
+    "src/features/billing/return-form.tsx:64"
+  ],
+  "Cash + another method": [
+    "src/features/billing/payment-fields.tsx:45"
+  ],
+  "Cash amount (₹)": [
+    "src/features/billing/payment-fields.tsx:52"
+  ],
+  "Cash received (₹)": [
+    "src/features/billing/payment-fields.tsx:83"
+  ],
+  "Cashier": [
+    "src/app/(workspace)/settings/staff/page.tsx:57"
+  ],
+  "Catalogue matches, lowest price first.": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:16"
+  ],
+  "CGST": [
+    "src/app/(workspace)/bills/[id]/page.tsx:128"
+  ],
+  "CGST + SGST": [
+    "src/components/billing-preview.tsx:90"
+  ],
+  "Change": [
+    "src/app/(workspace)/stock/history/page.tsx:71"
+  ],
+  "Change to give:": [
+    "src/features/billing/payment-fields.tsx:91"
+  ],
+  "Channel": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:85",
+    "src/app/(workspace)/notifications/page.tsx:152",
+    "src/features/notifications/message-form.tsx:184",
+    "src/features/notifications/template-editor.tsx:34"
+  ],
+  "Check expiry: a batch expires within 30 days.": [
+    "src/features/billing/cart-table.tsx:63"
+  ],
+  "Check SMSGate for delivery. Resending is blocked while the result is uncertain.": [
+    "src/app/(workspace)/notifications/page.tsx:206"
+  ],
+  "Checking…": [
+    "src/features/notifications/manual-broadcast-button.tsx:41"
+  ],
+  "chip": [
+    "src/app/(workspace)/stock/page.tsx:130"
+  ],
+  "chip danger": [
+    "src/app/(workspace)/stock/page.tsx:130"
+  ],
+  "Choose 80mm paper in the printer settings; turn off headers and footers.": [
+    "src/components/shared/print-button.tsx:69"
+  ],
+  "Choose a time": [
+    "src/features/appointments/booking-form.tsx:115"
+  ],
+  "Choose a time, then enter your contact details. All times are India time.": [
+    "src/app/booking/[token]/page.tsx:75"
+  ],
+  "Choose a valid booking date": [
+    "src/app/booking/[token]/page.tsx:35"
+  ],
+  "Choose customers": [
+    "src/features/notifications/broadcast-form.tsx:205"
+  ],
+  "Choose doctor": [
+    "src/features/notifications/broadcast-form.tsx:121"
+  ],
+  "Choose purchased medicine": [
+    "src/features/notifications/reminder-form.tsx:43"
+  ],
+  "Choose what each person can do in this shop.": [
+    "src/app/(workspace)/settings/staff/page.tsx:19"
+  ],
+  "Choose your own saved customer record with consent for this channel. Enter your own number for SMS/WhatsApp; email tests must match your staff sign-in email. Nothing is sent until you prepare the test. SMS tests are queued; WhatsApp and email open for you to send manually.": [
+    "src/features/notifications/message-form.tsx:102"
+  ],
+  "Clear": [
+    "src/components/shared/page.tsx:35"
+  ],
+  "Confirm and queue SMS": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:97"
+  ],
+  "Confirm manual broadcast": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:98"
+  ],
+  "Confirm order": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:42"
+  ],
+  "Confirm receipt": [
+    "src/app/(workspace)/stock/transfers/page.tsx:126"
+  ],
+  "Confirm return": [
+    "src/features/billing/return-form.tsx:26"
+  ],
+  "Confirm the applicable rate for this medicine.": [
+    "src/features/stock/medicine-fields.tsx:84"
+  ],
+  "Connect SMSGate and enable SMS sending before confirming this broadcast.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:88"
+  ],
+  "Consent is checked before confirmation and again before sending. Announcements are sent between 8 AM and 9 PM. A doctor announcement expires when the visit ends.": [
+    "src/features/notifications/broadcast-form.tsx:265"
+  ],
+  "Contact the shop for an updated booking link.": [
+    "src/app/booking/[token]/page.tsx:54"
+  ],
+  "Copy link": [
+    "src/features/receipts/share-panel.tsx:95"
+  ],
+  "Correction / damage": [
+    "src/app/(workspace)/stock/page.tsx:177"
+  ],
+  "Cost per unit (₹)": [
+    "src/app/(workspace)/stock/[id]/page.tsx:65"
+  ],
+  "Counter name": [
+    "src/features/offline/prepare-form.tsx:69"
+  ],
+  "Cream": [
+    "src/features/stock/medicine-fields.tsx:55"
+  ],
+  "Create a separate practice shop with sample stock.": [
+    "src/app/(workspace)/settings/practice/page.tsx:57"
+  ],
+  "Create a suggested order from low stock, review it, then record received stock.": [
+    "src/app/(workspace)/purchases/orders/page.tsx:27"
+  ],
+  "Create account": [
+    "src/app/(workspace)/settings/staff/page.tsx:30"
+  ],
+  "Create bills, track batches and expiry, receive stock, manage doctor appointments and keep customers informed.": [
+    "src/app/page.tsx:50"
+  ],
+  "Create draft": [
+    "src/app/(workspace)/purchases/orders/page.tsx:45"
+  ],
+  "Create practice shop": [
+    "src/app/(workspace)/settings/practice/page.tsx:44"
+  ],
+  "Create receipt link": [
+    "src/features/receipts/share-panel.tsx:45"
+  ],
+  "Create your first bill": [
+    "src/app/(workspace)/settings/setup/page.tsx:165"
+  ],
+  "Credit": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:77"
+  ],
+  "Credit / udhar": [
+    "src/features/billing/payment-fields.tsx:42",
+    "src/features/billing/payment-fields.tsx:71"
+  ],
+  "Credit history": [
+    "src/app/(workspace)/customers/[id]/page.tsx:203"
+  ],
+  "Customer": [
+    "src/app/(workspace)/appointments/page.tsx:204",
+    "src/app/(workspace)/bills/page.tsx:107",
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:135",
+    "src/app/(workspace)/notifications/page.tsx:149",
+    "src/app/(workspace)/notifications/reminders/page.tsx:55",
+    "src/features/appointments/booking-form.tsx:97",
+    "src/features/billing/customer-picker.tsx:70",
+    "src/features/notifications/message-form.tsx:169"
+  ],
+  "Customer booking link": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:37"
+  ],
+  "Customer details and message preferences.": [
+    "src/app/(workspace)/customers/page.tsx:42"
+  ],
+  "Customer mobile": [
+    "src/features/billing/customer-picker.tsx:88"
+  ],
+  "Customer name (if new)": [
+    "src/features/billing/customer-picker.tsx:97"
+  ],
+  "Customer name or counter note": [
+    "src/features/billing/held-bills.tsx:73"
+  ],
+  "Customer receipt link": [
+    "src/features/receipts/share-panel.tsx:78"
+  ],
+  "Customers": [
+    "src/app/(workspace)/customers/page.tsx:41",
+    "src/app/(workspace)/dashboard/page.tsx:93",
+    "src/app/(workspace)/layout.tsx:18",
+    "src/app/(workspace)/notifications/reminders/page.tsx:41",
+    "src/features/notifications/broadcast-form.tsx:196"
+  ],
+  "Customers can book a doctor visit without signing in. Staff pages remain protected. Only enable this when you are ready to accept bookings.": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:21"
+  ],
+  "Daily stock check ·": [
+    "src/app/(workspace)/dashboard/page.tsx:153"
+  ],
+  "Daily work, in one place": [
+    "src/app/page.tsx:45"
+  ],
+  "Date": [
+    "src/app/(workspace)/appointments/page.tsx:173",
+    "src/app/(workspace)/bills/page.tsx:110",
+    "src/app/(workspace)/customers/[id]/page.tsx:163",
+    "src/app/(workspace)/notifications/page.tsx:158",
+    "src/app/(workspace)/purchases/page.tsx:120",
+    "src/app/booking/[token]/page.tsx:101",
+    "src/features/appointments/booking-form.tsx:87",
+    "src/features/stock/purchase-form.tsx:45"
+  ],
+  "day": [
+    "src/app/(workspace)/appointments/page.tsx:178"
+  ],
+  "Day": [
+    "src/app/(workspace)/appointments/page.tsx:180",
+    "src/features/appointments/edit-form.tsx:110"
+  ],
+  "Deliveries": [
+    "src/app/(workspace)/deliveries/page.tsx:50"
+  ],
+  "Delivery address": [
+    "src/features/delivery/create-form.tsx:24"
+  ],
+  "Delivery mobile": [
+    "src/features/delivery/create-form.tsx:15"
+  ],
+  "Delivery notes": [
+    "src/features/delivery/create-form.tsx:28"
+  ],
+  "Details": [
+    "src/app/(workspace)/notifications/page.tsx:161"
+  ],
+  "disable": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:53"
+  ],
+  "Disable booking": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:59"
+  ],
+  "Disable shared links": [
+    "src/features/receipts/share-panel.tsx:72"
+  ],
+  "Disabled": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:33"
+  ],
+  "Discard": [
+    "src/features/billing/held-bills.tsx:136"
+  ],
+  "Discard saved draft": [
+    "src/features/billing/billing-form.tsx:69"
+  ],
+  "Discount": [
+    "src/app/(workspace)/bills/[id]/page.tsx:123"
+  ],
+  "Discount %": [
+    "src/features/billing/cart-table.tsx:46"
+  ],
+  "Discount per redeemed point (₹)": [
+    "src/features/loyalty/settings.tsx:37"
+  ],
+  "Dispatch from this shop; confirm arrival in the receiving shop.": [
+    "src/app/(workspace)/stock/transfers/page.tsx:46"
+  ],
+  "Dispatch stock": [
+    "src/app/(workspace)/stock/transfers/page.tsx:62"
+  ],
+  "Doctor": [
+    "src/app/(workspace)/appointments/page.tsx:207",
+    "src/app/(workspace)/settings/staff/page.tsx:63",
+    "src/app/booking/[token]/page.tsx:91",
+    "src/features/appointments/booking-form.tsx:77",
+    "src/features/notifications/broadcast-form.tsx:114"
+  ],
+  "Doctor login": [
+    "src/features/appointments/edit-form.tsx:84"
+  ],
+  "Doctor name": [
+    "src/features/billing/billing-form.tsx:108"
+  ],
+  "Doctor visiting": [
+    "src/features/notifications/broadcast-form.tsx:88"
+  ],
+  "Doctors & hours": [
+    "src/app/(workspace)/appointments/doctors/page.tsx:16",
+    "src/app/(workspace)/appointments/page.tsx:75"
+  ],
+  "Download CSV": [
+    "src/app/(workspace)/reports/page.tsx:47"
+  ],
+  "Download CSV template": [
+    "src/features/stock/import-form.tsx:91"
+  ],
+  "Download error report": [
+    "src/features/stock/import-form.tsx:152"
+  ],
+  "Download PDF": [
+    "src/app/(workspace)/bills/[id]/page.tsx:48",
+    "src/app/(workspace)/reports/page.tsx:55"
+  ],
+  "Drug licence no.": [
+    "src/features/settings/shop-fields.tsx:43"
+  ],
+  "Earliest expiry": [
+    "src/features/billing/cart-table.tsx:79"
+  ],
+  "Edit batch details / prices": [
+    "src/app/(workspace)/stock/page.tsx:145"
+  ],
+  "Edit contact details or archive a supplier you no longer use.": [
+    "src/app/(workspace)/suppliers/page.tsx:36"
+  ],
+  "Edit doctor": [
+    "src/app/(workspace)/appointments/doctors/[id]/page.tsx:35"
+  ],
+  "Edit shop details": [
+    "src/app/(workspace)/settings/setup/page.tsx:187"
+  ],
+  "eligible customers": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:65"
+  ],
+  "Email": [
+    "src/app/(workspace)/customers/page.tsx:82",
+    "src/app/(workspace)/customers/page.tsx:108",
+    "src/app/(workspace)/customers/[id]/page.tsx:138",
+    "src/app/(workspace)/settings/staff/page.tsx:37",
+    "src/app/(workspace)/settings/staff/page.tsx:81",
+    "src/app/login/login-form.tsx:11",
+    "src/features/notifications/template-editor.tsx:39"
+  ],
+  "Email — send individually": [
+    "src/features/notifications/broadcast-form.tsx:106"
+  ],
+  "Email — send manually": [
+    "src/features/notifications/message-form.tsx:198"
+  ],
+  "Email (optional)": [
+    "src/app/(workspace)/customers/page.tsx:64"
+  ],
+  "enable": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:53"
+  ],
+  "Enable booking": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:56"
+  ],
+  "Enable loyalty points": [
+    "src/features/loyalty/settings.tsx:25"
+  ],
+  "Enabled": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:33"
+  ],
+  "End time": [
+    "src/app/(workspace)/appointments/page.tsx:163"
+  ],
+  "Ends": [
+    "src/features/appointments/edit-form.tsx:130"
+  ],
+  "English": [
+    "src/components/shared/language-switch.tsx:17"
+  ],
+  "Enter a medicine name from the reviewed text": [
+    "src/features/billing/ocr-panel.tsx:127"
+  ],
+  "Enter an actual supplier bill or opening-stock record. Use the batch, expiry, quantity, purchase price and MRP printed on your stock.": [
+    "src/app/(workspace)/settings/setup/page.tsx:116"
+  ],
+  "Enter quantities for up to 20 batches. These units become unavailable to other counters until sold or released.": [
+    "src/features/offline/prepare-form.tsx:78"
+  ],
+  "Enter your real shop details. These appear on receipts.": [
+    "src/app/(workspace)/settings/setup/page.tsx:80"
+  ],
+  "Every receipt, sale, return and adjustment.": [
+    "src/app/(workspace)/stock/history/page.tsx:43"
+  ],
+  "Exact amount": [
+    "src/features/billing/payment-fields.tsx:86"
+  ],
+  "Existing bookings are protected. Cancel and rebook any affected appointment before changing its hours.": [
+    "src/features/appointments/edit-form.tsx:167"
+  ],
+  "Existing customers are selected by phone. New customers start with messages off.": [
+    "src/features/billing/customer-picker.tsx:107"
+  ],
+  "Expired": [
+    "src/app/(workspace)/stock/page.tsx:78"
+  ],
+  "expired batches": [
+    "src/app/(workspace)/dashboard/page.tsx:131"
+  ],
+  "expired batches,": [
+    "src/app/(workspace)/dashboard/page.tsx:159"
+  ],
+  "Expired stock write-off": [
+    "src/app/(workspace)/stock/page.tsx:180"
+  ],
+  "Expiring soon": [
+    "src/app/(workspace)/stock/page.tsx:75"
+  ],
+  "Expiry": [
+    "src/app/(workspace)/stock/page.tsx:102"
+  ],
+  "Expiry month": [
+    "src/app/(workspace)/stock/[id]/page.tsx:47",
+    "src/features/stock/purchase-form.tsx:77"
+  ],
+  "Explore GST-inclusive totals. This does not create a bill or change stock.": [
+    "src/components/billing-preview.tsx:39"
+  ],
+  "F2": [
+    "src/features/billing/medicine-search.tsx:63"
+  ],
+  "Fee (₹)": [
+    "src/app/(workspace)/appointments/page.tsx:116",
+    "src/features/appointments/edit-form.tsx:64"
+  ],
+  "Fill the template, then upload CSV or XLSX (first sheet). Keep barcodes as text. Confirm medicine details and applicable tax rates before importing. Opening stock is entered through Purchases.": [
+    "src/features/stock/import-form.tsx:96"
+  ],
+  "Filter history": [
+    "src/app/(workspace)/notifications/page.tsx:132"
+  ],
+  "Find / add customer by phone": [
+    "src/features/billing/customer-picker.tsx:84"
+  ],
+  "Find alternatives with the same ingredient": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:30"
+  ],
+  "Find customer": [
+    "src/features/notifications/broadcast-form.tsx:212"
+  ],
+  "Find medicine": [
+    "src/features/billing/medicine-search.tsx:62",
+    "src/features/billing/ocr-panel.tsx:146"
+  ],
+  "Find medicine → check quantity → save.": [
+    "src/app/(workspace)/billing/page.tsx:20"
+  ],
+  "Find medicines by name, ingredient or barcode.": [
+    "src/app/(workspace)/medicines/page.tsx:57"
+  ],
+  "Finding customer…": [
+    "src/features/billing/customer-picker.tsx:122"
+  ],
+  "Finish shop details": [
+    "src/app/(workspace)/dashboard/page.tsx:111"
+  ],
+  "For example: INV or MAIN.": [
+    "src/features/settings/shop-fields.tsx:60"
+  ],
+  "Form": [
+    "src/features/stock/medicine-fields.tsx:40"
+  ],
+  "From": [
+    "src/app/(workspace)/bills/page.tsx:80",
+    "src/app/(workspace)/reports/page.tsx:32",
+    "src/features/notifications/broadcast-form.tsx:141"
+  ],
+  "Get well soon.": [
+    "src/app/(workspace)/bills/[id]/page.tsx:154"
+  ],
+  "Go to billing": [
+    "src/app/(workspace)/settings/practice/page.tsx:62"
+  ],
+  "GST": [
+    "src/app/(workspace)/bills/[id]/page.tsx:94"
+  ],
+  "GST rate": [
+    "src/components/billing-preview.tsx:63",
+    "src/features/stock/medicine-fields.tsx:75"
+  ],
+  "GSTIN": [
+    "src/app/(workspace)/purchases/page.tsx:80",
+    "src/app/(workspace)/settings/setup/page.tsx:139",
+    "src/app/(workspace)/suppliers/page.tsx:72",
+    "src/features/settings/shop-fields.tsx:36"
+  ],
+  "GSTIN:": [
+    "src/app/(workspace)/bills/[id]/page.tsx:73"
+  ],
+  "Have a list already?": [
+    "src/app/(workspace)/settings/setup/page.tsx:103"
+  ],
+  "Held bills are private to your sign-in. Stock is not reserved; prices and availability are checked again when resumed.": [
+    "src/features/billing/held-bills.tsx:62"
+  ],
+  "Help": [
+    "src/app/(workspace)/layout.tsx:73"
+  ],
+  "History": [
+    "src/app/(workspace)/stock/page.tsx:81"
+  ],
+  "History channel": [
+    "src/app/(workspace)/notifications/page.tsx:108"
+  ],
+  "History status": [
+    "src/app/(workspace)/notifications/page.tsx:119"
+  ],
+  "Hold / resume bills": [
+    "src/features/billing/held-bills.tsx:55"
+  ],
+  "Hold label": [
+    "src/features/billing/held-bills.tsx:69"
+  ],
+  "Hold or finish the current bill before resuming another.": [
+    "src/features/billing/held-bills.tsx:142"
+  ],
+  "Hold this bill": [
+    "src/features/billing/held-bills.tsx:95"
+  ],
+  "Home": [
+    "src/app/(workspace)/help/page.tsx:54",
+    "src/app/(workspace)/layout.tsx:14",
+    "src/app/(workspace)/settings/setup/page.tsx:59"
+  ],
+  "HSN": [
+    "src/app/(workspace)/bills/[id]/page.tsx:89",
+    "src/features/stock/medicine-fields.tsx:88"
+  ],
+  "https://…": [
+    "src/features/notifications/broadcast-form.tsx:162"
+  ],
+  "I checked the original prescription, medicine and strength. I will confirm quantity in the bill.": [
+    "src/features/billing/ocr-panel.tsx:156"
+  ],
+  "I checked the quantity change.": [
+    "src/app/(workspace)/stock/page.tsx:186"
+  ],
+  "I checked the returned items and quantities.": [
+    "src/features/billing/return-form.tsx:78"
+  ],
+  "I checked the supplier and quantities. I will place the order myself.": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:64"
+  ],
+  "I checked these details against the physical stock.": [
+    "src/app/(workspace)/stock/[id]/page.tsx:80"
+  ],
+  "I confirm delivery completion or cancellation, if selected.": [
+    "src/app/(workspace)/deliveries/page.tsx:120"
+  ],
+  "I confirm this change.": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:68"
+  ],
+  "I counted and received all these units.": [
+    "src/app/(workspace)/stock/transfers/page.tsx:130"
+  ],
+  "I reviewed this message and the recipients.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:104"
+  ],
+  "I understand and want to continue.": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:77"
+  ],
+  "I understand this practice shop will be archived.": [
+    "src/app/(workspace)/settings/practice/page.tsx:56"
+  ],
+  "If archiving, I understand this hides the supplier from new purchases. History is kept.": [
+    "src/app/(workspace)/suppliers/page.tsx:88"
+  ],
+  "Import CSV / Excel": [
+    "src/app/(workspace)/medicines/page.tsx:61",
+    "src/app/(workspace)/settings/setup/page.tsx:105"
+  ],
+  "Import file": [
+    "src/features/stock/import-form.tsx:101"
+  ],
+  "Import medicines": [
+    "src/app/(workspace)/medicines/import/page.tsx:12"
+  ],
+  "Import only the": [
+    "src/features/stock/import-form.tsx:160"
+  ],
+  "Inactive": [
+    "src/app/(workspace)/appointments/doctors/page.tsx:28"
+  ],
+  "Incoming": [
+    "src/app/(workspace)/stock/transfers/page.tsx:114"
+  ],
+  "India time": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:61"
+  ],
+  "Ingredient": [
+    "src/app/(workspace)/medicines/page.tsx:102"
+  ],
+  "Ingredient / salt": [
+    "src/features/stock/medicine-fields.tsx:24"
+  ],
+  "Injection": [
+    "src/features/stock/medicine-fields.tsx:52"
+  ],
+  "Invoice": [
+    "src/app/(workspace)/bills/page.tsx:104",
+    "src/app/(workspace)/customers/[id]/page.tsx:160",
+    "src/app/(workspace)/purchases/page.tsx:114"
+  ],
+  "Invoice or customer": [
+    "src/app/(workspace)/bills/page.tsx:76"
+  ],
+  "Invoice prefix": [
+    "src/features/settings/shop-fields.tsx:52"
+  ],
+  "IST": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:75"
+  ],
+  "Learn with sample stock in a separate practice shop.": [
+    "src/app/(workspace)/settings/practice/page.tsx:15"
+  ],
+  "Leave blank if your shop is not GST registered.": [
+    "src/features/settings/shop-fields.tsx:39"
+  ],
+  "Leave blank to invite customers to call": [
+    "src/features/notifications/broadcast-form.tsx:168"
+  ],
+  "Loading workspace": [
+    "src/app/loading.tsx:4"
+  ],
+  "Loading…": [
+    "src/app/(workspace)/loading.tsx:5",
+    "src/features/appointments/booking-form.tsx:115"
+  ],
+  "Low stock": [
+    "src/app/(workspace)/stock/low/page.tsx:45",
+    "src/app/(workspace)/stock/page.tsx:72"
+  ],
+  "Low-stock alert below": [
+    "src/features/stock/medicine-fields.tsx:108"
+  ],
+  "Loyalty points": [
+    "src/features/loyalty/settings.tsx:16"
+  ],
+  "Loyalty points:": [
+    "src/app/(workspace)/customers/[id]/page.tsx:190"
+  ],
+  "Main menu": [
+    "src/app/(workspace)/layout.tsx:83"
+  ],
+  "Manage pharmacy billing, medicine stock, doctor appointments and customer messages.": [
+    "src/app/layout.tsx:14"
+  ],
+  "Manage staff": [
+    "src/app/(workspace)/settings/page.tsx:24"
+  ],
+  "Manage suppliers": [
+    "src/app/(workspace)/purchases/page.tsx:56"
+  ],
+  "Manufacturer": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:51",
+    "src/features/stock/medicine-fields.tsx:71"
+  ],
+  "Medicine": [
+    "src/app/(workspace)/medicines/page.tsx:99",
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:48",
+    "src/app/(workspace)/stock/low/page.tsx:64",
+    "src/features/billing/cart-table.tsx:37",
+    "src/features/stock/import-form.tsx:125",
+    "src/features/stock/purchase-form.tsx:57"
+  ],
+  "Medicine (for refill)": [
+    "src/features/notifications/reminder-form.tsx:40"
+  ],
+  "Medicine / batch": [
+    "src/app/(workspace)/stock/history/page.tsx:68",
+    "src/app/(workspace)/stock/page.tsx:99"
+  ],
+  "Medicine / batch / expiry": [
+    "src/app/(workspace)/bills/[id]/page.tsx:87"
+  ],
+  "Medicine details": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:35"
+  ],
+  "Medicine refill": [
+    "src/features/notifications/reminder-form.tsx:32"
+  ],
+  "Medicine to find": [
+    "src/features/billing/ocr-panel.tsx:118"
+  ],
+  "Medicines": [
+    "src/app/(workspace)/dashboard/page.tsx:87",
+    "src/app/(workspace)/layout.tsx:16",
+    "src/app/(workspace)/medicines/import/page.tsx:16",
+    "src/app/(workspace)/medicines/page.tsx:56"
+  ],
+  "medicines at or below their stock alert level.": [
+    "src/app/(workspace)/dashboard/page.tsx:163"
+  ],
+  "Medicines, stock and billing in one place.": [
+    "src/app/page.tsx:26"
+  ],
+  "MediShop": [
+    "src/app/(workspace)/layout.tsx:48",
+    "src/app/login/page.tsx:17",
+    "src/app/page.tsx:13"
+  ],
+  "MediShop · Simple pharmacy management": [
+    "src/app/layout.tsx:12",
+    "src/app/layout.tsx:17"
+  ],
+  "Message": [
+    "src/features/notifications/broadcast-form.tsx:185",
+    "src/features/notifications/message-form.tsx:223",
+    "src/features/notifications/template-editor.tsx:45"
+  ],
+  "Message preferences": [
+    "src/app/(workspace)/customers/[id]/page.tsx:108"
+  ],
+  "Message preview": [
+    "src/features/notifications/broadcast-form.tsx:258"
+  ],
+  "Message templates": [
+    "src/app/(workspace)/notifications/page.tsx:89",
+    "src/app/(workspace)/notifications/templates/page.tsx:17"
+  ],
+  "Messages": [
+    "src/app/(workspace)/layout.tsx:32",
+    "src/app/(workspace)/notifications/broadcast/page.tsx:49",
+    "src/app/(workspace)/notifications/page.tsx:79",
+    "src/app/(workspace)/notifications/templates/page.tsx:21"
+  ],
+  "Messages allowed": [
+    "src/app/(workspace)/customers/page.tsx:111"
+  ],
+  "Messages, shared receipts and invoice printing are disabled in practice. Use the shop selector to return to your real shop.": [
+    "src/app/(workspace)/settings/practice/page.tsx:28"
+  ],
+  "Mobile number": [
+    "src/app/(workspace)/customers/page.tsx:55",
+    "src/app/booking/[token]/page.tsx:159"
+  ],
+  "MRP": [
+    "src/app/(workspace)/bills/[id]/page.tsx:93",
+    "src/app/(workspace)/stock/page.tsx:110"
+  ],
+  "MRP from": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:54"
+  ],
+  "MRP per unit (₹)": [
+    "src/app/(workspace)/stock/[id]/page.tsx:56",
+    "src/features/stock/purchase-form.tsx:96"
+  ],
+  "My phone number": [
+    "src/features/notifications/message-form.tsx:147"
+  ],
+  "Name": [
+    "src/app/(workspace)/appointments/page.tsx:104",
+    "src/app/(workspace)/customers/page.tsx:51",
+    "src/app/(workspace)/customers/page.tsx:102",
+    "src/app/(workspace)/purchases/page.tsx:72",
+    "src/app/(workspace)/settings/setup/page.tsx:131",
+    "src/app/(workspace)/settings/staff/page.tsx:33",
+    "src/app/(workspace)/settings/staff/page.tsx:78",
+    "src/app/(workspace)/suppliers/page.tsx:59",
+    "src/features/appointments/edit-form.tsx:46",
+    "src/features/notifications/template-editor.tsx:25",
+    "src/features/stock/medicine-fields.tsx:15"
+  ],
+  "Name or mobile number": [
+    "src/app/(workspace)/customers/page.tsx:87"
+  ],
+  "Name or phone": [
+    "src/features/notifications/broadcast-form.tsx:216"
+  ],
+  "Name, ingredient or barcode": [
+    "src/app/(workspace)/medicines/page.tsx:86"
+  ],
+  "Name, ingredient or scan barcode": [
+    "src/features/billing/medicine-search.tsx:68"
+  ],
+  "New bill": [
+    "src/app/(workspace)/billing/page.tsx:19",
+    "src/app/(workspace)/bills/[id]/page.tsx:52",
+    "src/app/(workspace)/layout.tsx:15"
+  ],
+  "Next": [
+    "src/components/shared/page.tsx:71"
+  ],
+  "Next steps": [
+    "src/app/(workspace)/dashboard/page.tsx:100"
+  ],
+  "Next, you can": [
+    "src/app/(workspace)/settings/setup/page.tsx:168"
+  ],
+  "no": [
+    "src/app/(workspace)/settings/practice/page.tsx:50"
+  ],
+  "No appointments on this date.": [
+    "src/app/(workspace)/appointments/page.tsx:193"
+  ],
+  "No batches found. Add stock from a supplier purchase.": [
+    "src/app/(workspace)/stock/page.tsx:91"
+  ],
+  "No bills found.": [
+    "src/app/(workspace)/bills/page.tsx:96"
+  ],
+  "No bills yet.": [
+    "src/app/(workspace)/customers/[id]/page.tsx:152"
+  ],
+  "No broadcasts yet.": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:74"
+  ],
+  "No credit entries.": [
+    "src/app/(workspace)/customers/[id]/page.tsx:207"
+  ],
+  "No customers found. Add a customer when making a bill, or use the form above.": [
+    "src/app/(workspace)/customers/page.tsx:92"
+  ],
+  "No deliveries found.": [
+    "src/app/(workspace)/deliveries/page.tsx:75"
+  ],
+  "No doctors are available for online booking. Please contact the shop.": [
+    "src/app/booking/[token]/page.tsx:83"
+  ],
+  "No expiry alerts today.": [
+    "src/app/(workspace)/dashboard/page.tsx:145"
+  ],
+  "No free slots on this date.": [
+    "src/features/appointments/booking-form.tsx:131"
+  ],
+  "No held bills.": [
+    "src/features/billing/held-bills.tsx:101"
+  ],
+  "No linked login": [
+    "src/features/appointments/edit-form.tsx:87"
+  ],
+  "No matching alternatives with available stock. Add complete ingredient and strength details to compare medicines.": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:38"
+  ],
+  "No matching medicines.": [
+    "src/features/billing/medicine-search.tsx:117"
+  ],
+  "No medicines found. Add a medicine to get started.": [
+    "src/app/(workspace)/medicines/page.tsx:91"
+  ],
+  "No medicines need restocking.": [
+    "src/app/(workspace)/stock/low/page.tsx:56"
+  ],
+  "No message history yet.": [
+    "src/app/(workspace)/notifications/page.tsx:140"
+  ],
+  "No messages match these filters.": [
+    "src/app/(workspace)/notifications/page.tsx:139"
+  ],
+  "No online payment or promotional messages. Contact the shop if you need to change or cancel your visit.": [
+    "src/app/booking/[token]/page.tsx:181"
+  ],
+  "No personal contact record yet?": [
+    "src/features/notifications/message-form.tsx:107"
+  ],
+  "No purchases yet.": [
+    "src/app/(workspace)/purchases/page.tsx:106"
+  ],
+  "No records for this report.": [
+    "src/app/(workspace)/reports/page.tsx:66"
+  ],
+  "No reminders yet.": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:47"
+  ],
+  "No stock movements found.": [
+    "src/app/(workspace)/stock/history/page.tsx:57"
+  ],
+  "No times available on this date. Choose another date.": [
+    "src/app/booking/[token]/page.tsx:123"
+  ],
+  "Notes": [
+    "src/app/(workspace)/deliveries/page.tsx:109"
+  ],
+  "Notes (optional)": [
+    "src/features/appointments/booking-form.tsx:125"
+  ],
+  "numeric": [
+    "src/app/(workspace)/appointments/page.tsx:221"
+  ],
+  "of": [
+    "src/components/shared/page.tsx:65"
+  ],
+  "of 4 ·": [
+    "src/app/(workspace)/settings/setup/page.tsx:74"
+  ],
+  "Offline counter": [
+    "src/app/(workspace)/billing/page.tsx:23",
+    "src/app/(workspace)/offline/page.tsx:28"
+  ],
+  "Online billing": [
+    "src/app/(workspace)/offline/page.tsx:32"
+  ],
+  "Only tick the channels the customer agreed to.": [
+    "src/app/(workspace)/customers/page.tsx:69"
+  ],
+  "Open bill": [
+    "src/app/(workspace)/deliveries/page.tsx:86"
+  ],
+  "Open existing offline counter": [
+    "src/features/offline/prepare-form.tsx:63"
+  ],
+  "Open message to send": [
+    "src/features/notifications/manual-broadcast-button.tsx:20",
+    "src/features/notifications/message-form.tsx:264"
+  ],
+  "Open the original booking link and choose a date within the next 30 days.": [
+    "src/app/booking/[token]/page.tsx:40"
+  ],
+  "Open your shop": [
+    "src/app/page.tsx:32"
+  ],
+  "Opening your workspace…": [
+    "src/app/loading.tsx:6"
+  ],
+  "or read": [
+    "src/app/(workspace)/settings/setup/page.tsx:176"
+  ],
+  "Order": [
+    "src/app/(workspace)/purchases/orders/page.tsx:64"
+  ],
+  "Other": [
+    "src/features/stock/medicine-fields.tsx:58"
+  ],
+  "Outgoing": [
+    "src/app/(workspace)/stock/transfers/page.tsx:114"
+  ],
+  "Outstanding credit": [
+    "src/features/notifications/reminder-form.tsx:35"
+  ],
+  "Outstanding credit:": [
+    "src/app/(workspace)/customers/[id]/page.tsx:78"
+  ],
+  "Owner": [
+    "src/app/(workspace)/settings/staff/page.tsx:66"
+  ],
+  "Pack size": [
+    "src/features/stock/medicine-fields.tsx:63"
+  ],
+  "Pack, assign and track home deliveries. Add a delivery from a saved bill.": [
+    "src/app/(workspace)/deliveries/page.tsx:51"
+  ],
+  "Page": [
+    "src/components/shared/page.tsx:63"
+  ],
+  "Pages": [
+    "src/components/shared/page.tsx:56"
+  ],
+  "Paper": [
+    "src/components/shared/print-button.tsx:31"
+  ],
+  "Password": [
+    "src/app/login/login-form.tsx:21"
+  ],
+  "Pay remaining by": [
+    "src/features/billing/payment-fields.tsx:61"
+  ],
+  "Payment": [
+    "src/features/billing/payment-fields.tsx:29"
+  ],
+  "Payment method": [
+    "src/app/(workspace)/customers/[id]/page.tsx:91"
+  ],
+  "per point": [
+    "src/features/loyalty/picker.tsx:46"
+  ],
+  "Pharmacist": [
+    "src/app/(workspace)/settings/staff/page.tsx:60"
+  ],
+  "Phone": [
+    "src/app/(workspace)/customers/page.tsx:105",
+    "src/app/(workspace)/purchases/page.tsx:76",
+    "src/app/(workspace)/settings/page.tsx:51",
+    "src/app/(workspace)/settings/setup/page.tsx:135",
+    "src/app/(workspace)/suppliers/page.tsx:68",
+    "src/features/settings/shop-fields.tsx:16"
+  ],
+  "Phone, address or assigned staff": [
+    "src/app/(workspace)/deliveries/page.tsx:70"
+  ],
+  "Please try again. If the problem continues, restart the app.": [
+    "src/app/error.tsx:12"
+  ],
+  "Points are earned on the final bill total and redeemed as a bill discount. Returns adjust earned and redeemed points in proportion to the returned items’ original value. A negative balance must be earned back before further redemption.": [
+    "src/features/loyalty/settings.tsx:48"
+  ],
+  "points available · ₹": [
+    "src/features/loyalty/picker.tsx:44"
+  ],
+  "Practice mode: preview broadcasts without contacting anyone.": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:56"
+  ],
+  "Practice safely": [
+    "src/app/(workspace)/settings/practice/page.tsx:14"
+  ],
+  "Practice shop": [
+    "src/app/(workspace)/settings/page.tsx:27"
+  ],
+  "Practice shop · Sample records only · Messages are disabled": [
+    "src/app/(workspace)/layout.tsx:99"
+  ],
+  "Practice shop (messages and printing disabled)": [
+    "src/app/(workspace)/settings/page.tsx:57"
+  ],
+  "Prepare individual messages for me to send.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:108"
+  ],
+  "Prepare message": [
+    "src/features/notifications/manual-broadcast-button.tsx:41",
+    "src/features/notifications/message-form.tsx:272"
+  ],
+  "Prepare test message": [
+    "src/features/notifications/message-form.tsx:271"
+  ],
+  "Prepare while connected. Open the counter once before going offline. Sync before closing the counter or clearing browser data. Cash, confirmed UPI/card, split payments and discounts work offline. Customer credit, loyalty and prescriptions use online billing.": [
+    "src/app/(workspace)/offline/page.tsx:38"
+  ],
+  "Preparing preview…": [
+    "src/features/notifications/broadcast-form.tsx:276"
+  ],
+  "Preparing…": [
+    "src/features/notifications/message-form.tsx:269",
+    "src/features/offline/prepare-form.tsx:102"
+  ],
+  "Prescription": [
+    "src/app/(workspace)/medicines/page.tsx:111"
+  ],
+  "Prescription category": [
+    "src/features/stock/medicine-fields.tsx:92"
+  ],
+  "Prescription image": [
+    "src/features/billing/ocr-panel.tsx:94"
+  ],
+  "Prescription reference": [
+    "src/features/billing/billing-form.tsx:116"
+  ],
+  "Prescription required": [
+    "src/features/billing/cart-table.tsx:68"
+  ],
+  "Preview": [
+    "src/features/notifications/template-editor.tsx:68"
+  ],
+  "Preview customer receipt": [
+    "src/features/receipts/share-panel.tsx:103"
+  ],
+  "Preview first. Nothing is saved until you confirm.": [
+    "src/app/(workspace)/medicines/import/page.tsx:13"
+  ],
+  "Preview only: sending is disabled in practice mode.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:82"
+  ],
+  "Previous": [
+    "src/components/shared/page.tsx:59"
+  ],
+  "Previous broadcasts": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:69"
+  ],
+  "Price on pack (₹)": [
+    "src/components/billing-preview.tsx:45"
+  ],
+  "Prices and stock are checked again when you save.": [
+    "src/features/billing/billing-form.tsx:161"
+  ],
+  "Prices and stock will be refreshed.": [
+    "src/features/billing/billing-form.tsx:72"
+  ],
+  "Print / Save PDF": [
+    "src/components/shared/print-button.tsx:63"
+  ],
+  "Print paper size": [
+    "src/components/shared/print-button.tsx:33"
+  ],
+  "Printed English text only. The image is read on this device and is not uploaded. Check the original prescription; handwriting and unclear text may be read incorrectly.": [
+    "src/features/billing/ocr-panel.tsx:89"
+  ],
+  "Printed on the strip or box.": [
+    "src/features/stock/purchase-form.tsx:73"
+  ],
+  "Printing is disabled in practice mode.": [
+    "src/app/(workspace)/bills/[id]/page.tsx:58"
+  ],
+  "Promotional (consent and sending hours apply)": [
+    "src/features/notifications/template-editor.tsx:90"
+  ],
+  "Promotional message (8 AM–9 PM only)": [
+    "src/features/notifications/message-form.tsx:244"
+  ],
+  "Public booking is disabled in practice shops.": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:27"
+  ],
+  "Public booking link": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:16",
+    "src/app/(workspace)/appointments/page.tsx:83"
+  ],
+  "Purchase orders": [
+    "src/app/(workspace)/purchases/orders/page.tsx:26"
+  ],
+  "Purchase orders from low stock": [
+    "src/app/(workspace)/purchases/page.tsx:62"
+  ],
+  "Purchase price per unit (₹)": [
+    "src/features/stock/purchase-form.tsx:92"
+  ],
+  "Purchases": [
+    "src/app/(workspace)/layout.tsx:21",
+    "src/app/(workspace)/purchases/orders/page.tsx:30",
+    "src/app/(workspace)/purchases/page.tsx:52"
+  ],
+  "Qty": [
+    "src/app/(workspace)/bills/[id]/page.tsx:91",
+    "src/features/billing/cart-table.tsx:43"
+  ],
+  "Quantity": [
+    "src/app/(workspace)/stock/transfers/page.tsx:90",
+    "src/components/billing-preview.tsx:54",
+    "src/features/stock/purchase-form.tsx:81"
+  ],
+  "Quantity change": [
+    "src/app/(workspace)/stock/page.tsx:158"
+  ],
+  "Queue it for sending.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:107"
+  ],
+  "Queue retry": [
+    "src/app/(workspace)/notifications/page.tsx:190"
+  ],
+  "Quick help": [
+    "src/app/(workspace)/help/page.tsx:50",
+    "src/app/(workspace)/settings/setup/page.tsx:178"
+  ],
+  "Rack": [
+    "src/app/(workspace)/medicines/page.tsx:108",
+    "src/features/stock/medicine-fields.tsx:104"
+  ],
+  "Rack:": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:88"
+  ],
+  "Read a printed prescription": [
+    "src/features/billing/ocr-panel.tsx:83"
+  ],
+  "ready ·": [
+    "src/features/stock/import-form.tsx:113"
+  ],
+  "Ready. Open the message and send it yourself.": [
+    "src/features/notifications/message-form.tsx:72"
+  ],
+  "Reason": [
+    "src/app/(workspace)/stock/history/page.tsx:74",
+    "src/app/(workspace)/stock/page.tsx:170",
+    "src/app/(workspace)/stock/[id]/page.tsx:74",
+    "src/features/billing/return-form.tsx:57"
+  ],
+  "Receive this order": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:82"
+  ],
+  "Receiving shop": [
+    "src/app/(workspace)/stock/transfers/page.tsx:66"
+  ],
+  "Recent bills": [
+    "src/app/(workspace)/customers/[id]/page.tsx:148"
+  ],
+  "Recipients": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:88"
+  ],
+  "Record a supplier bill to add stock.": [
+    "src/app/(workspace)/purchases/page.tsx:53"
+  ],
+  "Record all ordered quantities. Stock is added only when this purchase is saved.": [
+    "src/app/(workspace)/purchases/orders/[id]/page.tsx:87"
+  ],
+  "Record payment": [
+    "src/app/(workspace)/customers/[id]/page.tsx:82"
+  ],
+  "Recorded returns": [
+    "src/app/(workspace)/bills/[id]/page.tsx:164"
+  ],
+  "Refill": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:77"
+  ],
+  "Refund method": [
+    "src/features/billing/return-form.tsx:61"
+  ],
+  "Remaining:": [
+    "src/features/billing/payment-fields.tsx:75"
+  ],
+  "remaining.": [
+    "src/features/billing/return-form.tsx:51"
+  ],
+  "Remind at": [
+    "src/features/notifications/reminder-form.tsx:53"
+  ],
+  "Reminder": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:58",
+    "src/features/notifications/reminder-form.tsx:29"
+  ],
+  "Reminders": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:37"
+  ],
+  "Remove": [
+    "src/features/billing/cart-table.tsx:124"
+  ],
+  "Remove access to this shop": [
+    "src/app/(workspace)/settings/staff/page.tsx:116"
+  ],
+  "Remove hours": [
+    "src/features/appointments/edit-form.tsx:144"
+  ],
+  "Remove item": [
+    "src/features/stock/purchase-form.tsx:106"
+  ],
+  "Replace link (old link stops working)": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:62"
+  ],
+  "Report": [
+    "src/app/(workspace)/reports/page.tsx:22"
+  ],
+  "Reports": [
+    "src/app/(workspace)/layout.tsx:35",
+    "src/app/(workspace)/reports/page.tsx:19"
+  ],
+  "Reserve stock & open counter": [
+    "src/features/offline/prepare-form.tsx:102"
+  ],
+  "Reserved": [
+    "src/app/(workspace)/stock/page.tsx:108"
+  ],
+  "Reset creates a fresh practice shop and archives this one. Old practice history is retained, not deleted; it disappears from the active shop selector. Only you receive access to the new practice shop. Sync and close offline counters and receive pending transfers first.": [
+    "src/app/(workspace)/settings/practice/page.tsx:36"
+  ],
+  "Reset example": [
+    "src/components/billing-preview.tsx:127"
+  ],
+  "Reset practice shop": [
+    "src/app/(workspace)/settings/practice/page.tsx:44"
+  ],
+  "Restore": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:60"
+  ],
+  "Restore draft": [
+    "src/features/billing/billing-form.tsx:62"
+  ],
+  "Restore medicine": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:56"
+  ],
+  "Result": [
+    "src/features/stock/import-form.tsx:128"
+  ],
+  "results": [
+    "src/components/shared/page.tsx:67"
+  ],
+  "Resume": [
+    "src/features/billing/held-bills.tsx:117"
+  ],
+  "Retry SMS": [
+    "src/app/(workspace)/notifications/page.tsx:186"
+  ],
+  "Retry this failed message for this customer.": [
+    "src/app/(workspace)/notifications/page.tsx:196"
+  ],
+  "Return items / void bill": [
+    "src/features/billing/return-form.tsx:24"
+  ],
+  "Returned stock goes back to the original batch. Any outstanding credit is reduced first.": [
+    "src/features/billing/return-form.tsx:32"
+  ],
+  "Review": [
+    "src/app/(workspace)/dashboard/page.tsx:129",
+    "src/app/(workspace)/dashboard/page.tsx:137"
+  ],
+  "Review current low stock": [
+    "src/app/(workspace)/dashboard/page.tsx:166"
+  ],
+  "Review expired stock": [
+    "src/app/(workspace)/dashboard/page.tsx:170"
+  ],
+  "Review extracted text": [
+    "src/features/billing/ocr-panel.tsx:106",
+    "src/features/billing/ocr-panel.tsx:108"
+  ],
+  "Review recipients": [
+    "src/features/notifications/broadcast-form.tsx:276"
+  ],
+  "Role": [
+    "src/app/(workspace)/settings/staff/page.tsx:54",
+    "src/app/(workspace)/settings/staff/page.tsx:104"
+  ],
+  "Round-off": [
+    "src/app/(workspace)/bills/[id]/page.tsx:137",
+    "src/components/billing-preview.tsx:98"
+  ],
+  "Row": [
+    "src/features/stock/import-form.tsx:122"
+  ],
+  "rows": [
+    "src/app/(workspace)/reports/page.tsx:92"
+  ],
+  "rows need fixing": [
+    "src/features/stock/import-form.tsx:115"
+  ],
+  "Sales today": [
+    "src/app/(workspace)/dashboard/page.tsx:75"
+  ],
+  "Same recorded ingredient, strength, form, pack size and prescription category. A pharmacist must confirm suitability before replacing a medicine.": [
+    "src/app/(workspace)/medicines/[id]/substitutes/page.tsx:26"
+  ],
+  "Sample tax rates for calculation testing; confirm each medicine’s rate before live use.": [
+    "src/components/billing-preview.tsx:76"
+  ],
+  "Save adjustment": [
+    "src/app/(workspace)/stock/page.tsx:149"
+  ],
+  "Save and continue": [
+    "src/app/(workspace)/settings/setup/page.tsx:82"
+  ],
+  "Save batch details": [
+    "src/app/(workspace)/stock/[id]/page.tsx:34"
+  ],
+  "Save bill · F10": [
+    "src/features/billing/billing-form.tsx:158"
+  ],
+  "Save changes": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:49"
+  ],
+  "Save doctor": [
+    "src/features/appointments/edit-form.tsx:42"
+  ],
+  "Save loyalty settings": [
+    "src/features/loyalty/settings.tsx:18"
+  ],
+  "Save preferences": [
+    "src/app/(workspace)/customers/[id]/page.tsx:110"
+  ],
+  "Save purchase": [
+    "src/features/stock/purchase-form.tsx:26"
+  ],
+  "Save shop details": [
+    "src/app/(workspace)/settings/page.tsx:31"
+  ],
+  "Save supplier": [
+    "src/app/(workspace)/suppliers/page.tsx:55"
+  ],
+  "Save supplier and continue": [
+    "src/app/(workspace)/settings/setup/page.tsx:127"
+  ],
+  "Save template": [
+    "src/features/notifications/template-editor.tsx:21"
+  ],
+  "Save wording you use often. Preview before preparing a message.": [
+    "src/app/(workspace)/notifications/templates/page.tsx:18"
+  ],
+  "Saving does not send any message.": [
+    "src/features/notifications/template-editor.tsx:101"
+  ],
+  "Saving…": [
+    "src/components/shared/action-form.tsx:30",
+    "src/components/shared/language-switch.tsx:22",
+    "src/features/billing/billing-form.tsx:158"
+  ],
+  "Schedule from a customer’s page. Pending reminders can be cancelled here.": [
+    "src/app/(workspace)/notifications/reminders/page.tsx:38"
+  ],
+  "Schedule refill / credit reminder": [
+    "src/features/notifications/reminder-form.tsx:15"
+  ],
+  "Schedule reminder": [
+    "src/features/notifications/reminder-form.tsx:24"
+  ],
+  "Scheduled reminders": [
+    "src/app/(workspace)/notifications/page.tsx:93"
+  ],
+  "Search": [
+    "src/app/(workspace)/bills/page.tsx:72",
+    "src/app/(workspace)/bills/page.tsx:88",
+    "src/components/shared/page.tsx:21",
+    "src/components/shared/page.tsx:31"
+  ],
+  "Search announcements": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:71"
+  ],
+  "Search covers up to 1,000 recent customers. “All customers” covers the full shop.": [
+    "src/features/notifications/broadcast-form.tsx:250"
+  ],
+  "Search for a medicine above to start your bill.": [
+    "src/features/billing/cart-table.tsx:28"
+  ],
+  "Search medicine": [
+    "src/app/(workspace)/stock/history/page.tsx:53",
+    "src/app/(workspace)/stock/page.tsx:86"
+  ],
+  "Searching…": [
+    "src/features/billing/medicine-search.tsx:80"
+  ],
+  "selected": [
+    "src/features/notifications/broadcast-form.tsx:221"
+  ],
+  "Send by": [
+    "src/features/notifications/broadcast-form.tsx:96"
+  ],
+  "Send only to customers who have agreed to receive messages.": [
+    "src/app/(workspace)/notifications/page.tsx:80"
+  ],
+  "Sending window starts": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:71"
+  ],
+  "Set up your shop": [
+    "src/app/(workspace)/settings/setup/page.tsx:55"
+  ],
+  "Set up your shop step by step": [
+    "src/app/(workspace)/dashboard/page.tsx:105"
+  ],
+  "Settings": [
+    "src/app/(workspace)/layout.tsx:36",
+    "src/app/(workspace)/settings/page.tsx:16"
+  ],
+  "Setup guide": [
+    "src/app/(workspace)/settings/page.tsx:21"
+  ],
+  "Setup progress": [
+    "src/app/(workspace)/settings/setup/page.tsx:63"
+  ],
+  "SGST": [
+    "src/app/(workspace)/bills/[id]/page.tsx:132"
+  ],
+  "Share receipt securely": [
+    "src/features/receipts/share-panel.tsx:14"
+  ],
+  "Shop": [
+    "src/app/(workspace)/layout.tsx:57"
+  ],
+  "Shop details shown on every invoice.": [
+    "src/app/(workspace)/settings/page.tsx:17"
+  ],
+  "Shop name": [
+    "src/app/(workspace)/settings/page.tsx:43",
+    "src/features/settings/shop-fields.tsx:7"
+  ],
+  "short": [
+    "src/app/(workspace)/appointments/page.tsx:220",
+    "src/app/(workspace)/appointments/page.tsx:222"
+  ],
+  "Show": [
+    "src/app/(workspace)/appointments/page.tsx:188",
+    "src/app/(workspace)/reports/page.tsx:40"
+  ],
+  "Show times": [
+    "src/app/booking/[token]/page.tsx:112"
+  ],
+  "Sign in": [
+    "src/app/login/login-form.tsx:36",
+    "src/app/page.tsx:16",
+    "src/app/page.tsx:39"
+  ],
+  "Sign in to manage your pharmacy.": [
+    "src/app/page.tsx:35"
+  ],
+  "Sign in to your pharmacy.": [
+    "src/app/login/page.tsx:23"
+  ],
+  "Sign out": [
+    "src/app/(workspace)/layout.tsx:78"
+  ],
+  "Signing in…": [
+    "src/app/login/login-form.tsx:36"
+  ],
+  "Simple billing, stock, appointments and customer messages.": [
+    "src/app/layout.tsx:18"
+  ],
+  "Simple steps for daily pharmacy work.": [
+    "src/app/(workspace)/help/page.tsx:51"
+  ],
+  "skipped for consent or contact details": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:68"
+  ],
+  "Slot length (minutes)": [
+    "src/app/(workspace)/appointments/page.tsx:125",
+    "src/features/appointments/edit-form.tsx:72"
+  ],
+  "SMS": [
+    "src/app/(workspace)/customers/page.tsx:74",
+    "src/app/(workspace)/customers/[id]/page.tsx:122",
+    "src/features/notifications/broadcast-form.tsx:101",
+    "src/features/notifications/message-form.tsx:193",
+    "src/features/notifications/template-editor.tsx:36"
+  ],
+  "SMS queued. Delivery status will update after the worker sends it.": [
+    "src/features/notifications/message-form.tsx:73"
+  ],
+  "SMS reminders need the customer’s consent. Times use India time; reminders outside 8 AM–9 PM move to the next morning.": [
+    "src/features/notifications/reminder-form.tsx:20"
+  ],
+  "Specialization": [
+    "src/app/(workspace)/appointments/page.tsx:108",
+    "src/features/appointments/edit-form.tsx:55"
+  ],
+  "Spend to earn one point (₹)": [
+    "src/features/loyalty/settings.tsx:29"
+  ],
+  "Staff": [
+    "src/app/(workspace)/settings/staff/page.tsx:18"
+  ],
+  "Staff sign in": [
+    "src/app/login/page.tsx:5"
+  ],
+  "Start time": [
+    "src/app/(workspace)/appointments/page.tsx:154"
+  ],
+  "Starts": [
+    "src/features/appointments/edit-form.tsx:121"
+  ],
+  "Status": [
+    "src/app/(workspace)/appointments/page.tsx:210",
+    "src/app/(workspace)/appointments/page.tsx:238",
+    "src/app/(workspace)/bills/page.tsx:113",
+    "src/app/(workspace)/deliveries/page.tsx:92",
+    "src/app/(workspace)/notifications/broadcast/page.tsx:91",
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:138",
+    "src/app/(workspace)/notifications/page.tsx:155",
+    "src/app/(workspace)/notifications/reminders/page.tsx:64",
+    "src/app/(workspace)/purchases/orders/page.tsx:70"
+  ],
+  "Status:": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:32",
+    "src/app/(workspace)/bills/[id]/page.tsx:63"
+  ],
+  "step": [
+    "src/app/(workspace)/settings/setup/page.tsx:65"
+  ],
+  "Step": [
+    "src/app/(workspace)/settings/setup/page.tsx:72"
+  ],
+  "Stock": [
+    "src/app/(workspace)/layout.tsx:17",
+    "src/app/(workspace)/stock/page.tsx:57",
+    "src/app/(workspace)/stock/transfers/page.tsx:49",
+    "src/app/(workspace)/stock/[id]/page.tsx:29"
+  ],
+  "Stock history": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:42",
+    "src/app/(workspace)/stock/history/page.tsx:42"
+  ],
+  "Strength": [
+    "src/features/stock/medicine-fields.tsx:32"
+  ],
+  "Supplier": [
+    "src/app/(workspace)/purchases/orders/page.tsx:48",
+    "src/app/(workspace)/purchases/orders/page.tsx:67",
+    "src/app/(workspace)/purchases/page.tsx:117",
+    "src/features/stock/purchase-form.tsx:31"
+  ],
+  "Supplier invoice no.": [
+    "src/features/stock/purchase-form.tsx:41"
+  ],
+  "Supplier invoice number": [
+    "src/app/(workspace)/purchases/page.tsx:103"
+  ],
+  "Suppliers": [
+    "src/app/(workspace)/suppliers/page.tsx:35"
+  ],
+  "Switch": [
+    "src/app/(workspace)/layout.tsx:68"
+  ],
+  "Syrup": [
+    "src/features/stock/medicine-fields.tsx:49"
+  ],
+  "Tablet": [
+    "src/features/stock/medicine-fields.tsx:43"
+  ],
+  "Taxable amount": [
+    "src/components/billing-preview.tsx:85"
+  ],
+  "Tell customers about a doctor’s visit, booking times or a shop update.": [
+    "src/app/(workspace)/notifications/broadcast/page.tsx:46"
+  ],
+  "Template": [
+    "src/features/notifications/message-form.tsx:116"
+  ],
+  "Temporary password": [
+    "src/app/(workspace)/settings/staff/page.tsx:41"
+  ],
+  "Test a saved template": [
+    "src/features/notifications/message-form.tsx:97"
+  ],
+  "Test with my contact": [
+    "src/app/(workspace)/notifications/templates/page.tsx:48"
+  ],
+  "The customer gets a separate receipt-only page. It has no staff login, navigation or links to this app. Links expire in 30 days.": [
+    "src/features/receipts/share-panel.tsx:20"
+  ],
+  "These are my contact details, and the shop may contact me about this appointment.": [
+    "src/app/booking/[token]/page.tsx:174"
+  ],
+  "These units are leaving this shop. Remove them from available stock.": [
+    "src/app/(workspace)/stock/transfers/page.tsx:104"
+  ],
+  "This hides the medicine from new bills and purchases in this shop. Its stock and history are kept.": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:71"
+  ],
+  "This is my own contact record, and I agree to receive this test.": [
+    "src/features/notifications/message-form.tsx:161"
+  ],
+  "This makes the medicine available for new bills and purchases again.": [
+    "src/app/(workspace)/medicines/[id]/page.tsx:72"
+  ],
+  "This saved morning check found": [
+    "src/app/(workspace)/dashboard/page.tsx:157"
+  ],
+  "Time": [
+    "src/app/(workspace)/appointments/page.tsx:201",
+    "src/app/booking/[token]/page.tsx:133"
+  ],
+  "Title": [
+    "src/features/notifications/broadcast-form.tsx:176"
+  ],
+  "to": [
+    "src/app/(workspace)/reports/page.tsx:60"
+  ],
+  "To": [
+    "src/app/(workspace)/bills/page.tsx:84",
+    "src/app/(workspace)/reports/page.tsx:36"
+  ],
+  "Today": [
+    "src/app/(workspace)/dashboard/page.tsx:62"
+  ],
+  "Total": [
+    "src/app/(workspace)/bills/page.tsx:116",
+    "src/app/(workspace)/bills/[id]/page.tsx:143",
+    "src/app/(workspace)/customers/[id]/page.tsx:166",
+    "src/app/(workspace)/purchases/page.tsx:123",
+    "src/components/billing-preview.tsx:106",
+    "src/features/billing/bill-totals.tsx:24"
+  ],
+  "Track batches, expiry and available quantities.": [
+    "src/app/(workspace)/stock/page.tsx:58"
+  ],
+  "Track deliveries": [
+    "src/features/delivery/create-form.tsx:33"
+  ],
+  "Track home deliveries": [
+    "src/app/(workspace)/bills/page.tsx:92"
+  ],
+  "Try again": [
+    "src/app/error.tsx:15"
+  ],
+  "TRY THE FOUNDATION": [
+    "src/components/billing-preview.tsx:26"
+  ],
+  "Until": [
+    "src/features/notifications/broadcast-form.tsx:150"
+  ],
+  "Up to": [
+    "src/features/billing/return-form.tsx:49"
+  ],
+  "Up to 100 low-stock medicines, targeting twice the alert level. Review the supplier and quantities before ordering.": [
+    "src/app/(workspace)/purchases/orders/page.tsx:41"
+  ],
+  "Update": [
+    "src/app/(workspace)/appointments/page.tsx:234"
+  ],
+  "Update access": [
+    "src/app/(workspace)/settings/staff/page.tsx:100"
+  ],
+  "Update booking link": [
+    "src/app/(workspace)/appointments/booking-link/page.tsx:48"
+  ],
+  "Update delivery": [
+    "src/app/(workspace)/deliveries/page.tsx:88"
+  ],
+  "Update these only with the customer’s permission.": [
+    "src/app/(workspace)/customers/[id]/page.tsx:113"
+  ],
+  "UPI": [
+    "src/app/(workspace)/customers/[id]/page.tsx:96",
+    "src/features/billing/payment-fields.tsx:37",
+    "src/features/billing/payment-fields.tsx:66",
+    "src/features/billing/return-form.tsx:66"
+  ],
+  "Use a negative number to remove stock.": [
+    "src/app/(workspace)/stock/page.tsx:166"
+  ],
+  "Use loyalty points": [
+    "src/features/loyalty/picker.tsx:40"
+  ],
+  "Use this customer": [
+    "src/features/billing/customer-picker.tsx:122"
+  ],
+  "valid medicines shown above; skip rows with errors.": [
+    "src/features/stock/import-form.tsx:162"
+  ],
+  "Variables:": [
+    "src/features/notifications/template-editor.tsx:55"
+  ],
+  "View": [
+    "src/app/(workspace)/appointments/page.tsx:177"
+  ],
+  "Visit date": [
+    "src/features/notifications/broadcast-form.tsx:131"
+  ],
+  "Void the whole bill (all remaining items must be returned)": [
+    "src/features/billing/return-form.tsx:74"
+  ],
+  "Walk-in bills with reserved stock, discounts and cash or confirmed electronic payments.": [
+    "src/app/(workspace)/offline/page.tsx:29"
+  ],
+  "Walk-in customer": [
+    "src/features/billing/customer-picker.tsx:73"
+  ],
+  "We couldn’t open this screen.": [
+    "src/app/error.tsx:9"
+  ],
+  "week": [
+    "src/app/(workspace)/appointments/page.tsx:178"
+  ],
+  "Weekly hours (India time)": [
+    "src/features/appointments/edit-form.tsx:105"
+  ],
+  "Welcome back": [
+    "src/app/login/page.tsx:20"
+  ],
+  "WhatsApp": [
+    "src/app/(workspace)/customers/page.tsx:78",
+    "src/app/(workspace)/customers/[id]/page.tsx:130",
+    "src/features/notifications/template-editor.tsx:37"
+  ],
+  "WhatsApp — send individually": [
+    "src/features/notifications/broadcast-form.tsx:103"
+  ],
+  "WhatsApp — send manually": [
+    "src/features/notifications/message-form.tsx:195"
+  ],
+  "WhatsApp and email open one customer at a time. You send the message in that app; delivery is not tracked here.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:117"
+  ],
+  "When": [
+    "src/app/(workspace)/stock/history/page.tsx:65"
+  ],
+  "Working…": [
+    "src/features/stock/import-form.tsx:187"
+  ],
+  "Write your own": [
+    "src/features/notifications/broadcast-form.tsx:91",
+    "src/features/notifications/message-form.tsx:134"
+  ],
+  "yes": [
+    "src/app/(workspace)/settings/practice/page.tsx:50"
+  ],
+  "Your name": [
+    "src/app/booking/[token]/page.tsx:150"
+  ],
+  "Your own mobile number": [
+    "src/features/notifications/message-form.tsx:153"
+  ],
+  "Your pharmacy at a glance.": [
+    "src/app/(workspace)/dashboard/page.tsx:63"
+  ],
+  "Your pharmacy, simplified.": [
+    "src/app/page.tsx:23"
+  ],
+  "Your progress is saved as you go. You can leave and return anytime.": [
+    "src/app/(workspace)/settings/setup/page.tsx:56"
+  ],
+  "Your real shop's medicines, customers and bills stay unchanged. Practice includes three clearly marked sample items with 20 units each and a sample supplier. No customer contacts are added.": [
+    "src/app/(workspace)/settings/practice/page.tsx:21"
+  ],
+  "Your shop details, medicines and available stock are ready. Create a bill using your actual sale details.": [
+    "src/app/(workspace)/settings/setup/page.tsx:160"
+  ],
+  "Your shop is not connected yet. The owner needs to finish setup before you can sign in.": [
+    "src/app/login/page.tsx:29"
+  ],
+  "Your shop name is added automatically.": [
+    "src/features/notifications/message-form.tsx:233"
+  ]
+}

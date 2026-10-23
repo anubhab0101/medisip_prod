@@ -1,0 +1,72 @@
+{
+  "name": "medishop",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check:deployment": "tsx scripts/check-deployment.ts",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "format": "prettier --write .",
+    "db:generate": "node scripts/prisma.mjs generate",
+    "db:migrate": "node scripts/prisma.mjs migrate deploy",
+    "db:validate": "node scripts/prisma.mjs validate",
+    "db:seed": "tsx prisma/seed.ts",
+    "test:integration": "vitest run --config tests/integration/config.ts",
+    "worker": "node --conditions=react-server --import tsx scripts/worker.ts",
+    "receipts": "node --import tsx scripts/receipt-server.ts",
+    "ocr:prepare": "node scripts/prepare-ocr.mjs",
+    "offline:prepare": "node scripts/prepare-offline.mjs",
+    "prebuild": "npm run offline:prepare",
+    "predev": "npm run offline:prepare"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@radix-ui/react-slot": "^1.2.0",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.27",
+    "next-auth": "^5.0.0-beta.32",
+    "pdfmake": "0.3.11",
+    "postcss": "^8.5.29",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "read-excel-file": "^8.0.3",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.0.0",
+    "tesseract.js": "^7.0.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
+    "@playwright/test": "^1.51.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pdfmake": "0.3.3",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.5.0",
+    "prettier": "^3.4.0",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.0",
+    "vitest": "^5.0.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.29"
+    },
+    "braces": "3.0.3",
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    }
+  }
+}

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'"
+    />
+    <title>Offline counter</title>
+    <link rel="manifest" href="./manifest.json" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font: 15px system-ui;
+        background: #f5f7f6;
+        color: #183d32;
+        margin: 0;
+      }
+      main {
+        max-width: 760px;
+        margin: auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      section {
+        background: white;
+        border: 1px solid #d6e2db;
+        border-radius: 8px;
+        padding: 18px;
+        margin: 16px 0;
+      }
+      button,
+      a.button {
+        padding: 12px 16px;
+        border: 1px solid #c6d7cf;
+        border-radius: 6px;
+        background: white;
+        color: #075e51;
+        font: inherit;
+        cursor: pointer;
+        display: inline-block;
+        margin: 4px 4px 4px 0;
+      }
+      button.primary {
+        background: #08766a;
+        color: white;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 12px 0;
+      }
+      input,
+      select {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin: 6px 0;
+        border: 1px solid #bfd0c6;
+        border-radius: 6px;
+        font: inherit;
+      }
+      p {
+        line-height: 1.6;
+      }
+      .muted {
+        font-size: 13px;
+        color: #526b61;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .row > * {
+        flex: 1;
+        min-width: 100px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td,
+      th {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        overflow-wrap: anywhere;
+      }
+      #status {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      #receipt {
+        display: none;
+      }
+      @media print {
+        body {
+          background: white;
+        }
+        #counter {
+          display: none;
+        }
+        #receipt {
+          display: block;
+        }
+        button,
+        a {
+          display: none !important;
+        }
+        @page {
+          margin: 10mm;
+          size: A4;
+        }
+      }
+    </style>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <main id="counter">
+      <h1>Offline counter</h1>
+      <p id="shop"></p>
+      <p id="status" role="status">Opening counter…</p>
+      <section id="billing" hidden>
+        <form id="bill-form">
+          <label>Medicine<select id="medicine"></select></label>
+          <div class="row">
+            <label
+              >Quantity<input
+                id="quantity"
+                type="number"
+                min="1"
+                value="1"
+                required /></label
+            ><label
+              >Line discount (%)<input
+                id="line-discount"
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="0"
+            /></label>
+          </div>
+          <button type="button" id="add">Add to bill</button>
+          <div id="cart"></div>
+          <label
+            >Bill discount (₹)<input
+              id="bill-discount"
+              inputmode="decimal"
+              placeholder="0"
+          /></label>
+          <p id="total"></p>
+          <details>
+            <summary>UPI / card / split payment</summary>
+            <p class="muted">
+              Only record payments confirmed on your payment device. This
+              counter does not process or verify electronic payments.
+            </p>
+            <div class="row">
+              <label
+                >UPI amount (₹)<input
+                  id="upi"
+                  inputmode="decimal"
+                  placeholder="0" /></label
+              ><label
+                >UPI reference<input id="upi-reference" maxlength="100"
+              /></label>
+            </div>
+            <div class="row">
+              <label
+                >Card amount (₹)<input
+                  id="card"
+                  inputmode="decimal"
+                  placeholder="0" /></label
+              ><label
+                >Card reference<input id="card-reference" maxlength="100"
+              /></label>
+            </div>
+            <label
+              ><input
+                id="payment-confirmed"
+                type="checkbox"
+                style="display: inline; width: auto"
+              />
+              I independently confirmed these payments.</label
+            >
+          </details>
+          <label
+            >Cash received (₹)<input
+              id="cash"
+              inputmode="decimal"
+              placeholder="Exact remaining amount"
+          /></label>
+          <p class="muted">
+            The remaining amount is cash. Return any excess cash as change.
+          </p>
+          <button class="primary" id="save">Save provisional bill</button
+          ><button type="button" id="clear">Clear current bill</button>
+        </form>
+      </section>
+      <section>
+        <button id="sync">Sync saved bills</button
+        ><button id="close">Close counter & release stock</button
+        ><a class="button" href="/login" target="_blank" rel="noopener"
+          >Staff sign-in</a
+        >
+        <p class="muted">
+          This is a staff counter on a trusted device. Sync before clearing
+          browser data. Stock is never released automatically. Cash, confirmed
+          UPI/card, split payments and discounts work offline. Customer credit,
+          loyalty and prescription medicines require online billing.
+        </p>
+      </section>
+      <section>
+        <h2>Saved bills</h2>
+        <div id="bills"></div>
+      </section>
+    </main>
+    <main id="receipt"></main>
+  </body>
+</html>

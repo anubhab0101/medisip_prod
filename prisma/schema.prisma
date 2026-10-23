@@ -1,0 +1,625 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  PHARMACIST
+  CASHIER
+  DOCTOR
+}
+
+enum Schedule {
+  NONE
+  H
+  H1
+  X
+}
+
+enum MovementType {
+  PURCHASE
+  SALE
+  RETURN
+  ADJUST
+  EXPIRED
+  TRANSFER_OUT
+  TRANSFER_IN
+}
+
+enum SaleStatus {
+  PAID
+  PARTIAL
+  RETURNED
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+  CREDIT
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum JobStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
+enum Channel {
+  SMS
+  WHATSAPP
+  EMAIL
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique @db.VarChar(191)
+  name           String
+  passwordHash   String
+  active         Boolean      @default(true)
+  sessionVersion Int          @default(1)
+  locale         String       @default("en")
+  createdAt      DateTime     @default(now())
+  memberships    Membership[]
+}
+
+model Branch {
+  id                 String           @id @default(cuid())
+  name               String
+  address            String           @db.Text
+  phone              String
+  gstin              String           @default("")
+  drugLicenseNo      String           @default("")
+  invoicePrefix      String           @default("INV")
+  active             Boolean          @default(true)
+  demo               Boolean          @default(false)
+  loyaltyEnabled     Boolean          @default(false)
+  loyaltyEarnPaise   Int              @default(10000)
+  loyaltyRedeemPaise Int              @default(100)
+  createdAt          DateTime         @default(now())
+  memberships        Membership[]
+  batches            Batch[]
+  sales              Sale[]
+  customers          Customer[]
+  suppliers          Supplier[]
+  doctors            Doctor[]
+  invoices           InvoiceCounter[]
+  publicBookingLink  PublicBookingLink?
+}
+
+model PublicBookingLink {
+  branchId  String @id
+  token     String @unique @db.VarChar(43)
+  active    Boolean @default(false)
+  branch    Branch @relation(fields: [branchId], references: [id])
+  updatedAt DateTime @updatedAt
+}
+
+model Membership {
+  userId   String
+  branchId String
+  role     Role
+  user     User   @relation(fields: [userId], references: [id])
+  branch   Branch @relation(fields: [branchId], references: [id])
+
+  @@id([userId, branchId])
+  @@index([branchId, role])
+}
+
+model Medicine {
+  id             String           @id @default(cuid())
+  name           String
+  genericName    String           @default("")
+  strength       String           @default("")
+  dosageForm     String           @default("tablet")
+  manufacturer   String           @default("")
+  category       String           @default("Tablet")
+  hsn            String           @default("")
+  gstBasisPoints Int              @default(0)
+  packSize       String           @default("1 strip")
+  barcode        String?          @unique @db.VarChar(191)
+  schedule       Schedule         @default(NONE)
+  active         Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  batches        Batch[]
+  branchSettings BranchMedicine[]
+
+  @@index([name])
+  @@index([genericName])
+}
+
+model BranchMedicine {
+  branchId     String
+  medicineId   String
+  active       Boolean  @default(true)
+  rack         String   @default("")
+  reorderLevel Int      @default(10)
+  medicine     Medicine @relation(fields: [medicineId], references: [id])
+
+  @@id([branchId, medicineId])
+  @@index([medicineId])
+}
+
+model Batch {
+  id                 String          @id @default(cuid())
+  branchId           String
+  medicineId         String
+  batchNo            String          @db.VarChar(100)
+  expiryDate         DateTime        @db.Date
+  qtyOnHand          Int             @default(0)
+  qtyReserved        Int             @default(0)
+  purchasePricePaise Int
+  mrpPaise           Int
+  supplierId         String?
+  receivedAt         DateTime        @default(now())
+  branch             Branch          @relation(fields: [branchId], references: [id])
+  medicine           Medicine        @relation(fields: [medicineId], references: [id])
+  movements          StockMovement[]
+  saleItems          SaleItem[]
+
+  @@unique([branchId, medicineId, batchNo, expiryDate])
+  @@index([medicineId, expiryDate])
+  @@index([branchId, expiryDate])
+}
+
+model Supplier {
+  id        String     @id @default(cuid())
+  branchId  String
+  name      String
+  phone     String     @default("")
+  gstin     String     @default("")
+  active    Boolean    @default(true)
+  branch    Branch     @relation(fields: [branchId], references: [id])
+  purchases Purchase[]
+
+  @@index([branchId, name])
+}
+
+model Purchase {
+  id          String         @id @default(cuid())
+  branchId    String
+  supplierId  String
+  invoiceNo   String         @db.VarChar(100)
+  date        DateTime
+  totalPaise  Int
+  userId      String
+  operationId String         @unique @db.VarChar(100)
+  createdAt   DateTime       @default(now())
+  supplier    Supplier       @relation(fields: [supplierId], references: [id])
+  items       PurchaseItem[]
+
+  @@unique([branchId, supplierId, invoiceNo])
+  @@index([branchId, date])
+}
+
+model PurchaseItem {
+  id            String   @id @default(cuid())
+  purchaseId    String
+  batchId       String
+  quantity      Int
+  unitCostPaise Int
+  purchase      Purchase @relation(fields: [purchaseId], references: [id])
+
+  @@index([purchaseId])
+}
+
+model StockMovement {
+  id        String       @id @default(cuid())
+  branchId  String
+  batchId   String
+  type      MovementType
+  quantity  Int
+  reason    String
+  userId    String
+  refId     String
+  createdAt DateTime     @default(now())
+  batch     Batch        @relation(fields: [batchId], references: [id])
+
+  @@index([branchId, createdAt])
+  @@index([batchId, createdAt])
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  branchId        String
+  name            String
+  phone           String   @db.VarChar(20)
+  email           String   @default("")
+  consentSms      Boolean  @default(false)
+  consentWhatsapp Boolean  @default(false)
+  consentEmail    Boolean  @default(false)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  branch          Branch   @relation(fields: [branchId], references: [id])
+  sales           Sale[]
+
+  @@unique([branchId, phone])
+  @@index([branchId, name])
+}
+
+model InvoiceCounter {
+  branchId      String
+  financialYear String @db.VarChar(10)
+  nextNumber    Int    @default(1)
+  branch        Branch @relation(fields: [branchId], references: [id])
+
+  @@id([branchId, financialYear])
+}
+
+model Sale {
+  id               String       @id @default(cuid())
+  branchId         String
+  operationId      String       @unique @db.VarChar(100)
+  invoiceNo        String       @db.VarChar(100)
+  customerId       String?
+  userId           String
+  subtotalPaise    Int
+  discountPaise    Int
+  taxablePaise     Int
+  cgstPaise        Int
+  sgstPaise        Int
+  roundOffPaise    Int
+  totalPaise       Int
+  creditPaise      Int          @default(0)
+  status           SaleStatus
+  doctorName       String       @default("")
+  prescriptionRef  String       @default("")
+  shopSnapshot     Json
+  customerSnapshot Json?
+  createdAt        DateTime     @default(now())
+  branch           Branch       @relation(fields: [branchId], references: [id])
+  customer         Customer?    @relation(fields: [customerId], references: [id])
+  items            SaleItem[]
+  payments         Payment[]
+  returns          SaleReturn[]
+
+  @@unique([branchId, invoiceNo])
+  @@index([branchId, createdAt])
+  @@index([customerId])
+}
+
+model SaleItem {
+  id                  String   @id @default(cuid())
+  saleId              String
+  medicineId          String
+  batchId             String
+  name                String
+  hsn                 String
+  schedule            Schedule
+  batchNo             String
+  expiryDate          DateTime @db.Date
+  quantity            Int
+  returnedQuantity    Int      @default(0)
+  unitPricePaise      Int
+  unitCostPaise       Int
+  discountBasisPoints Int
+  discountPaise       Int
+  gstBasisPoints      Int
+  taxablePaise        Int
+  cgstPaise           Int
+  sgstPaise           Int
+  totalPaise          Int
+  sale                Sale     @relation(fields: [saleId], references: [id])
+  batch               Batch    @relation(fields: [batchId], references: [id])
+
+  @@index([saleId])
+  @@index([batchId])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  saleId      String
+  method      PaymentMethod
+  amountPaise Int
+  reference   String        @default("")
+  createdAt   DateTime      @default(now())
+  sale        Sale          @relation(fields: [saleId], references: [id])
+
+  @@index([saleId])
+}
+
+model SaleReturn {
+  cashRefundPaise   Int           @default(0)
+  creditRefundPaise Int           @default(0)
+  refundMethod      PaymentMethod @default(CASH)
+  id                String        @id @default(cuid())
+  saleId            String
+  userId            String
+  operationId       String        @unique @db.VarChar(100)
+  reason            String
+  amountPaise       Int
+  items             Json
+  createdAt         DateTime      @default(now())
+  sale              Sale          @relation(fields: [saleId], references: [id])
+
+  @@index([saleId])
+}
+
+model CreditEntry {
+  id          String         @id @default(cuid())
+  branchId    String
+  customerId  String
+  saleId      String?
+  amountPaise Int
+  reason      String
+  method      PaymentMethod?
+  operationId String         @unique @db.VarChar(100)
+  userId      String
+  createdAt   DateTime       @default(now())
+
+  @@index([branchId, customerId, createdAt])
+}
+
+model Doctor {
+  id             String               @id @default(cuid())
+  branchId       String
+  userId         String?
+  name           String
+  specialization String
+  feePaise       Int
+  slotMinutes    Int                  @default(15)
+  active         Boolean              @default(true)
+  branch         Branch               @relation(fields: [branchId], references: [id])
+  availability   DoctorAvailability[]
+  appointments   Appointment[]
+
+  @@index([branchId])
+}
+
+model DoctorAvailability {
+  id          String @id @default(cuid())
+  doctorId    String
+  weekday     Int
+  startMinute Int
+  endMinute   Int
+  doctor      Doctor @relation(fields: [doctorId], references: [id])
+
+  @@index([doctorId, weekday])
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  branchId    String
+  doctorId    String
+  customerId  String
+  startsAt    DateTime
+  endsAt      DateTime
+  status      AppointmentStatus @default(BOOKED)
+  notes       String            @db.Text
+  operationId String            @unique @db.VarChar(100)
+  createdAt   DateTime          @default(now())
+  doctor      Doctor            @relation(fields: [doctorId], references: [id])
+
+  @@index([doctorId, startsAt, endsAt])
+  @@index([branchId, startsAt])
+}
+
+model NotificationTemplate {
+  id          String  @id @default(cuid())
+  branchId    String
+  key         String  @db.VarChar(100)
+  channel     Channel
+  body        String  @db.Text
+  promotional Boolean @default(false)
+  active      Boolean @default(true)
+
+  @@unique([branchId, key, channel])
+}
+
+model NotificationLog {
+  id           String    @id @default(cuid())
+  branchId     String
+  customerId   String
+  broadcastId  String?
+  channel      Channel
+  templateKey  String
+  payload      Json
+  status       String    @default("QUEUED")
+  providerId   String?
+  error        String?   @db.Text
+  scheduledFor DateTime
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([branchId, createdAt])
+  @@index([broadcastId])
+  @@index([status, scheduledFor])
+}
+
+model Broadcast {
+  id             String   @id @default(cuid())
+  branchId       String
+  userId         String
+  operationId    String   @unique @db.VarChar(100)
+  title          String
+  body           String   @db.Text
+  channel        Channel
+  status         String   @default("DRAFT")
+  recipientCount Int
+  skippedCount   Int
+  scheduledFor   DateTime
+  expiresAt      DateTime?
+  createdAt      DateTime @default(now())
+
+  @@index([branchId, createdAt])
+}
+
+model Job {
+  id         String    @id @default(cuid())
+  key        String    @unique @db.VarChar(191)
+  type       String
+  payload    Json
+  status     JobStatus @default(PENDING)
+  attempts   Int       @default(0)
+  runAt      DateTime
+  leaseUntil DateTime?
+  leaseToken String?
+  lastError  String?   @db.Text
+  createdAt  DateTime  @default(now())
+
+  @@index([status, runAt])
+  @@index([leaseUntil])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  branchId  String
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  @@index([branchId, createdAt])
+}
+
+model LoginAttempt {
+  key      String   @id @db.VarChar(64)
+  attempts Int
+  resetsAt DateTime
+
+  @@index([resetsAt])
+}
+
+model HeldBill {
+  id        String   @id @default(cuid())
+  branchId  String
+  userId    String
+  label     String
+  payload   Json
+  updatedAt DateTime @updatedAt
+
+  @@index([branchId, userId])
+}
+
+model ReceiptShare {
+  id        String   @id @default(cuid())
+  branchId  String
+  saleId    String
+  tokenHash String   @unique @db.VarChar(64)
+  snapshot  Json
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([branchId, saleId])
+  @@index([expiresAt])
+}
+
+model RefillReminder {
+  id         String   @id @default(cuid())
+  branchId   String
+  customerId String
+  medicineId String
+  dueAt      DateTime
+  active     Boolean  @default(true)
+
+  @@index([branchId, dueAt])
+}
+
+model PurchaseOrder {
+  id         String   @id @default(cuid())
+  branchId   String
+  supplierId String
+  status     String   @default("DRAFT")
+  items      Json
+  purchaseId String?  @unique
+  createdAt  DateTime @default(now())
+
+  @@index([branchId, status])
+}
+
+model LoyaltyEntry {
+  id          String   @id @default(cuid())
+  branchId    String
+  customerId  String
+  saleId      String?
+  points      Int
+  reason      String
+  operationId String   @unique @db.VarChar(100)
+  createdAt   DateTime @default(now())
+
+  @@index([branchId, customerId])
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  branchId   String
+  userId     String
+  name       String
+  secretHash String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([branchId])
+}
+
+model StockReservation {
+  id             String   @id @default(cuid())
+  branchId       String
+  deviceId       String
+  batchId        String
+  quantity       Int
+  consumed       Int      @default(0)
+  released       Int      @default(0)
+  unitPricePaise Int
+  gstBasisPoints Int
+  createdAt      DateTime @default(now())
+
+  @@index([deviceId, batchId])
+}
+
+model OfflineOperation {
+  id          String   @id @db.VarChar(100)
+  deviceId    String
+  payloadHash String   @db.VarChar(64)
+  saleId      String   @unique
+  createdAt   DateTime @default(now())
+}
+
+model Transfer {
+  id           String    @id @default(cuid())
+  fromBranchId String
+  toBranchId   String
+  status       String    @default("DISPATCHED")
+  items        Json
+  operationId  String    @unique @db.VarChar(100)
+  userId       String
+  receivedBy   String?
+  createdAt    DateTime  @default(now())
+  receivedAt   DateTime?
+
+  @@index([fromBranchId, status])
+  @@index([toBranchId, status])
+}
+
+model Delivery {
+  id         String   @id @default(cuid())
+  branchId   String
+  saleId     String   @unique
+  address    String   @db.Text
+  phone      String
+  assignedTo String   @default("")
+  status     String   @default("PENDING")
+  notes      String   @db.Text
+  updatedAt  DateTime @updatedAt
+
+  @@index([branchId, status])
+}

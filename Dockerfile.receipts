@@ -1,0 +1,20 @@
+FROM node:24-bookworm-slim AS build
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY prisma/schema.prisma ./prisma/schema.prisma
+RUN DATABASE_URL=mysql://build:build@127.0.0.1:4000/build npx prisma generate
+COPY scripts/receipt-server.ts ./scripts/receipt-server.ts
+COPY src/features/receipts/http.ts src/features/receipts/render.ts ./src/features/receipts/
+RUN node_modules/.bin/esbuild scripts/receipt-server.ts --bundle --platform=node --packages=external --outfile=receipt-server.cjs
+RUN npm prune --omit=dev
+FROM node:24-bookworm-slim
+WORKDIR /app
+ENV NODE_ENV=production RECEIPT_BIND=0.0.0.0
+RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/receipt-server.cjs ./receipt-server.cjs
+USER node
+EXPOSE 10000
+CMD ["node", "receipt-server.cjs"]

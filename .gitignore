@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.env
+.env.local
+*.tsbuildinfo
+playwright-report/
+test-results/
+
+.local/
+.env.*
+!.env.example
+!.env.receipts.example
+public/ocr/core/
+public/ocr/lang/eng.traineddata
+public/ocr/worker.min.js
+
+public/offline-shell/app.js
