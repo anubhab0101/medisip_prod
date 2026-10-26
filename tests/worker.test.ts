@@ -3,7 +3,19 @@ import { createHmac } from "node:crypto";
 vi.mock("@/features/receipts/issuance", () => ({ issueReceipt: vi.fn() }));
 const TEST_KEY = "test-signature-key-32-chars-minimum-length";
 function sign(payload: Record<string, unknown>): string {
-  return createHmac("sha256", TEST_KEY).update(JSON.stringify(payload)).digest("base64url");
+  const canonical = (value: unknown): unknown =>
+    Array.isArray(value)
+      ? value.map(canonical)
+      : value && typeof value === "object"
+        ? Object.fromEntries(
+            Object.entries(value)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([key, item]) => [key, canonical(item)]),
+          )
+        : value;
+  return createHmac("sha256", TEST_KEY)
+    .update(JSON.stringify(canonical(payload)))
+    .digest("base64url");
 }
 const basePayload = {
   branchId: "shop",

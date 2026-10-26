@@ -34,6 +34,10 @@ function verifyJob(job: Job): boolean {
 }
 async function deliver(job: Job) {
   if (!verifyJob(job)) {
+    await db().notificationLog.updateMany({
+      where: { id: job.id, status: "QUEUED" },
+      data: { status: "FAILED", error: "Invalid job signature" },
+    });
     await finishJob(job, JobStatus.FAILED, "Invalid job signature");
     return;
   }
@@ -253,6 +257,10 @@ async function deliver(job: Job) {
 
 async function deliverWhatsApp(job: Job) {
   if (!verifyJob(job)) {
+    await db().notificationLog.updateMany({
+      where: { id: job.id, status: "QUEUED" },
+      data: { status: "FAILED", error: "Invalid job signature" },
+    });
     await finishJob(job, JobStatus.FAILED, "Invalid job signature");
     return;
   }

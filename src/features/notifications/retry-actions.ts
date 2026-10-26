@@ -9,6 +9,7 @@ import { id } from "@/lib/validation";
 import { saveResult, text } from "@/server/forms";
 import type { FormState } from "@/components/shared/action-form";
 import { promotionalSendAt } from "./content";
+import { validateSignedJob } from "@/lib/job-signature";
 
 export async function retryMessageAction(_state: FormState, form: FormData) {
   return saveResult(
@@ -28,6 +29,14 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
         >`SELECT * FROM NotificationLog WHERE id=${logId} AND branchId=${ctx.branch.id} FOR UPDATE`;
         if (!job || !log || !["SMS", "WHATSAPP"].includes(log.channel))
           throw new BusinessError("Message job not found in this shop.");
+        if (
+          !validateSignedJob(
+            job.payload as Record<string, unknown> & { _sig?: string },
+          )
+        )
+          throw new BusinessError(
+            "This message could not be verified. Prepare a fresh message instead.",
+          );
         const payload = z
           .object({
             branchId: z.string(),
