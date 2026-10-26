@@ -1,10 +1,10 @@
 # Deployment environment and launch decision
 
-Current decision: staging/personal testing is suitable; full live-customer launch is not yet verified. The production build passes. Live SMS was confirmed by the user. Container execution, real HTTPS routing/cookie isolation, durable off-host backups and final broader-flow verification remain launch gates. Translation coverage and some offline modes are incomplete; see IMPLEMENTATION_STATUS.md and I18N_STATUS.md.
+Current decision: staging/personal testing is suitable; full live-customer launch is not yet verified. The production build passes. The user confirmed a successful live SMS test; staging and production messaging must still be configured separately. Container execution, real HTTPS routing/cookie isolation, durable off-host backups and final broader-flow verification remain launch gates. Translation coverage and some offline modes are incomplete; see IMPLEMENTATION_STATUS.md and I18N_STATUS.md.
 
 ## Render setup (user-selected host)
 
-The current workspace has no Git repository/remote. First push the project to a private GitHub/GitLab/Bitbucket repository, keeping .env*, .local, node_modules and .next out of Git. Do not upload the original credential-bearing screenshot or connection string. No Render service has been created by the agent.
+This project is already in a Git repository with a GitHub `origin`; the current `main` checkout is synced with `origin/main`. Keep `.env*`, `.local`, `node_modules` and `.next` out of Git. Do not upload the original credential-bearing screenshot or connection string. The connected Render workspace has no MediShop services or database yet; provision them only after reviewing the service list and displayed charges.
 
 Create these services from the SAME repository in the Render Dashboard. Choose Docker runtime and Singapore region, close to the existing TiDB endpoint:
 
@@ -63,7 +63,7 @@ BACKUP_KEY=REPLACE_WITH_32_RANDOM_BYTES_IN_BASE64
 
 Set SMS_SEND_ENABLED=true in the worker only when that environment should actually send queued customer messages. The user has reported a successful SMS test, but staging should stay false by default. Keep the Android gateway online with its SMS permissions/connectivity. No API keys are needed for the current manual WhatsApp/email redirects. There is no Redis requirement.
 
-Use a dedicated application database, never sys. Its runtime user needs SELECT, INSERT, UPDATE and DELETE on the application tables, not administrative privileges. Use the SAME database for staff and worker. The receipt reader must access ReceiptShare in that same database with SELECT only. The existing local application's database name is medishop_dev_20261008; changing the URL to a new name does not create a database or grant access. A separate staging database is preferable to sharing real business data.
+Use a dedicated application database, never sys. Its runtime user needs SELECT, INSERT, UPDATE and DELETE on the application tables, not administrative privileges. Use the SAME database for staff and worker. The receipt viewer needs SELECT on `ReceiptShare` only. The existing local application's database name is medishop_dev_20261008; changing the URL to a new name does not create a database or grant access. A separate staging database is preferable to sharing real business data.
 
 If using a persistent disk mounted elsewhere, replace BACKUP_DIRECTORY with that path. Ephemeral container storage is insufficient. Copy encrypted backups off-host and keep the recovery key separately. Preserve the BACKUP_KEY for any backups you need to restore. Preserve RECEIPT_TOKEN_SECRET when migrating existing receipt links; changing it can invalidate issuance retries. Rotate AUTH_SECRET intentionally: it signs users out.
 

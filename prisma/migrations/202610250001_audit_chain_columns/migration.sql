@@ -1,0 +1,3 @@
+ALTER TABLE `AuditLog`
+  ADD COLUMN `hash` VARCHAR(64) NULL,
+  ADD COLUMN `prevHash` VARCHAR(64) NULL;

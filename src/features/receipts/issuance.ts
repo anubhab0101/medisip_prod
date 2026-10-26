@@ -8,6 +8,11 @@ import { shopDate } from "@/lib/date";
 
 import { receiptOrigin } from "./config";
 import { receiptSchema } from "./render";
+import { getSecret } from "@/lib/secret-manager";
+
+// Reduced from 30 days to 24 hours for security
+const RECEIPT_EXPIRY_MS = 24 * 60 * 60 * 1000;
+
 export async function issueReceipt(
   branchId: string,
   saleId: string,
@@ -19,11 +24,12 @@ export async function issueReceipt(
   } catch {
     throw new BusinessError(
       "Set up the separate receipt service before sharing a link.",
+      "UNAVAILABLE",
     );
   }
-  const secret = process.env.RECEIPT_TOKEN_SECRET;
+  const secret = await getSecret("RECEIPT_TOKEN_SECRET");
   if (!secret || secret.length < 32)
-    throw new BusinessError("Receipt sharing is not configured yet.");
+    throw new BusinessError("Receipt sharing is not configured yet.", "UNAVAILABLE");
   const token = createHmac("sha256", secret)
     .update(`receipt:${shareId}`)
     .digest("base64url");
@@ -43,6 +49,7 @@ export async function issueReceipt(
       )
         throw new BusinessError(
           "This receipt link is no longer available. Create a new one.",
+          "EXPIRED",
         );
       return `${origin}/r/${token}`;
     }
@@ -54,7 +61,7 @@ export async function issueReceipt(
         branch: { select: { demo: true } },
       },
     });
-    if (!sale) throw new BusinessError("Bill not found in this shop.");
+    if (!sale) throw new BusinessError("Bill not found in this shop.", "NOT_FOUND");
     const snapshot = receiptSchema.parse({
       shop: sale.shopSnapshot,
       invoiceNo: sale.invoiceNo,
@@ -85,7 +92,7 @@ export async function issueReceipt(
         saleId,
         tokenHash,
         snapshot,
-        expiresAt: new Date(Date.now() + 30 * 86400000),
+        expiresAt: new Date(Date.now() + RECEIPT_EXPIRY_MS),
       },
     });
     return `${origin}/r/${token}`;

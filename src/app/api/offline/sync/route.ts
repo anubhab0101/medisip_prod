@@ -4,8 +4,17 @@ import { checkout } from "@/features/billing/service";
 import { closeOffline, offlineIdentity } from "@/features/offline/service";
 import { friendlyError } from "@/lib/errors";
 import { db } from "@/server/db";
+import { validateCsrfToken, getCsrfTokenFromRequest } from "@/lib/csrf";
+
 export async function POST(request: NextRequest) {
   const headers = { "Cache-Control": "no-store" };
+  const csrfToken = await getCsrfTokenFromRequest(request);
+  if (!(await validateCsrfToken(csrfToken))) {
+    return NextResponse.json(
+      { error: "Invalid CSRF token." },
+      { status: 403, headers },
+    );
+  }
   if (
     request.headers.get("origin") !==
     new URL(process.env.APP_URL ?? request.url).origin

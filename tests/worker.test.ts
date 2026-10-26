@@ -1,5 +1,23 @@
 import { beforeEach, it, expect, vi } from "vitest";
+import { createHmac } from "node:crypto";
 vi.mock("@/features/receipts/issuance", () => ({ issueReceipt: vi.fn() }));
+const TEST_KEY = "test-signature-key-32-chars-minimum-length";
+function sign(payload: Record<string, unknown>): string {
+  return createHmac("sha256", TEST_KEY).update(JSON.stringify(payload)).digest("base64url");
+}
+const basePayload = {
+  branchId: "shop",
+  customerId: "customer",
+  body: "Test announcement",
+  promotional: true,
+};
+const job = {
+  id: "test-job",
+  type: "CUSTOM_SMS",
+  payload: { ...basePayload, _sig: sign(basePayload) },
+  runAt: new Date(),
+  attempts: 1,
+};
 const mocks = vi.hoisted(() => ({
   claim: vi.fn(),
   finish: vi.fn(),
@@ -41,18 +59,6 @@ vi.mock("@/features/notifications/smsgate", () => ({
   ProviderError: class extends Error {},
 }));
 import { workOnce } from "../src/server/jobs/worker";
-const job = {
-  id: "test-job",
-  type: "CUSTOM_SMS",
-  payload: {
-    branchId: "shop",
-    customerId: "customer",
-    body: "Test announcement",
-    promotional: true,
-  },
-  runAt: new Date(),
-  attempts: 1,
-};
 beforeEach(() => {
   vi.resetAllMocks();
   mocks.claim.mockResolvedValue(job);
@@ -78,10 +84,8 @@ it("does not send when consent was revoked after confirmation", async () => {
   );
 });
 it("does not send stale doctor announcements", async () => {
-  mocks.claim.mockResolvedValue({
-    ...job,
-    payload: { ...job.payload, expiresAt: "2020-01-01T00:00:00.000Z" },
-  });
+  const payload = { ...basePayload, expiresAt: "2020-01-01T00:00:00.000Z" };
+  mocks.claim.mockResolvedValue({ ...job, payload: { ...payload, _sig: sign(payload) } });
   await workOnce();
   expect(mocks.send).not.toHaveBeenCalled();
   expect(mocks.finish).toHaveBeenCalledWith(
@@ -112,7 +116,12 @@ it("submits eligible announcements once using a stable provider id", async () =>
 });
 
 it("skips a scheduled credit reminder after the balance is settled", async () => {
-  mocks.claim.mockResolvedValue({ ...job, type: "CREDIT_REMINDER" });
+  const payload = { ...basePayload, reminderId: "credit-reminder" };
+  mocks.claim.mockResolvedValue({
+    ...job,
+    type: "CREDIT_REMINDER",
+    payload: { ...payload, _sig: sign(payload) },
+  });
   mocks.balance.mockResolvedValue({ _sum: { amountPaise: 0 } });
   await workOnce();
   expect(mocks.send).not.toHaveBeenCalled();
@@ -123,10 +132,11 @@ it("skips a scheduled credit reminder after the balance is settled", async () =>
   );
 });
 it("does not send a cancelled refill reminder", async () => {
+  const payload = { ...basePayload, reminderId: "cancelled" };
   mocks.claim.mockResolvedValue({
     ...job,
     type: "REFILL_REMINDER",
-    payload: { ...job.payload, reminderId: "cancelled" },
+    payload: { ...payload, _sig: sign(payload) },
   });
   mocks.reminder.mockResolvedValue(null);
   await workOnce();

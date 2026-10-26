@@ -9,6 +9,7 @@ import { Permission } from "@/lib/permissions";
 import { id } from "@/lib/validation";
 import { BusinessError } from "@/lib/errors";
 import { manualMessage, promotionalSendAt } from "./content";
+import { evolutionGoSendingEnabled } from "./evolution-go";
 import {
   broadcastSchema,
   broadcastBody,
@@ -19,12 +20,13 @@ export async function previewBroadcast(raw: unknown) {
   const ctx = await context(Permission.MESSAGES);
   const input = broadcastSchema.parse(raw);
   if (input.audience === "SELECTED" && !input.customerIds.length)
-    throw new BusinessError("Select at least one customer.");
+    throw new BusinessError("Select at least one customer.", "VALIDATION_ERROR");
   const scheduledFor = promotionalSendAt();
   const expiresAt = input.expiresAt ? new Date(input.expiresAt) : null;
   if (expiresAt && expiresAt <= scheduledFor)
     throw new BusinessError(
       "The visit must end after the next permitted sending time (8 AM–9 PM).",
+      "VALIDATION_ERROR",
     );
   return transaction(async (tx) => {
     const previous = await tx.broadcast.findUnique({
@@ -32,7 +34,7 @@ export async function previewBroadcast(raw: unknown) {
     });
     if (previous) {
       if (previous.branchId !== ctx.branch.id)
-        throw new BusinessError("Broadcast not found in this shop.");
+        throw new BusinessError("Broadcast not found in this shop.", "NOT_FOUND");
       return previous.id;
     }
     const customers = await tx.customer.findMany({
@@ -48,6 +50,7 @@ export async function previewBroadcast(raw: unknown) {
     if (customers.length > 10000)
       throw new BusinessError(
         "Choose up to 10,000 customers for one broadcast.",
+        "VALIDATION_ERROR",
       );
     const eligible = customers.filter((c) =>
       eligibleCustomer(c, input.channel),
@@ -55,6 +58,7 @@ export async function previewBroadcast(raw: unknown) {
     if (!eligible.length)
       throw new BusinessError(
         "No selected customers have consent and a valid contact for this channel.",
+        "VALIDATION_ERROR",
       );
     const broadcast = await tx.broadcast.create({
       data: {
@@ -144,19 +148,22 @@ export async function confirmBroadcast(raw: unknown) {
       throw new BusinessError(
         "No recipients remain eligible. Check customer consent and create a new preview.",
       );
-    const status =
-      broadcast.channel === Channel.SMS ? "QUEUED" : "READY_FOR_MANUAL_SEND";
+    const automatic =
+      broadcast.channel === Channel.SMS ||
+      (broadcast.channel === Channel.WHATSAPP && evolutionGoSendingEnabled());
+    const status = automatic ? "QUEUED" : "READY_FOR_MANUAL_SEND";
     await tx.notificationLog.updateMany({
       where: { id: { in: [...eligibleIds] } },
       data: { status, scheduledFor: runAt },
     });
-    if (broadcast.channel === Channel.SMS) {
+    if (automatic) {
+      const whatsapp = broadcast.channel === Channel.WHATSAPP;
       for (let start = 0; start < eligible.length; start += 500) {
         await tx.job.createMany({
           data: eligible.slice(start, start + 500).map((l) => ({
             id: l.id,
-            key: `broadcast:${l.id}`,
-            type: "CUSTOM_SMS",
+            key: `${whatsapp ? "whatsapp" : "broadcast"}:${l.id}`,
+            type: whatsapp ? "CUSTOM_WHATSAPP" : "CUSTOM_SMS",
             payload: {
               branchId: ctx.branch.id,
               customerId: l.customerId,

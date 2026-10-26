@@ -228,18 +228,19 @@ it("caps new requests from one phone at five per hour", async () => {
   expect(await requestPublicBooking(first)).toBe(firstId);
 });
 it("concurrent first login attempts share one throttle row without lost counts", async () => {
+  const testIp = "192.168.1.100";
   const first = await Promise.all([
-    consumeLoginAttempt(loginEmail),
-    consumeLoginAttempt(loginEmail),
+    consumeLoginAttempt(loginEmail, testIp),
+    consumeLoginAttempt(loginEmail, testIp),
   ]);
   expect(first).toEqual([true, true]);
-  const key = createHash("sha256").update(loginEmail).digest("hex");
+  const key = createHash("sha256").update(`${loginEmail}:${testIp}`).digest("hex");
   expect(
     (await prisma.loginAttempt.findUniqueOrThrow({ where: { key } })).attempts,
   ).toBe(2);
   for (let i = 0; i < 8; i++)
-    expect(await consumeLoginAttempt(loginEmail)).toBe(true);
-  expect(await consumeLoginAttempt(loginEmail)).toBe(false);
+    expect(await consumeLoginAttempt(loginEmail, testIp)).toBe(true);
+  expect(await consumeLoginAttempt(loginEmail, testIp)).toBe(false);
   expect(
     (await prisma.loginAttempt.findUniqueOrThrow({ where: { key } })).attempts,
   ).toBe(10);

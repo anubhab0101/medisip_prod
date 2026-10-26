@@ -1,5 +1,5 @@
 import "server-only";
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual, randomBytes } from "node:crypto";
 import { z } from "zod";
 import {
   Prisma,
@@ -14,16 +14,25 @@ import { Permission } from "@/lib/permissions";
 import { id, operationId, quantity } from "@/lib/validation";
 import { BusinessError } from "@/lib/errors";
 import { shopDate } from "@/lib/date";
+
+// Offline device expires after 30 days
+const DEVICE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
+// Minimum 32 bytes entropy (43 chars base64url)
+const MIN_SECRET_LENGTH = 43;
+
 export const offlineIdentity = z.object({
   deviceId: operationId,
-  secret: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+  secret: z.string().min(MIN_SECRET_LENGTH).regex(/^[A-Za-z0-9_-]+$/),
 });
 export const secretHash = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function checkDeviceSecret(device: Device, secret: string) {
   const hash = secretHash(secret);
   if (!timingSafeEqual(Buffer.from(device.secretHash), Buffer.from(hash)))
-    throw new BusinessError("This offline counter key does not match.");
+    throw new BusinessError("This offline counter key does not match.", "VALIDATION_ERROR");
+}
+function isDeviceExpired(device: Device): boolean {
+  return Date.now() - device.createdAt.getTime() > DEVICE_EXPIRY_MS;
 }
 export async function prepareOffline(raw: unknown) {
   const ctx = await context(Permission.BILL);
@@ -37,17 +46,18 @@ export async function prepareOffline(raw: unknown) {
     })
     .parse(raw);
   if (new Set(input.items.map((i) => i.batchId)).size !== input.items.length)
-    throw new BusinessError("Choose each batch only once.");
+    throw new BusinessError("Choose each batch only once.", "VALIDATION_ERROR");
   if (!ctx.branch.address || !ctx.branch.drugLicenseNo)
     throw new BusinessError(
       "Complete shop details before preparing an offline counter.",
+      "VALIDATION_ERROR",
     );
   await transaction(async (tx) => {
     const [branch] = await tx.$queryRaw<
       { active: boolean }[]
     >`SELECT active FROM Branch WHERE id=${ctx.branch.id} FOR UPDATE`;
     if (!branch?.active)
-      throw new BusinessError("This shop is no longer active.");
+      throw new BusinessError("This shop is no longer active.", "UNAVAILABLE");
     const previous = await tx.device.findUnique({
       where: { id: input.deviceId },
     });
@@ -57,10 +67,26 @@ export async function prepareOffline(raw: unknown) {
         previous.userId !== ctx.user.id ||
         !previous.active
       )
-        throw new BusinessError("Counter is unavailable.");
+        throw new BusinessError("Counter is unavailable.", "UNAVAILABLE");
+      // Require secret rotation on re-prepare
       checkDeviceSecret(previous, input.secret);
-      return;
+      if (isDeviceExpired(previous)) {
+        throw new BusinessError(
+          "This offline counter has expired. Create a new one.",
+          "EXPIRED",
+        );
+      }
+      // Generate new secret for rotation
+      const newSecret = randomBytes(32).toString("base64url");
+      await tx.device.update({
+        where: { id: previous.id },
+        data: { secretHash: secretHash(newSecret), name: input.name },
+      });
+      // Return new secret to user
+      return { ...input, rotatedSecret: newSecret };
     }
+    // New device - generate secret
+    const newSecret = randomBytes(32).toString("base64url");
     const batchIds = input.items.map((i) => i.batchId).sort();
     const rows = await tx.batch.findMany({
       where: { id: { in: batchIds }, branchId: ctx.branch.id },
@@ -88,7 +114,7 @@ export async function prepareOffline(raw: unknown) {
         branchId: ctx.branch.id,
         userId: ctx.user.id,
         name: input.name,
-        secretHash: secretHash(input.secret),
+        secretHash: secretHash(newSecret),
       },
     });
     for (const i of input.items) {
@@ -128,6 +154,7 @@ export async function prepareOffline(raw: unknown) {
         after: { items: input.items },
       },
     });
+    return { ...input, rotatedSecret: newSecret };
   });
   const reservations = await db().stockReservation.findMany({
     where: { deviceId: input.deviceId, branchId: ctx.branch.id },
@@ -178,7 +205,10 @@ export async function closeOffline(raw: unknown) {
     const [device] = await tx.$queryRaw<
       Device[]
     >`SELECT * FROM Device WHERE id=${input.deviceId} AND branchId=${ctx.branch.id} AND userId=${ctx.user.id} FOR UPDATE`;
-    if (!device) throw new BusinessError("Counter not found.");
+    if (!device) throw new BusinessError("Counter not found.", "NOT_FOUND");
+    if (isDeviceExpired(device)) {
+      throw new BusinessError("This offline counter has expired. Contact the owner.", "EXPIRED");
+    }
     checkDeviceSecret(device, input.secret);
     if (!device.active) return;
     const reservations = await tx.$queryRaw<

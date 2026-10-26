@@ -11,18 +11,32 @@ import {
   smsStatus,
   ProviderError,
 } from "@/features/notifications/smsgate";
+import {
+  evolutionGoSendingEnabled,
+  sendEvolutionGoText,
+} from "@/features/notifications/evolution-go";
+import { validateSignedJob } from "@/lib/job-signature";
 const payloadSchema = z.object({
   branchId: z.string(),
   customerId: z.string(),
   saleId: z.string().optional(),
+  receiptShareId: z.string().max(191).optional(),
   reminderId: z.string().optional(),
   appointmentId: z.string().optional(),
   body: z.string().optional(),
   templateKey: z.string().max(100).optional(),
   promotional: z.boolean().optional(),
   expiresAt: z.string().datetime().optional(),
+  _sig: z.string(),
 });
+function verifyJob(job: Job): boolean {
+  return validateSignedJob(job.payload as Record<string, unknown> & { _sig?: string });
+}
 async function deliver(job: Job) {
+  if (!verifyJob(job)) {
+    await finishJob(job, JobStatus.FAILED, "Invalid job signature");
+    return;
+  }
   const payload = payloadSchema.parse(job.payload);
   const [branch, customer] = await Promise.all([
     db().branch.findUnique({ where: { id: payload.branchId } }),
@@ -83,7 +97,7 @@ async function deliver(job: Job) {
     }
     body = `${branch.name}: Bill ${sale.invoiceNo}, total ${formatMoney(sale.totalPaise)}. Thank you.`;
     if (process.env.RECEIPT_PUBLIC_URL)
-      body += ` Receipt: ${await issueReceipt(branch.id, sale.id, `sms-${job.id}`)}`;
+      body += ` Receipt: ${await issueReceipt(branch.id, sale.id, payload.receiptShareId ?? `sms-${job.id}`)}`;
   }
   if (job.type.startsWith("APPOINTMENT_") && payload.appointmentId) {
     const appointment = await db().appointment.findFirst({
@@ -236,11 +250,160 @@ async function deliver(job: Job) {
     throw error;
   }
 }
+
+async function deliverWhatsApp(job: Job) {
+  if (!verifyJob(job)) {
+    await finishJob(job, JobStatus.FAILED, "Invalid job signature");
+    return;
+  }
+  if (!evolutionGoSendingEnabled()) {
+    await finishJob(
+      job,
+      JobStatus.PENDING,
+      "WhatsApp sending is disabled; message remains queued.",
+      new Date(Date.now() + 60000),
+    );
+    return;
+  }
+  const payload = payloadSchema.parse(job.payload);
+  const log = await db().notificationLog.upsert({
+    where: { id: job.id },
+    create: {
+      id: job.id,
+      branchId: payload.branchId,
+      customerId: payload.customerId,
+      channel: Channel.WHATSAPP,
+      templateKey: payload.templateKey ?? job.type,
+      payload: { body: payload.body ?? "" },
+      scheduledFor: job.runAt,
+    },
+    update: {},
+  });
+  const [branch, customer] = await Promise.all([
+    db().branch.findUnique({ where: { id: payload.branchId } }),
+    db().customer.findFirst({
+      where: { id: payload.customerId, branchId: payload.branchId },
+    }),
+  ]);
+  const skip = async (reason: string) => {
+    await db().notificationLog.update({
+      where: { id: log.id },
+      data: { status: "SKIPPED", error: reason },
+    });
+    await finishJob(job, JobStatus.DONE, reason);
+  };
+  if (
+    !branch?.active ||
+    branch.demo ||
+    !customer?.active ||
+    !customer.consentWhatsapp
+  ) {
+    await skip("Shop mode, customer status or WhatsApp consent changed.");
+    return;
+  }
+  if (payload.expiresAt && new Date(payload.expiresAt) <= new Date()) {
+    await skip("Announcement expired before sending.");
+    return;
+  }
+  if (payload.promotional) {
+    const due = promotionalSendAt();
+    if (due.getTime() > Date.now()) {
+      await finishJob(job, JobStatus.PENDING, undefined, due);
+      return;
+    }
+  }
+  let body = payload.body;
+  if (job.type === "WHATSAPP_RECEIPT" && payload.saleId) {
+    const sale = await db().sale.findFirst({
+      where: {
+        id: payload.saleId,
+        branchId: branch.id,
+        customerId: customer.id,
+      },
+    });
+    if (!sale || sale.status === "VOID") {
+      await skip("Bill is unavailable.");
+      return;
+    }
+    try {
+      body = `${branch.name}: Bill ${sale.invoiceNo}, total ${formatMoney(sale.totalPaise)}. Receipt: ${await issueReceipt(branch.id, sale.id, payload.receiptShareId ?? `whatsapp-${job.id}`)}`;
+    } catch {
+      await db().notificationLog.update({
+        where: { id: log.id },
+        data: {
+          status: "FAILED",
+          error: "Separate receipt service is not configured.",
+        },
+      });
+      throw new ProviderError(
+        "Separate receipt service is not configured.",
+        false,
+      );
+    }
+  }
+  if (!body)
+    throw new ProviderError("No WhatsApp message content is available.", false);
+  if (
+    ["SUBMITTED", "DELIVERED", "READ"].includes(log.status) &&
+    log.providerId
+  ) {
+    await finishJob(job, JobStatus.DONE);
+    return;
+  }
+  if (log.status === "SUBMITTING" || log.status === "UNKNOWN")
+    throw new ProviderError(
+      "Previous WhatsApp send outcome is unknown; review Evolution Go before retrying.",
+      false,
+      true,
+    );
+  await db().notificationLog.update({
+    where: { id: log.id },
+    data: { status: "SUBMITTING", error: null },
+  });
+  try {
+    const result = await sendEvolutionGoText({ phone: customer.phone, text: body });
+    await db().notificationLog.update({
+      where: { id: log.id },
+      data: {
+        status: "SUBMITTED",
+        providerId: result.id,
+        sentAt: new Date(),
+        error: null,
+      },
+    });
+    await finishJob(job, JobStatus.DONE);
+  } catch (error) {
+    await db().notificationLog.update({
+      where: { id: log.id },
+      data: {
+        status:
+          error instanceof ProviderError && error.uncertain
+            ? "UNKNOWN"
+            : "FAILED",
+        error:
+          error instanceof ProviderError
+            ? error.message
+            : "WhatsApp could not be submitted.",
+      },
+    });
+    throw error;
+  }
+}
+
 export async function workOnce() {
   const job = await claimJob();
   if (!job) return false;
   try {
-    await deliver(job);
+    if (job.type === "CUSTOM_WHATSAPP" || job.type === "WHATSAPP_RECEIPT")
+      await deliverWhatsApp(job);
+    else if (process.env.SMS_SEND_ENABLED !== "true" && evolutionGoSendingEnabled())
+      await finishJob(
+        job,
+        JobStatus.PENDING,
+        "SMS sending is disabled; message remains queued.",
+        new Date(Date.now() + 60000),
+      );
+    else await deliver(job);
   } catch (error) {
     const retry =
       error instanceof ProviderError && error.retryable && job.attempts < 3;
@@ -250,8 +413,29 @@ export async function workOnce() {
       error instanceof ProviderError
         ? error.message
         : "Job could not be processed.",
-      retry ? new Date(Date.now() + 30000 * 2 ** job.attempts) : undefined,
+      retry
+        ? new Date(
+            Date.now() +
+              (error instanceof ProviderError && error.retryAfterMs
+                ? error.retryAfterMs
+                : 30000 * 2 ** job.attempts),
+          )
+        : undefined,
     );
+    if (
+      retry &&
+      (job.type === "CUSTOM_WHATSAPP" || job.type === "WHATSAPP_RECEIPT")
+    )
+      await db().notificationLog.updateMany({
+        where: { id: job.id },
+        data: {
+          status: "QUEUED",
+          error:
+            error instanceof ProviderError
+              ? error.message
+              : "WhatsApp will be retried by the worker.",
+        },
+      });
   }
   return true;
 }

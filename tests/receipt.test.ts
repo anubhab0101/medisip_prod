@@ -1,8 +1,9 @@
 import { afterAll, beforeAll, it, expect, vi } from "vitest";
-import { createServer, request as httpRequest, type Server } from "node:http";
+import { createServer, type Server, request as httpRequest } from "node:http";
 import { createHash } from "node:crypto";
 import { receiptHandler } from "../src/features/receipts/http";
 import { receiptOrigin } from "../src/features/receipts/config";
+import type { IncomingMessage, ServerResponse } from "node:http";
 const token = "a".repeat(43);
 const snapshot = {
   shop: {
@@ -36,10 +37,14 @@ const snapshot = {
   refunded: 0,
 };
 const lookup = vi.fn(async (hash: string) =>
-  hash === createHash("sha256").update(token).digest("hex") ? snapshot : null,
+  hash === createHash("sha256").update(token).digest("hex")
+    ? snapshot
+    : null,
 );
 let server: Server, base: string;
+let handler: (req: IncomingMessage, res: ServerResponse) => void;
 beforeAll(async () => {
+  handler = receiptHandler(lookup, `127.0.0.1:0`);
   server = createServer((req, res) => {
     void handler(req, res);
   });
@@ -47,7 +52,12 @@ beforeAll(async () => {
   const address = server.address();
   if (!address || typeof address === "string") throw new Error("No test port");
   base = `http://127.0.0.1:${address.port}`;
-  const handler = receiptHandler(lookup, `127.0.0.1:${address.port}`);
+  // Re-create handler with correct port
+  handler = receiptHandler(lookup, `127.0.0.1:${address.port}`);
+  server = createServer((req, res) => {
+    void handler(req, res);
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
 });
 afterAll(async () => {
   await new Promise<void>((resolve, reject) =>
@@ -68,6 +78,8 @@ it("serves only the receipt without scripts, navigation, cookies or app links", 
     "default-src 'none'",
   );
   expect(response.headers.get("cache-control")).toContain("no-store");
+  // Link previews may GET the URL before the customer; a view must not consume it.
+  expect((await request(`/r/${token}`)).status).toBe(200);
 });
 it("has no login, staff, API, root or redirect routes", async () => {
   for (const path of [

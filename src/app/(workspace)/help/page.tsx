@@ -16,7 +16,7 @@ const sections = [
   ],
   [
     "Share a receipt",
-    "Open the saved bill and create a customer receipt link. It opens a separate receipt-only viewer, with no staff-site links. Revoke a link when needed; returns automatically invalidate older links.",
+    "Open the saved bill and create a separate receipt link. Then choose Send by SMS or Send by WhatsApp. Messages require the customer’s consent and an enabled provider. Revoke a link when needed; returns automatically invalidate older links.",
   ],
   [
     "Correct a bill or stock",

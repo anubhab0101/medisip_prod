@@ -14,27 +14,30 @@ const credentialsSchema = z.object({
     .max(191)
     .transform((v) => v.toLowerCase()),
   password: z.string().min(1).max(72),
+  ip: z.string().max(45).optional(),
 });
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
   pages: { signIn: "/login" },
   providers: [
     Credentials({
-      credentials: { email: { type: "email" }, password: { type: "password" } },
+      credentials: {
+        email: { type: "email" },
+        password: { type: "password" },
+        ip: { type: "text" },
+      },
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success || !process.env.DATABASE_URL) return null;
-        const { email, password } = parsed.data;
-        if (!(await consumeLoginAttempt(email))) return null;
+        const { email, password, ip = "unknown" } = parsed.data;
+        if (!(await consumeLoginAttempt(email, ip))) return null;
         const user = await db().user.findUnique({ where: { email } });
-        // Compare even unknown accounts to avoid a fast account-enumeration path.
-        const valid = await compare(
-          password,
-          user?.passwordHash ??
-            "$2b$12$NQ2LvNmTHSSQaLiQUCpR4e/AywjHtghV0NLjWCduDNnhRPNwujm6y",
-        );
-        if (!user?.active || !valid) return null;
-        await clearLoginAttempts(email);
+        // Constant-time comparison: always hash, never early-return on missing user
+        const valid = user?.active && (await compare(password, user.passwordHash));
+        if (!valid) {
+          await clearLoginAttempts(email, ip);
+          return null;
+        }
         return {
           id: user.id,
           name: user.name,

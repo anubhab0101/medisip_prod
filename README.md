@@ -19,7 +19,7 @@ New owners can use **Settings → Setup guide**: enter shop details, add the fir
 
 For the faster production preview, use `npm run build` once, then `npm run start`; stop the existing preview before building again. Saved bills offer A4/PDF and compact 80mm receipt layouts. For thermal printing, select 80mm paper in the printer dialog and disable browser headers/footers. PDF currently uses the browser's Save as PDF option; physical printer output has not been tested.
 
-Messages → Message templates lets you save reusable wording with `{name}`, `{shop}`, `{date}`, `{time}`, `{doctor}` and `{amount}`. Select a saved template on Messages, choose the customer, fill the remaining values and review the message. Saving a template never sends it; WhatsApp/email still require manual sending. Disabling a template removes it from new messages without changing already prepared messages.
+Messages → Message templates lets you save reusable wording with `{name}`, `{shop}`, `{date}`, `{time}`, `{doctor}` and `{amount}`. Select a saved template on Messages, choose the customer, fill the remaining values and review the message. Saving a template never sends it; WhatsApp is queued only when the optional Evolution Go integration is enabled, otherwise it opens for staff to send manually. Email remains manual. Disabling a template removes it from new messages without changing already prepared messages.
 
 For a personal test, open a saved template and choose **Test with my contact**. Add your own customer record with consent first if needed, select it, enter your own number and confirm. Email tests must use your staff sign-in email. Tests are labelled [TEST]; SMS tests expire after 15 minutes and still respect promotional sending hours. WhatsApp/email test links require you to send manually. Ownership is declared by the staff member; this flow does not verify phone ownership with an OTP.
 
@@ -59,9 +59,9 @@ SMS is disabled by default. Configure SMSGATE_USERNAME, SMSGATE_PASSWORD and opt
 npm run worker
 ```
 
-The separate worker processes durable TiDB jobs and polls delivery status. `npm run worker -- --once` processes at most one job and exits. Unknown provider outcomes are retained for review rather than blindly resent. WhatsApp and email currently open a prefilled message for staff to send manually.
+The separate worker processes durable TiDB jobs and polls SMS delivery status. `npm run worker -- --once` processes at most one job and exits. Unknown provider outcomes are retained for review rather than blindly resent. See `docs/EVOLUTION_GO_SETUP.md` before enabling automated WhatsApp; Evolution Go is off by default and WhatsApp receipt delivery uses only the isolated receipt-host link.
 
-Open **Messages > Broadcast** to announce a doctor visit or write a custom update. Choose all consented customers or specific customers, then review the exact message and recipient list. Confirmation queues SMS; WhatsApp/email must be opened and sent individually. Announcements respect 8 AM-9 PM India time and doctor announcements expire when the visit ends. Practice mode supports previews only.
+Open **Messages > Broadcast** to announce a doctor visit or write a custom update. Choose all consented customers or specific customers, then review the exact message and recipient list. Confirmation queues SMS and, when enabled, WhatsApp; otherwise WhatsApp/email must be opened and sent manually. Announcements respect 8 AM-9 PM India time and doctor announcements expire when the visit ends. Practice mode supports previews only.
 
 ## Customer receipts and offline counter
 
@@ -76,7 +76,6 @@ See [operations and backup/restore](docs/OPERATIONS.md). A real encrypted restor
 ## Important limits
 
 The core workflows and approved extras are implemented, with isolated test evidence recorded in the implementation log. Remaining release gates include pushing a Git remote, Render service setup, production database grants and migrations, container/runtime validation, off-host backup recovery and a supervised real-shop rehearsal. The latest launch checklist separates current evidence from these external gates; the project is not yet cleared for live customer use.
-
 
 ## Add real medicines
 

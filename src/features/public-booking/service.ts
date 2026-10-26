@@ -25,6 +25,7 @@ export const publicBookingSchema = z.object({
   confirmed: z.literal(true, {
     error: "Confirm that these are your contact details.",
   }),
+  ip: z.string().max(45).optional(),
 });
 const digest = (value: string) =>
   createHash("sha256").update(value).digest("hex");
@@ -39,7 +40,7 @@ export function bookingDate(value: string) {
     value < today ||
     value > last
   )
-    throw new BusinessError("Choose a date within the next 30 days.");
+    throw new BusinessError("Choose a date within the next 30 days.", "VALIDATION_ERROR");
   return value;
 }
 
@@ -130,6 +131,7 @@ export async function requestPublicBooking(raw: unknown) {
   if (!link)
     throw new BusinessError(
       "This booking link is unavailable. Contact the shop.",
+      "NOT_FOUND",
     );
   const requestId = `public:${digest(`${input.token}:${input.operationId}`)}`;
   const fingerprint = digest(
@@ -147,19 +149,25 @@ export async function requestPublicBooking(raw: unknown) {
     )
       throw new BusinessError(
         "This request changed. Reload the booking page before trying again.",
+        "CONFLICT",
       );
     if (committed.status === "CANCELLED")
       throw new BusinessError(
         "This request was cancelled. Reload the page to make a new booking.",
+        "EXPIRED",
       );
     return committed.id;
   }
+  const clientIp = input.ip ?? "unknown";
+  // Rate limit by IP (10 requests/hour) and by phone per branch (5/hour) and global per branch (200/hour)
   if (
-    !(await consumeLimit(`${link.branchId}:${input.phone}`, 5)) ||
+    !(await consumeLimit(`${link.branchId}:ip:${clientIp}`, 10)) ||
+    !(await consumeLimit(`${link.branchId}:phone:${input.phone}`, 5)) ||
     !(await consumeLimit(link.branchId, 200))
   )
     throw new BusinessError(
       "Too many booking attempts. Please call the shop or try again in one hour.",
+      "RATE_LIMITED",
     );
   return transaction(async (tx) => {
     const [branch] = await tx.$queryRaw<

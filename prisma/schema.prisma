@@ -486,6 +486,8 @@ model AuditLog {
   before    Json?
   after     Json?
   createdAt DateTime @default(now())
+  hash      String?  @db.VarChar(64)
+  prevHash  String?  @db.VarChar(64)
 
   @@index([branchId, createdAt])
 }

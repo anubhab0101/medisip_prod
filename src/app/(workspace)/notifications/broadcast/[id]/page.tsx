@@ -46,6 +46,7 @@ export default async function BroadcastDetail({
     process.env.SMS_SEND_ENABLED === "true" &&
     !!process.env.SMSGATE_USERNAME &&
     !!process.env.SMSGATE_PASSWORD;
+  const whatsappReady = process.env.EVOLUTION_GO_SEND_ENABLED === "true";
   return (
     <>
       <PageTitle
@@ -95,7 +96,9 @@ export default async function BroadcastDetail({
               label={
                 broadcast.channel === Channel.SMS
                   ? "Confirm and queue SMS"
-                  : "Confirm manual broadcast"
+                  : broadcast.channel === Channel.WHATSAPP && whatsappReady
+                    ? "Confirm and queue WhatsApp"
+                    : "Confirm manual broadcast"
               }
             >
               <input type="hidden" name="id" value={id} />
@@ -105,12 +108,15 @@ export default async function BroadcastDetail({
                 <T>
                   {broadcast.channel === Channel.SMS
                     ? "Queue it for sending."
-                    : "Prepare individual messages for me to send."}
+                    : broadcast.channel === Channel.WHATSAPP && whatsappReady
+                      ? "Queue it for WhatsApp delivery."
+                      : "Prepare individual messages for me to send."}
                 </T>
               </label>
             </ActionForm>
           ))}
-        {broadcast.channel !== Channel.SMS && (
+        {(broadcast.channel === Channel.EMAIL ||
+          (broadcast.channel === Channel.WHATSAPP && !whatsappReady)) && (
           <p>
             <T>
               {

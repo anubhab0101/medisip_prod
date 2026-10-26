@@ -8,8 +8,17 @@ import { BusinessError } from "@/lib/errors";
 import { saveResult, text } from "@/server/forms";
 import type { FormState } from "@/components/shared/action-form";
 import { requestPublicBooking } from "./service";
+import { headers } from "next/headers";
+
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  const forwarded = h.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return h.get("x-real-ip") ?? "unknown";
+}
 
 export async function publicBookingAction(_state: FormState, form: FormData) {
+  const ip = await getClientIp();
   return saveResult(
     () =>
       requestPublicBooking({
@@ -20,6 +29,7 @@ export async function publicBookingAction(_state: FormState, form: FormData) {
         name: text(form, "name"),
         phone: text(form, "phone"),
         confirmed: form.get("confirmed") === "on",
+        ip,
       }),
     ["/appointments"],
     "Booking received. Please contact the shop to confirm your visit. No payment has been taken.",

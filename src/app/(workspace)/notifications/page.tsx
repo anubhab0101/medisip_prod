@@ -14,6 +14,8 @@ const statuses = [
   "PROCESSED",
   "SENT",
   "DELIVERED",
+  "SUBMITTED",
+  "READ",
   "FAILED",
   "UNKNOWN",
   "SUBMITTING",
@@ -58,7 +60,7 @@ export default async function Notifications({
   const failedIds = logs
     .filter(
       (log) =>
-        log.channel === "SMS" &&
+        (log.channel === "SMS" || log.channel === "WHATSAPP") &&
         log.status === "FAILED" &&
         !log.providerId &&
         !log.sentAt,
@@ -183,7 +185,11 @@ export default async function Notifications({
                     {retryable.has(log.id) && !ctx.branch.demo && (
                       <details>
                         <summary>
-                          <T>{"Retry SMS"}</T>
+                          <T>
+                            {log.channel === "SMS"
+                              ? "Retry SMS"
+                              : "Retry WhatsApp"}
+                          </T>
                         </summary>
                         <ActionForm
                           action={retryMessageAction}
@@ -202,9 +208,9 @@ export default async function Notifications({
                     {["UNKNOWN", "SUBMITTING"].includes(log.status) && (
                       <small>
                         <T>
-                          {
-                            "Check SMSGate for delivery. Resending is blocked while the result is uncertain."
-                          }
+                          {log.channel === "SMS"
+                            ? "Check SMSGate for delivery. Resending is blocked while the result is uncertain."
+                            : "Check Evolution Go for delivery. Resending is blocked while the result is uncertain."}
                         </T>
                       </small>
                     )}

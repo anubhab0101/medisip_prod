@@ -68,9 +68,11 @@ export function MessageForm({
       }
       setUrl(result.url);
       setSuccess(
-        result.url
-          ? "Ready. Open the message and send it yourself."
-          : "SMS queued. Delivery status will update after the worker sends it.",
+        result.queued
+          ? channel === "WHATSAPP"
+            ? "WhatsApp message queued. Check its status below."
+            : "SMS queued. Delivery status will update after the worker sends it."
+          : "Ready. Open the message and send it yourself.",
       );
       operation.current = crypto.randomUUID();
     } catch {
@@ -99,7 +101,7 @@ export function MessageForm({
             <p>
               <T>
                 {
-                  "Choose your own saved customer record with consent for this channel. Enter your own number for SMS/WhatsApp; email tests must match your staff sign-in email. Nothing is sent until you prepare the test. SMS tests are queued; WhatsApp and email open for you to send manually."
+                  "Choose your own saved customer record with consent for this channel. Enter your own number for SMS/WhatsApp; email tests must match your staff sign-in email. Preparing a test queues SMS, and queues WhatsApp when Evolution Go is enabled; otherwise WhatsApp and email open for you to send manually."
                 }
               </T>
             </p>

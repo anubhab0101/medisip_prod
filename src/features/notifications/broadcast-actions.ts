@@ -24,7 +24,7 @@ export async function confirmBroadcastAction(
         confirmed: form.get("confirmed") === "on",
       }),
     ["/notifications/broadcast", "/notifications"],
-    "Broadcast confirmed. SMS delivery is tracked below; manual messages must be opened and sent individually.",
+    "Broadcast confirmed. Queued messages are tracked below; manual channels still need staff to send them.",
   );
 }
 export async function openBroadcastAction(logId: string) {

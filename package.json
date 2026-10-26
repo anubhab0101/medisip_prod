@@ -22,7 +22,10 @@
     "ocr:prepare": "node scripts/prepare-ocr.mjs",
     "offline:prepare": "node scripts/prepare-offline.mjs",
     "prebuild": "npm run offline:prepare",
-    "predev": "npm run offline:prepare"
+    "predev": "npm run offline:prepare",
+    "audit": "npm audit --audit-level=high --production",
+    "audit:dev": "npm audit --audit-level=high",
+    "audit:fix": "npm audit fix --audit-level=high"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

@@ -7,7 +7,12 @@ import {
   renderTemplate,
 } from "../src/features/notifications/content";
 import { sendSms } from "../src/features/notifications/smsgate";
-afterEach(() => vi.unstubAllEnvs());
+import { SecretManager } from "@/lib/secret-manager";
+vi.mock("server-only", () => ({}));
+afterEach(() => {
+  vi.unstubAllEnvs();
+  SecretManager.getInstance().clearCache();
+});
 describe("partial returns", () => {
   it("returns every paise exactly once across three refunds", () =>
     expect(
@@ -75,8 +80,8 @@ describe("message controls", () => {
   });
   it("marks a timeout as uncertain, not safely retryable", async () => {
     vi.stubEnv("SMS_SEND_ENABLED", "true");
-    vi.stubEnv("SMSGATE_USERNAME", "test");
-    vi.stubEnv("SMSGATE_PASSWORD", "test");
+    vi.stubEnv("SMSGATE_USERNAME", "test-user");
+    vi.stubEnv("SMSGATE_PASSWORD", "test-password-16-chars");
     const request = vi.fn().mockRejectedValue(new Error("timeout"));
     await expect(
       sendSms({ id: "x", phone: "+919999999999", body: "Test" }, request),

@@ -12,6 +12,7 @@ import { BusinessError } from "@/lib/errors";
 import { id, name, operationId, paise } from "@/lib/validation";
 import { shopDate } from "@/lib/date";
 import { slotsForDay, overlaps } from "./slots";
+import { createJob } from "@/server/jobs/queue";
 export const doctorSchema = z
   .object({
     name,
@@ -105,18 +106,16 @@ export async function bookAppointment(raw: unknown) {
         ["APPOINTMENT_REMINDER_2H", new Date(startsAt.getTime() - 7200000)],
       ] as const) {
         if (type !== "APPOINTMENT_CONFIRMATION" && when < new Date()) continue;
-        await tx.job.create({
-          data: {
-            key: `${type}:${appointment.id}`,
-            type,
-            payload: {
-              branchId: ctx.branch.id,
-              customerId: customer.id,
-              appointmentId: appointment.id,
-            },
-            runAt: when,
+        await createJob(
+          `${type}:${appointment.id}`,
+          type,
+          {
+            branchId: ctx.branch.id,
+            customerId: customer.id,
+            appointmentId: appointment.id,
           },
-        });
+          when,
+        );
       }
     }
     return appointment.id;

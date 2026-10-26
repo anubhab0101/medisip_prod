@@ -2,11 +2,29 @@
 import { T } from "@/lib/i18n/provider";
 
 import { useRef, useState } from "react";
-import { shareReceiptAction, revokeReceiptsAction } from "./actions";
-export function ShareReceiptPanel({ saleId }: { saleId: string }) {
+import {
+  shareReceiptAction,
+  revokeReceiptsAction,
+  queueReceiptDeliveryAction,
+} from "./actions";
+export function ShareReceiptPanel({
+  saleId,
+  canSendSms,
+  canSendWhatsapp,
+  smsReady,
+  whatsappReady,
+}: {
+  saleId: string;
+  canSendSms: boolean;
+  canSendWhatsapp: boolean;
+  smsReady: boolean;
+  whatsappReady: boolean;
+}) {
   const [url, setUrl] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+  const [sending, setSending] = useState<"SMS" | "WHATSAPP" | "">("");
+  const [queued, setQueued] = useState<string[]>([]);
   const requestId = useRef(crypto.randomUUID());
   return (
     <details className="panel disclosure no-print">
@@ -17,7 +35,7 @@ export function ShareReceiptPanel({ saleId }: { saleId: string }) {
         <p>
           <T>
             {
-              "The customer gets a separate receipt-only page. It has no staff login, navigation or links to this app. Links expire in 30 days."
+              "The customer gets a separate receipt-only page. It has no staff login, navigation or links to this app. Links expire after 24 hours."
             }
           </T>
         </p>
@@ -34,6 +52,7 @@ export function ShareReceiptPanel({ saleId }: { saleId: string }) {
                   requestId: requestId.current,
                 });
                 setUrl(result.id ?? "");
+                setQueued([]);
                 setMessage(result.error || result.success || "");
               } catch {
                 setMessage("Could not create the receipt link. Try again.");
@@ -60,6 +79,7 @@ export function ShareReceiptPanel({ saleId }: { saleId: string }) {
                 setMessage(result.error || result.success || "");
                 if (!result.error) {
                   setUrl("");
+                  setQueued([]);
                   requestId.current = crypto.randomUUID();
                 }
               } catch {
@@ -79,6 +99,54 @@ export function ShareReceiptPanel({ saleId }: { saleId: string }) {
               <input readOnly value={url} onFocus={(e) => e.target.select()} />
             </label>
             <div className="inline">
+              <button
+                className="button primary"
+                type="button"
+                disabled={pending || !!sending || !canSendSms || !smsReady || queued.includes("SMS")}
+                onClick={async () => {
+                  setSending("SMS");
+                  setMessage("");
+                  try {
+                    const result = await queueReceiptDeliveryAction({
+                      saleId,
+                      requestId: requestId.current,
+                      channel: "SMS",
+                    });
+                    if (!result.error) setQueued((items) => [...items, "SMS"]);
+                    setMessage(result.error || result.success || "");
+                  } catch {
+                    setMessage("Could not queue the SMS. Try again.");
+                  } finally {
+                    setSending("");
+                  }
+                }}
+              >
+                <T>{queued.includes("SMS") ? "SMS queued" : "Send by SMS"}</T>
+              </button>
+              <button
+                className="button secondary"
+                type="button"
+                disabled={pending || !!sending || !canSendWhatsapp || !whatsappReady || queued.includes("WHATSAPP")}
+                onClick={async () => {
+                  setSending("WHATSAPP");
+                  setMessage("");
+                  try {
+                    const result = await queueReceiptDeliveryAction({
+                      saleId,
+                      requestId: requestId.current,
+                      channel: "WHATSAPP",
+                    });
+                    if (!result.error) setQueued((items) => [...items, "WHATSAPP"]);
+                    setMessage(result.error || result.success || "");
+                  } catch {
+                    setMessage("Could not queue the WhatsApp message. Try again.");
+                  } finally {
+                    setSending("");
+                  }
+                }}
+              >
+                <T>{queued.includes("WHATSAPP") ? "WhatsApp queued" : "Send by WhatsApp"}</T>
+              </button>
               <button
                 className="button secondary"
                 onClick={async () => {
@@ -103,6 +171,11 @@ export function ShareReceiptPanel({ saleId }: { saleId: string }) {
                 <T>{"Preview customer receipt"}</T>
               </a>
             </div>
+            {(!canSendSms || !canSendWhatsapp || !smsReady || !whatsappReady) && (
+              <small>
+                <T>{"Sending needs an active customer, channel consent and an enabled provider."}</T>
+              </small>
+            )}
           </>
         )}
         {message && <p role="status">{message}</p>}

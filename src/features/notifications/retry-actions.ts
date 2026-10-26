@@ -16,9 +16,7 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
       const ctx = await context(Permission.MESSAGES);
       const logId = id.parse(text(form, "id"));
       if (form.get("confirmed") !== "on")
-        throw new BusinessError(
-          "Confirm that you want to retry this failed SMS.",
-        );
+        throw new BusinessError("Confirm that you want to retry this message.");
       if (ctx.branch.demo)
         throw new BusinessError("Messages are disabled in practice mode.");
       return transaction(async (tx) => {
@@ -28,8 +26,8 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
         const [log] = await tx.$queryRaw<
           NotificationLog[]
         >`SELECT * FROM NotificationLog WHERE id=${logId} AND branchId=${ctx.branch.id} FOR UPDATE`;
-        if (!job || !log || log.channel !== "SMS")
-          throw new BusinessError("SMS job not found in this shop.");
+        if (!job || !log || !["SMS", "WHATSAPP"].includes(log.channel))
+          throw new BusinessError("Message job not found in this shop.");
         const payload = z
           .object({
             branchId: z.string(),
@@ -51,19 +49,21 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
           log.sentAt
         )
           throw new BusinessError(
-            "This message cannot be retried safely. Check its delivery status in SMSGate; an uncertain or accepted message must not be resent.",
+            "This message cannot be retried safely. Check the provider; an uncertain or accepted message must not be resent.",
           );
         const customer = await tx.customer.findFirst({
           where: {
             id: log.customerId,
             branchId: ctx.branch.id,
             active: true,
-            consentSms: true,
+            ...(log.channel === "SMS"
+              ? { consentSms: true }
+              : { consentWhatsapp: true }),
           },
         });
         if (!customer)
           throw new BusinessError(
-            "The customer is inactive or has not agreed to SMS.",
+            "The customer is inactive or has not agreed to this message channel.",
           );
         const runAt = payload.promotional ? promotionalSendAt() : new Date();
         if (payload.expiresAt && new Date(payload.expiresAt) <= runAt)
@@ -89,7 +89,7 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
           data: {
             branchId: ctx.branch.id,
             userId: ctx.user.id,
-            action: "RETRY_SMS",
+            action: log.channel === "SMS" ? "RETRY_SMS" : "RETRY_WHATSAPP",
             entity: "NotificationLog",
             entityId: log.id,
             before: { status: log.status, attempts: job.attempts },
@@ -100,6 +100,6 @@ export async function retryMessageAction(_state: FormState, form: FormData) {
       });
     },
     ["/notifications"],
-    "Retry queued with the same message ID. Delivery still requires the SMS worker.",
+    "Message retry queued. Uncertain send outcomes stay blocked to prevent duplicates.",
   );
 }

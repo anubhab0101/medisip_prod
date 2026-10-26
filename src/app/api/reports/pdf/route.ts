@@ -3,9 +3,17 @@ import { getReport } from "@/features/reports/service";
 import { context } from "@/server/context";
 import { can, Permission } from "@/lib/permissions";
 import { pdfResponse, pdfTable, pdfText, renderPdf } from "@/server/pdf";
+import { validateCsrfToken, getCsrfTokenFromRequest } from "@/lib/csrf";
 
 export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
+  const csrfToken = await getCsrfTokenFromRequest(request);
+  if (!(await validateCsrfToken(csrfToken))) {
+    return Response.json(
+      { error: "Invalid CSRF token." },
+      { status: 403, headers: { "Cache-Control": "no-store" } },
+    );
+  }
   const ctx = await context();
   if (!can(ctx.role, Permission.REPORT))
     return Response.json(

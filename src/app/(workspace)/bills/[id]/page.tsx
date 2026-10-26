@@ -27,7 +27,7 @@ export default async function Invoice({
   const { id } = await params;
   const sale = await db().sale.findFirst({
     where: { id, branchId: ctx.branch.id },
-    include: { items: true, payments: true, returns: true },
+    include: { items: true, payments: true, returns: true, customer: true },
   });
   if (!sale) notFound();
   const shop = shopSchema.parse(sale.shopSnapshot);
@@ -154,7 +154,13 @@ export default async function Invoice({
           <T>{"Get well soon."}</T>
         </p>
       </article>
-      <ShareReceiptPanel saleId={sale.id} />
+      <ShareReceiptPanel
+        saleId={sale.id}
+        canSendSms={Boolean(sale.customer?.active && sale.customer.consentSms)}
+        canSendWhatsapp={Boolean(sale.customer?.active && sale.customer.consentWhatsapp)}
+        smsReady={process.env.SMS_SEND_ENABLED === "true" && !ctx.branch.demo}
+        whatsappReady={process.env.EVOLUTION_GO_SEND_ENABLED === "true" && !ctx.branch.demo}
+      />
       {!["VOID", "RETURNED"].includes(sale.status) && (
         <DeliveryForm saleId={sale.id} />
       )}

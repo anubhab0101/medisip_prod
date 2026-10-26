@@ -57,6 +57,7 @@ export function receiptHandler(lookup: Lookup, expectedHost: string) {
         reject(404);
         return;
       }
+      // Keep reads side-effect free so messaging link-preview bots cannot consume a receipt.
       const html = renderReceipt(data);
       res.statusCode = 200;
       res.end(req.method === "HEAD" ? undefined : html);

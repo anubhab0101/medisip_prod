@@ -9,13 +9,13 @@
     "src/app/booking/[token]/page.tsx:119"
   ],
   ". SMS tests expire after 15 minutes.": [
-    "src/features/notifications/message-form.tsx:111"
+    "src/features/notifications/message-form.tsx:113"
   ],
   ". The customer name and shop are filled automatically when preparing a message.": [
     "src/features/notifications/template-editor.tsx:59"
   ],
   "· Credit reduced": [
-    "src/app/(workspace)/bills/[id]/page.tsx:171"
+    "src/app/(workspace)/bills/[id]/page.tsx:177"
   ],
   "· Drug licence:": [
     "src/app/(workspace)/bills/[id]/page.tsx:75"
@@ -24,10 +24,10 @@
     "src/app/(workspace)/notifications/templates/page.tsx:35"
   ],
   "· Refund by": [
-    "src/app/(workspace)/bills/[id]/page.tsx:172"
+    "src/app/(workspace)/bills/[id]/page.tsx:178"
   ],
   "· Total": [
-    "src/app/(workspace)/bills/[id]/page.tsx:169"
+    "src/app/(workspace)/bills/[id]/page.tsx:175"
   ],
   "· Visit fee:": [
     "src/app/booking/[token]/page.tsx:117"
@@ -72,7 +72,7 @@
     "src/app/(workspace)/appointments/page.tsx:91"
   ],
   "+ Broadcast": [
-    "src/app/(workspace)/notifications/page.tsx:83"
+    "src/app/(workspace)/notifications/page.tsx:85"
   ],
   "+ New bill": [
     "src/app/(workspace)/bills/page.tsx:66",
@@ -122,7 +122,7 @@
     "src/app/(workspace)/stock/page.tsx:112"
   ],
   "Action / details": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:141"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:147"
   ],
   "Active": [
     "src/app/(workspace)/appointments/doctors/page.tsx:28",
@@ -180,7 +180,7 @@
     "src/app/(workspace)/suppliers/page.tsx:46"
   ],
   "Add your own contact and consent first": [
-    "src/features/notifications/message-form.tsx:109"
+    "src/features/notifications/message-form.tsx:111"
   ],
   "Add your supplier first": [
     "src/app/(workspace)/settings/setup/page.tsx:123"
@@ -203,16 +203,16 @@
     "src/app/(workspace)/stock/page.tsx:69"
   ],
   "All broadcasts": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:56"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:57"
   ],
   "All channels": [
-    "src/app/(workspace)/notifications/page.tsx:111"
+    "src/app/(workspace)/notifications/page.tsx:113"
   ],
   "All customers who agreed to this channel": [
     "src/features/notifications/broadcast-form.tsx:202"
   ],
   "All statuses": [
-    "src/app/(workspace)/notifications/page.tsx:122"
+    "src/app/(workspace)/notifications/page.tsx:124"
   ],
   "Amount": [
     "src/app/(workspace)/bills/[id]/page.tsx:96"
@@ -225,7 +225,7 @@
     "src/features/notifications/broadcast-form.tsx:85"
   ],
   "Apply": [
-    "src/components/shared/language-switch.tsx:22"
+    "src/components/shared/language-switch.tsx:23"
   ],
   "Appointments": [
     "src/app/(workspace)/appointments/doctors/page.tsx:19",
@@ -429,15 +429,18 @@
   ],
   "Channel": [
     "src/app/(workspace)/notifications/broadcast/page.tsx:85",
-    "src/app/(workspace)/notifications/page.tsx:152",
-    "src/features/notifications/message-form.tsx:184",
+    "src/app/(workspace)/notifications/page.tsx:154",
+    "src/features/notifications/message-form.tsx:186",
     "src/features/notifications/template-editor.tsx:34"
+  ],
+  "Check Evolution Go for delivery. Resending is blocked while the result is uncertain.": [
+    "src/app/(workspace)/notifications/page.tsx:213"
   ],
   "Check expiry: a batch expires within 30 days.": [
     "src/features/billing/cart-table.tsx:63"
   ],
   "Check SMSGate for delivery. Resending is blocked while the result is uncertain.": [
-    "src/app/(workspace)/notifications/page.tsx:206"
+    "src/app/(workspace)/notifications/page.tsx:212"
   ],
   "Checking…": [
     "src/features/notifications/manual-broadcast-button.tsx:41"
@@ -472,17 +475,20 @@
   "Choose what each person can do in this shop.": [
     "src/app/(workspace)/settings/staff/page.tsx:19"
   ],
-  "Choose your own saved customer record with consent for this channel. Enter your own number for SMS/WhatsApp; email tests must match your staff sign-in email. Nothing is sent until you prepare the test. SMS tests are queued; WhatsApp and email open for you to send manually.": [
-    "src/features/notifications/message-form.tsx:102"
+  "Choose your own saved customer record with consent for this channel. Enter your own number for SMS/WhatsApp; email tests must match your staff sign-in email. Preparing a test queues SMS, and queues WhatsApp when Evolution Go is enabled; otherwise WhatsApp and email open for you to send manually.": [
+    "src/features/notifications/message-form.tsx:104"
   ],
   "Clear": [
     "src/components/shared/page.tsx:35"
   ],
   "Confirm and queue SMS": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:97"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:98"
+  ],
+  "Confirm and queue WhatsApp": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:100"
   ],
   "Confirm manual broadcast": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:98"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:101"
   ],
   "Confirm order": [
     "src/app/(workspace)/purchases/orders/[id]/page.tsx:42"
@@ -497,7 +503,7 @@
     "src/features/stock/medicine-fields.tsx:84"
   ],
   "Connect SMSGate and enable SMS sending before confirming this broadcast.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:88"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:89"
   ],
   "Consent is checked before confirmation and again before sending. Announcements are sent between 8 AM and 9 PM. A doctor announcement expires when the visit ends.": [
     "src/features/notifications/broadcast-form.tsx:265"
@@ -506,7 +512,7 @@
     "src/app/booking/[token]/page.tsx:54"
   ],
   "Copy link": [
-    "src/features/receipts/share-panel.tsx:95"
+    "src/features/receipts/share-panel.tsx:163"
   ],
   "Correction / damage": [
     "src/app/(workspace)/stock/page.tsx:177"
@@ -539,7 +545,7 @@
     "src/app/(workspace)/settings/practice/page.tsx:44"
   ],
   "Create receipt link": [
-    "src/features/receipts/share-panel.tsx:45"
+    "src/features/receipts/share-panel.tsx:64"
   ],
   "Create your first bill": [
     "src/app/(workspace)/settings/setup/page.tsx:165"
@@ -557,12 +563,12 @@
   "Customer": [
     "src/app/(workspace)/appointments/page.tsx:204",
     "src/app/(workspace)/bills/page.tsx:107",
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:135",
-    "src/app/(workspace)/notifications/page.tsx:149",
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:141",
+    "src/app/(workspace)/notifications/page.tsx:151",
     "src/app/(workspace)/notifications/reminders/page.tsx:55",
     "src/features/appointments/booking-form.tsx:97",
     "src/features/billing/customer-picker.tsx:70",
-    "src/features/notifications/message-form.tsx:169"
+    "src/features/notifications/message-form.tsx:171"
   ],
   "Customer booking link": [
     "src/app/(workspace)/appointments/booking-link/page.tsx:37"
@@ -580,7 +586,7 @@
     "src/features/billing/held-bills.tsx:73"
   ],
   "Customer receipt link": [
-    "src/features/receipts/share-panel.tsx:78"
+    "src/features/receipts/share-panel.tsx:98"
   ],
   "Customers": [
     "src/app/(workspace)/customers/page.tsx:41",
@@ -602,7 +608,7 @@
     "src/app/(workspace)/appointments/page.tsx:173",
     "src/app/(workspace)/bills/page.tsx:110",
     "src/app/(workspace)/customers/[id]/page.tsx:163",
-    "src/app/(workspace)/notifications/page.tsx:158",
+    "src/app/(workspace)/notifications/page.tsx:160",
     "src/app/(workspace)/purchases/page.tsx:120",
     "src/app/booking/[token]/page.tsx:101",
     "src/features/appointments/booking-form.tsx:87",
@@ -628,7 +634,7 @@
     "src/features/delivery/create-form.tsx:28"
   ],
   "Details": [
-    "src/app/(workspace)/notifications/page.tsx:161"
+    "src/app/(workspace)/notifications/page.tsx:163"
   ],
   "disable": [
     "src/app/(workspace)/appointments/booking-link/page.tsx:53"
@@ -637,7 +643,7 @@
     "src/app/(workspace)/appointments/booking-link/page.tsx:59"
   ],
   "Disable shared links": [
-    "src/features/receipts/share-panel.tsx:72"
+    "src/features/receipts/share-panel.tsx:92"
   ],
   "Disabled": [
     "src/app/(workspace)/appointments/booking-link/page.tsx:33"
@@ -715,7 +721,7 @@
     "src/app/(workspace)/settings/setup/page.tsx:187"
   ],
   "eligible customers": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:65"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:66"
   ],
   "Email": [
     "src/app/(workspace)/customers/page.tsx:82",
@@ -730,7 +736,7 @@
     "src/features/notifications/broadcast-form.tsx:106"
   ],
   "Email — send manually": [
-    "src/features/notifications/message-form.tsx:198"
+    "src/features/notifications/message-form.tsx:200"
   ],
   "Email (optional)": [
     "src/app/(workspace)/customers/page.tsx:64"
@@ -754,7 +760,7 @@
     "src/features/appointments/edit-form.tsx:130"
   ],
   "English": [
-    "src/components/shared/language-switch.tsx:17"
+    "src/components/shared/language-switch.tsx:18"
   ],
   "Enter a medicine name from the reviewed text": [
     "src/features/billing/ocr-panel.tsx:127"
@@ -816,7 +822,7 @@
     "src/features/stock/import-form.tsx:96"
   ],
   "Filter history": [
-    "src/app/(workspace)/notifications/page.tsx:132"
+    "src/app/(workspace)/notifications/page.tsx:134"
   ],
   "Find / add customer by phone": [
     "src/features/billing/customer-picker.tsx:84"
@@ -857,6 +863,9 @@
   "Get well soon.": [
     "src/app/(workspace)/bills/[id]/page.tsx:154"
   ],
+  "Go home": [
+    "src/app/_not-found.tsx:18"
+  ],
   "Go to billing": [
     "src/app/(workspace)/settings/practice/page.tsx:62"
   ],
@@ -889,10 +898,10 @@
     "src/app/(workspace)/stock/page.tsx:81"
   ],
   "History channel": [
-    "src/app/(workspace)/notifications/page.tsx:108"
+    "src/app/(workspace)/notifications/page.tsx:110"
   ],
   "History status": [
-    "src/app/(workspace)/notifications/page.tsx:119"
+    "src/app/(workspace)/notifications/page.tsx:121"
   ],
   "Hold / resume bills": [
     "src/features/billing/held-bills.tsx:55"
@@ -943,7 +952,7 @@
     "src/app/(workspace)/stock/transfers/page.tsx:130"
   ],
   "I reviewed this message and the recipients.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:104"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:107"
   ],
   "I understand and want to continue.": [
     "src/app/(workspace)/medicines/[id]/page.tsx:77"
@@ -997,7 +1006,7 @@
     "src/features/settings/shop-fields.tsx:52"
   ],
   "IST": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:75"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:76"
   ],
   "Learn with sample stock in a separate practice shop.": [
     "src/app/(workspace)/settings/practice/page.tsx:15"
@@ -1094,7 +1103,7 @@
   ],
   "Message": [
     "src/features/notifications/broadcast-form.tsx:185",
-    "src/features/notifications/message-form.tsx:223",
+    "src/features/notifications/message-form.tsx:225",
     "src/features/notifications/template-editor.tsx:45"
   ],
   "Message preferences": [
@@ -1104,13 +1113,13 @@
     "src/features/notifications/broadcast-form.tsx:258"
   ],
   "Message templates": [
-    "src/app/(workspace)/notifications/page.tsx:89",
+    "src/app/(workspace)/notifications/page.tsx:91",
     "src/app/(workspace)/notifications/templates/page.tsx:17"
   ],
   "Messages": [
     "src/app/(workspace)/layout.tsx:32",
     "src/app/(workspace)/notifications/broadcast/page.tsx:49",
-    "src/app/(workspace)/notifications/page.tsx:79",
+    "src/app/(workspace)/notifications/page.tsx:81",
     "src/app/(workspace)/notifications/templates/page.tsx:21"
   ],
   "Messages allowed": [
@@ -1135,7 +1144,7 @@
     "src/features/stock/purchase-form.tsx:96"
   ],
   "My phone number": [
-    "src/features/notifications/message-form.tsx:147"
+    "src/features/notifications/message-form.tsx:149"
   ],
   "Name": [
     "src/app/(workspace)/appointments/page.tsx:104",
@@ -1231,16 +1240,16 @@
     "src/app/(workspace)/stock/low/page.tsx:56"
   ],
   "No message history yet.": [
-    "src/app/(workspace)/notifications/page.tsx:140"
+    "src/app/(workspace)/notifications/page.tsx:142"
   ],
   "No messages match these filters.": [
-    "src/app/(workspace)/notifications/page.tsx:139"
+    "src/app/(workspace)/notifications/page.tsx:141"
   ],
   "No online payment or promotional messages. Contact the shop if you need to change or cancel your visit.": [
     "src/app/booking/[token]/page.tsx:181"
   ],
   "No personal contact record yet?": [
-    "src/features/notifications/message-form.tsx:107"
+    "src/features/notifications/message-form.tsx:109"
   ],
   "No purchases yet.": [
     "src/app/(workspace)/purchases/page.tsx:106"
@@ -1290,7 +1299,7 @@
   ],
   "Open message to send": [
     "src/features/notifications/manual-broadcast-button.tsx:20",
-    "src/features/notifications/message-form.tsx:264"
+    "src/features/notifications/message-form.tsx:266"
   ],
   "Open the original booking link and choose a date within the next 30 days.": [
     "src/app/booking/[token]/page.tsx:40"
@@ -1330,6 +1339,9 @@
   ],
   "Page": [
     "src/components/shared/page.tsx:63"
+  ],
+  "Page not found": [
+    "src/app/_not-found.tsx:10"
   ],
   "Pages": [
     "src/components/shared/page.tsx:56"
@@ -1391,14 +1403,14 @@
     "src/app/(workspace)/settings/page.tsx:57"
   ],
   "Prepare individual messages for me to send.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:108"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:113"
   ],
   "Prepare message": [
     "src/features/notifications/manual-broadcast-button.tsx:41",
-    "src/features/notifications/message-form.tsx:272"
+    "src/features/notifications/message-form.tsx:274"
   ],
   "Prepare test message": [
-    "src/features/notifications/message-form.tsx:271"
+    "src/features/notifications/message-form.tsx:273"
   ],
   "Prepare while connected. Open the counter once before going offline. Sync before closing the counter or clearing browser data. Cash, confirmed UPI/card, split payments and discounts work offline. Customer credit, loyalty and prescriptions use online billing.": [
     "src/app/(workspace)/offline/page.tsx:38"
@@ -1407,7 +1419,7 @@
     "src/features/notifications/broadcast-form.tsx:276"
   ],
   "Preparing…": [
-    "src/features/notifications/message-form.tsx:269",
+    "src/features/notifications/message-form.tsx:271",
     "src/features/offline/prepare-form.tsx:102"
   ],
   "Prescription": [
@@ -1429,13 +1441,13 @@
     "src/features/notifications/template-editor.tsx:68"
   ],
   "Preview customer receipt": [
-    "src/features/receipts/share-panel.tsx:103"
+    "src/features/receipts/share-panel.tsx:171"
   ],
   "Preview first. Nothing is saved until you confirm.": [
     "src/app/(workspace)/medicines/import/page.tsx:13"
   ],
   "Preview only: sending is disabled in practice mode.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:82"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:83"
   ],
   "Previous": [
     "src/components/shared/page.tsx:59"
@@ -1471,7 +1483,7 @@
     "src/features/notifications/template-editor.tsx:90"
   ],
   "Promotional message (8 AM–9 PM only)": [
-    "src/features/notifications/message-form.tsx:244"
+    "src/features/notifications/message-form.tsx:246"
   ],
   "Public booking is disabled in practice shops.": [
     "src/app/(workspace)/appointments/booking-link/page.tsx:27"
@@ -1507,10 +1519,13 @@
     "src/app/(workspace)/stock/page.tsx:158"
   ],
   "Queue it for sending.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:107"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:110"
+  ],
+  "Queue it for WhatsApp delivery.": [
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:112"
   ],
   "Queue retry": [
-    "src/app/(workspace)/notifications/page.tsx:190"
+    "src/app/(workspace)/notifications/page.tsx:196"
   ],
   "Quick help": [
     "src/app/(workspace)/help/page.tsx:50",
@@ -1530,7 +1545,7 @@
     "src/features/stock/import-form.tsx:113"
   ],
   "Ready. Open the message and send it yourself.": [
-    "src/features/notifications/message-form.tsx:72"
+    "src/features/notifications/message-form.tsx:75"
   ],
   "Reason": [
     "src/app/(workspace)/stock/history/page.tsx:74",
@@ -1560,7 +1575,7 @@
     "src/app/(workspace)/customers/[id]/page.tsx:82"
   ],
   "Recorded returns": [
-    "src/app/(workspace)/bills/[id]/page.tsx:164"
+    "src/app/(workspace)/bills/[id]/page.tsx:170"
   ],
   "Refill": [
     "src/app/(workspace)/notifications/reminders/page.tsx:77"
@@ -1640,10 +1655,13 @@
     "src/features/billing/held-bills.tsx:117"
   ],
   "Retry SMS": [
-    "src/app/(workspace)/notifications/page.tsx:186"
+    "src/app/(workspace)/notifications/page.tsx:190"
   ],
   "Retry this failed message for this customer.": [
-    "src/app/(workspace)/notifications/page.tsx:196"
+    "src/app/(workspace)/notifications/page.tsx:202"
+  ],
+  "Retry WhatsApp": [
+    "src/app/(workspace)/notifications/page.tsx:191"
   ],
   "Return items / void bill": [
     "src/features/billing/return-form.tsx:24"
@@ -1741,7 +1759,7 @@
   ],
   "Saving…": [
     "src/components/shared/action-form.tsx:30",
-    "src/components/shared/language-switch.tsx:22",
+    "src/components/shared/language-switch.tsx:23",
     "src/features/billing/billing-form.tsx:158"
   ],
   "Schedule from a customer’s page. Pending reminders can be cancelled here.": [
@@ -1754,7 +1772,7 @@
     "src/features/notifications/reminder-form.tsx:24"
   ],
   "Scheduled reminders": [
-    "src/app/(workspace)/notifications/page.tsx:93"
+    "src/app/(workspace)/notifications/page.tsx:95"
   ],
   "Search": [
     "src/app/(workspace)/bills/page.tsx:72",
@@ -1784,11 +1802,20 @@
   "Send by": [
     "src/features/notifications/broadcast-form.tsx:96"
   ],
+  "Send by SMS": [
+    "src/features/receipts/share-panel.tsx:124"
+  ],
+  "Send by WhatsApp": [
+    "src/features/receipts/share-panel.tsx:148"
+  ],
   "Send only to customers who have agreed to receive messages.": [
-    "src/app/(workspace)/notifications/page.tsx:80"
+    "src/app/(workspace)/notifications/page.tsx:82"
+  ],
+  "Sending needs an active customer, channel consent and an enabled provider.": [
+    "src/features/receipts/share-panel.tsx:176"
   ],
   "Sending window starts": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:71"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:72"
   ],
   "Set up your shop": [
     "src/app/(workspace)/settings/setup/page.tsx:55"
@@ -1810,7 +1837,7 @@
     "src/app/(workspace)/bills/[id]/page.tsx:132"
   ],
   "Share receipt securely": [
-    "src/features/receipts/share-panel.tsx:14"
+    "src/features/receipts/share-panel.tsx:32"
   ],
   "Shop": [
     "src/app/(workspace)/layout.tsx:57"
@@ -1857,7 +1884,7 @@
     "src/app/(workspace)/help/page.tsx:51"
   ],
   "skipped for consent or contact details": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:68"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:69"
   ],
   "Slot length (minutes)": [
     "src/app/(workspace)/appointments/page.tsx:125",
@@ -1867,11 +1894,14 @@
     "src/app/(workspace)/customers/page.tsx:74",
     "src/app/(workspace)/customers/[id]/page.tsx:122",
     "src/features/notifications/broadcast-form.tsx:101",
-    "src/features/notifications/message-form.tsx:193",
+    "src/features/notifications/message-form.tsx:195",
     "src/features/notifications/template-editor.tsx:36"
   ],
+  "SMS queued": [
+    "src/features/receipts/share-panel.tsx:124"
+  ],
   "SMS queued. Delivery status will update after the worker sends it.": [
-    "src/features/notifications/message-form.tsx:73"
+    "src/features/notifications/message-form.tsx:74"
   ],
   "SMS reminders need the customer’s consent. Times use India time; reminders outside 8 AM–9 PM move to the next morning.": [
     "src/features/notifications/reminder-form.tsx:20"
@@ -1901,8 +1931,8 @@
     "src/app/(workspace)/bills/page.tsx:113",
     "src/app/(workspace)/deliveries/page.tsx:92",
     "src/app/(workspace)/notifications/broadcast/page.tsx:91",
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:138",
-    "src/app/(workspace)/notifications/page.tsx:155",
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:144",
+    "src/app/(workspace)/notifications/page.tsx:157",
     "src/app/(workspace)/notifications/reminders/page.tsx:64",
     "src/app/(workspace)/purchases/orders/page.tsx:70"
   ],
@@ -1960,19 +1990,22 @@
     "src/app/(workspace)/notifications/broadcast/page.tsx:46"
   ],
   "Template": [
-    "src/features/notifications/message-form.tsx:116"
+    "src/features/notifications/message-form.tsx:118"
   ],
   "Temporary password": [
     "src/app/(workspace)/settings/staff/page.tsx:41"
   ],
   "Test a saved template": [
-    "src/features/notifications/message-form.tsx:97"
+    "src/features/notifications/message-form.tsx:99"
   ],
   "Test with my contact": [
     "src/app/(workspace)/notifications/templates/page.tsx:48"
   ],
-  "The customer gets a separate receipt-only page. It has no staff login, navigation or links to this app. Links expire in 30 days.": [
-    "src/features/receipts/share-panel.tsx:20"
+  "The customer gets a separate receipt-only page. It has no staff login, navigation or links to this app. Links expire after 24 hours.": [
+    "src/features/receipts/share-panel.tsx:38"
+  ],
+  "The page you're looking for doesn't exist or has been moved.": [
+    "src/app/_not-found.tsx:13"
   ],
   "These are my contact details, and the shop may contact me about this appointment.": [
     "src/app/booking/[token]/page.tsx:174"
@@ -1984,7 +2017,7 @@
     "src/app/(workspace)/medicines/[id]/page.tsx:71"
   ],
   "This is my own contact record, and I agree to receive this test.": [
-    "src/features/notifications/message-form.tsx:161"
+    "src/features/notifications/message-form.tsx:163"
   ],
   "This makes the medicine available for new bills and purchases again.": [
     "src/app/(workspace)/medicines/[id]/page.tsx:72"
@@ -2113,10 +2146,16 @@
     "src/features/notifications/broadcast-form.tsx:103"
   ],
   "WhatsApp — send manually": [
-    "src/features/notifications/message-form.tsx:195"
+    "src/features/notifications/message-form.tsx:197"
   ],
   "WhatsApp and email open one customer at a time. You send the message in that app; delivery is not tracked here.": [
-    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:117"
+    "src/app/(workspace)/notifications/broadcast/[id]/page.tsx:123"
+  ],
+  "WhatsApp message queued. Check its status below.": [
+    "src/features/notifications/message-form.tsx:73"
+  ],
+  "WhatsApp queued": [
+    "src/features/receipts/share-panel.tsx:148"
   ],
   "When": [
     "src/app/(workspace)/stock/history/page.tsx:65"
@@ -2126,7 +2165,7 @@
   ],
   "Write your own": [
     "src/features/notifications/broadcast-form.tsx:91",
-    "src/features/notifications/message-form.tsx:134"
+    "src/features/notifications/message-form.tsx:136"
   ],
   "yes": [
     "src/app/(workspace)/settings/practice/page.tsx:50"
@@ -2135,7 +2174,7 @@
     "src/app/booking/[token]/page.tsx:150"
   ],
   "Your own mobile number": [
-    "src/features/notifications/message-form.tsx:153"
+    "src/features/notifications/message-form.tsx:155"
   ],
   "Your pharmacy at a glance.": [
     "src/app/(workspace)/dashboard/page.tsx:63"
@@ -2156,6 +2195,6 @@
     "src/app/login/page.tsx:29"
   ],
   "Your shop name is added automatically.": [
-    "src/features/notifications/message-form.tsx:233"
+    "src/features/notifications/message-form.tsx:235"
   ]
 }

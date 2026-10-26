@@ -16,6 +16,7 @@ const password = randomBytes(24).toString("base64url");
 const prisma = new PrismaClient();
 try {
   await prisma.$executeRawUnsafe(`CREATE USER '${username}'@'%' IDENTIFIED BY '${password}'`);
+  // The viewer is read-only. Link previews and customer retries must not consume links.
   await prisma.$executeRawUnsafe(`GRANT SELECT ON \`${database}\`.\`ReceiptShare\` TO '${username}'@'%'`);
   // TiDB gateway routes by cluster prefix; preserve it for the new SQL account.
   url.username = username;
@@ -23,5 +24,5 @@ try {
   url.searchParams.set("connection_limit", "2");
   writeFileSync(".env.receipts.local", `RECEIPT_DATABASE_URL=${url.toString()}\nRECEIPT_PUBLIC_URL=http://127.0.0.1:3002\nRECEIPT_PORT=3002\nRECEIPT_BIND=127.0.0.1\n`, { flag: "wx" });
   appendFileSync(".env.local", `\nRECEIPT_PUBLIC_URL=http://127.0.0.1:3002\nRECEIPT_TOKEN_SECRET=${randomBytes(32).toString("base64url")}\n`);
-  console.log("Created isolated receipt reader; credentials saved only in ignored local environment files.");
+  console.log("Created isolated receipt viewer; credentials saved only in ignored local environment files.");
 } catch (error) { console.error("Receipt reader setup failed.", error.code ?? "Review database permissions."); process.exitCode = 1; } finally { await prisma.$disconnect(); }

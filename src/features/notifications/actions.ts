@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Channel } from "@prisma/client";
 import { context } from "@/server/context";
 import { db } from "@/server/db";
+import { transaction } from "@/server/transaction";
 import { Permission } from "@/lib/permissions";
 import { BusinessError, friendlyError } from "@/lib/errors";
 import { id, operationId, phone } from "@/lib/validation";
@@ -11,6 +12,7 @@ import { saveResult, text } from "@/server/forms";
 import { manualMessage, promotionalSendAt } from "./content";
 import type { FormState } from "@/components/shared/action-form";
 import { fillTemplate } from "./template-content";
+import { evolutionGoSendingEnabled } from "./evolution-go";
 export async function prepareMessage(raw: unknown) {
   const ctx = await context(Permission.MESSAGES);
   const input = z
@@ -106,7 +108,9 @@ export async function prepareMessage(raw: unknown) {
       "The customer has not agreed to messages on this channel.",
     );
   const body = `${ctx.branch.name}: ${input.testMode ? "[TEST] " : ""}${input.body}${input.promotional ? " Reply STOP or contact the shop to opt out." : ""}`;
-  if (input.channel !== Channel.SMS) {
+  const sendWhatsAppAutomatically =
+    input.channel === Channel.WHATSAPP && evolutionGoSendingEnabled();
+  if (input.channel !== Channel.SMS && !sendWhatsAppAutomatically) {
     if (input.promotional && promotionalSendAt().getTime() > Date.now())
       throw new BusinessError(
         "Promotional messages can be sent between 8 AM and 9 PM.",
@@ -127,7 +131,7 @@ export async function prepareMessage(raw: unknown) {
         scheduledFor: new Date(),
       },
     });
-    return { url };
+    return { url, queued: false };
   }
   const runAt = input.promotional ? promotionalSendAt() : new Date();
   const testExpiry = new Date(Date.now() + 15 * 60000);
@@ -135,41 +139,60 @@ export async function prepareMessage(raw: unknown) {
     throw new BusinessError(
       "Test promotional SMS templates between 8 AM and 9 PM.",
     );
-  const queued = await db().job.upsert({
-    where: { key: `manual:${input.operationId}` },
-    create: {
-      key: `manual:${input.operationId}`,
-      type: "CUSTOM_SMS",
-      payload: {
-        branchId: ctx.branch.id,
-        customerId: customer.id,
-        body,
-        promotional: input.promotional,
-        templateKey,
-        ...(input.testMode ? { expiresAt: testExpiry.toISOString() } : {}),
+  const whatsapp = input.channel === Channel.WHATSAPP;
+  await transaction(async (tx) => {
+    const key = `${whatsapp ? "manual-whatsapp" : "manual"}:${input.operationId}`;
+    const queued = await tx.job.upsert({
+      where: { key },
+      create: {
+        key,
+        type: whatsapp ? "CUSTOM_WHATSAPP" : "CUSTOM_SMS",
+        payload: {
+          branchId: ctx.branch.id,
+          customerId: customer.id,
+          body,
+          promotional: input.promotional,
+          templateKey,
+          ...(input.testMode ? { expiresAt: testExpiry.toISOString() } : {}),
+        },
+        runAt,
       },
-      runAt,
-    },
-    update: {},
+      update: {},
+    });
+    const prior = z
+      .object({
+        branchId: z.string(),
+        customerId: z.string(),
+        body: z.string(),
+        promotional: z.boolean(),
+      })
+      .parse(queued.payload);
+    if (
+      prior.branchId !== ctx.branch.id ||
+      prior.customerId !== customer.id ||
+      prior.body !== body ||
+      prior.promotional !== input.promotional
+    )
+      throw new BusinessError(
+        "This submission already prepared a different message. Reload before preparing a new message.",
+      );
+    if (whatsapp)
+      await tx.notificationLog.upsert({
+        where: { id: queued.id },
+        create: {
+          id: queued.id,
+          branchId: ctx.branch.id,
+          customerId: customer.id,
+          channel: Channel.WHATSAPP,
+          templateKey,
+          payload: { body },
+          status: "QUEUED",
+          scheduledFor: runAt,
+        },
+        update: {},
+      });
   });
-  const prior = z
-    .object({
-      branchId: z.string(),
-      customerId: z.string(),
-      body: z.string(),
-      promotional: z.boolean(),
-    })
-    .parse(queued.payload);
-  if (
-    prior.branchId !== ctx.branch.id ||
-    prior.customerId !== customer.id ||
-    prior.body !== body ||
-    prior.promotional !== input.promotional
-  )
-    throw new BusinessError(
-      "This submission already prepared a different message. Reload before preparing a new message.",
-    );
-  return { url: "" };
+  return { url: "", queued: true };
 }
 export async function prepareMessageForForm(raw: unknown) {
   try {
@@ -179,6 +202,7 @@ export async function prepareMessageForForm(raw: unknown) {
   } catch (error) {
     return {
       url: "",
+      queued: false,
       error:
         error instanceof z.ZodError
           ? (error.issues[0]?.message ?? "Check the message fields.")

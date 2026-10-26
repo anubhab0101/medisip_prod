@@ -6,6 +6,7 @@ import { Permission } from "@/lib/permissions";
 import { id, operationId } from "@/lib/validation";
 import { BusinessError } from "@/lib/errors";
 import { promotionalSendAt } from "./content";
+import { createJob } from "@/server/jobs/queue";
 export async function scheduleReminder(raw: unknown) {
   const ctx = await context(Permission.MESSAGES);
   const input = z
@@ -77,19 +78,17 @@ export async function scheduleReminder(raw: unknown) {
       if ((balance._sum.amountPaise ?? 0) <= 0)
         throw new BusinessError("This customer has no outstanding credit.");
     }
-    const job = await tx.job.create({
-      data: {
-        key: `reminder:${input.operationId}`,
-        type: input.kind === "REFILL" ? "REFILL_REMINDER" : "CREDIT_REMINDER",
-        payload: {
-          branchId: ctx.branch.id,
-          customerId: customer.id,
-          reminderId: input.operationId,
-          promotional: true,
-        },
-        runAt,
+    const job = await createJob(
+      `reminder:${input.operationId}`,
+      input.kind === "REFILL" ? "REFILL_REMINDER" : "CREDIT_REMINDER",
+      {
+        branchId: ctx.branch.id,
+        customerId: customer.id,
+        reminderId: input.operationId,
+        promotional: true,
       },
-    });
+      runAt,
+    );
     await tx.auditLog.create({
       data: {
         branchId: ctx.branch.id,

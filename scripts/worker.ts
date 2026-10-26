@@ -8,7 +8,11 @@ async function main() {
   const maintenanceOnly = process.argv.includes("--maintenance-only");
   if (process.argv.includes("--once")) {
     console.log(await runMaintenance());
-    if (!maintenanceOnly && process.env.SMS_SEND_ENABLED === "true") {
+    if (
+      !maintenanceOnly &&
+      (process.env.SMS_SEND_ENABLED === "true" ||
+        process.env.EVOLUTION_GO_SEND_ENABLED === "true")
+    ) {
       await workOnce();
       await pollStatuses();
     }
@@ -38,7 +42,8 @@ async function main() {
         i < 20 &&
         !stopping &&
         !maintenanceOnly &&
-        process.env.SMS_SEND_ENABLED === "true";
+        (process.env.SMS_SEND_ENABLED === "true" ||
+          process.env.EVOLUTION_GO_SEND_ENABLED === "true");
         i++
       ) {
         if (!(await workOnce())) break;

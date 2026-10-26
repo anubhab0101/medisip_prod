@@ -1,9 +1,11 @@
 import { z } from "zod";
+import { getSmsGateConfig } from "@/lib/secret-manager";
 export class ProviderError extends Error {
   constructor(
     message: string,
     public readonly retryable: boolean,
     public readonly uncertain = false,
+    public readonly retryAfterMs?: number,
   ) {
     super(message);
   }
@@ -21,25 +23,14 @@ const resultSchema = z.object({
   ]),
 });
 export type SmsResult = z.infer<typeof resultSchema>;
-function configuration() {
-  const base =
-    process.env.SMSGATE_URL ?? "https://api.sms-gate.app/3rdparty/v1";
-  if (new URL(base).protocol !== "https:")
-    throw new ProviderError("SMS endpoint must use HTTPS.", false);
-  const user = process.env.SMSGATE_USERNAME;
-  const password = process.env.SMSGATE_PASSWORD;
-  if (!user || !password)
-    throw new ProviderError("SMS account is not configured.", false);
-  return {
-    base: base.replace(/\/$/, ""),
-    authorization: `Basic ${Buffer.from(`${user}:${password}`).toString("base64")}`,
-  };
+async function getConfig() {
+  return getSmsGateConfig();
 }
 export async function smsStatus(
   id: string,
   request: typeof fetch = fetch,
 ): Promise<SmsResult | null> {
-  const { base, authorization } = configuration();
+  const { base, authorization } = await getConfig();
   const response = await request(`${base}/messages/${encodeURIComponent(id)}`, {
     headers: { Authorization: authorization },
     signal: AbortSignal.timeout(15000),
@@ -55,7 +46,7 @@ export async function sendSms(
 ): Promise<SmsResult> {
   if (process.env.SMS_SEND_ENABLED !== "true")
     throw new ProviderError("Live SMS sending is disabled.", false);
-  const { base, authorization } = configuration();
+  const { base, authorization } = await getConfig();
   let response: Response;
   try {
     response = await request(`${base}/messages`, {

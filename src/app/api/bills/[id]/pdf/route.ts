@@ -3,12 +3,20 @@ import { db } from "@/server/db";
 import { Permission, can } from "@/lib/permissions";
 import { invoicePdf } from "@/features/billing/invoice-pdf";
 import { pdfResponse } from "@/server/pdf";
+import { validateCsrfToken, getCsrfTokenFromRequest } from "@/lib/csrf";
 
 export const runtime = "nodejs";
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const csrfToken = await getCsrfTokenFromRequest(request);
+  if (!(await validateCsrfToken(csrfToken))) {
+    return Response.json(
+      { error: "Invalid CSRF token." },
+      { status: 403, headers: { "Cache-Control": "no-store" } },
+    );
+  }
   const ctx = await context();
   if (!can(ctx.role, Permission.BILL) || ctx.branch.demo)
     return Response.json(

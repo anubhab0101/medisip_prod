@@ -5,17 +5,27 @@ import { receiptHandler } from "../src/features/receipts/http";
 try {
   process.loadEnvFile(".env.receipts.local");
 } catch {}
-const databaseUrl = process.env.RECEIPT_DATABASE_URL;
+const rawDatabaseUrl = process.env.RECEIPT_DATABASE_URL;
 const publicUrl = process.env.RECEIPT_PUBLIC_URL;
-if (!databaseUrl || !publicUrl)
+if (!rawDatabaseUrl || !publicUrl)
   throw new Error("Configure the isolated receipt service environment.");
+function enforceTls(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!u.searchParams.has("sslmode")) u.searchParams.set("sslmode", "verify-full");
+    if (!u.searchParams.has("sslaccept")) u.searchParams.set("sslaccept", "strict");
+    return u.toString();
+  } catch { return url; }
+}
+const databaseUrl = process.env.NODE_ENV === "production" ? enforceTls(rawDatabaseUrl) : rawDatabaseUrl;
 const prisma = new PrismaClient({ datasourceUrl: databaseUrl });
 const handler = receiptHandler(async (tokenHash) => {
   const row = await prisma.receiptShare.findFirst({
     where: { tokenHash, revokedAt: null, expiresAt: { gt: new Date() } },
-    select: { snapshot: true },
+    select: { snapshot: true, id: true },
   });
-  return row?.snapshot ?? null;
+  if (!row) return null;
+  return row.snapshot;
 }, new URL(publicUrl).host);
 const server = createServer(handler);
 server.requestTimeout = 15000;

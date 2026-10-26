@@ -1,19 +1,27 @@
 "use server";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { context } from "@/server/context";
 import { redirect } from "next/navigation";
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  const forwarded = h.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return h.get("x-real-ip") ?? "unknown";
+}
 export async function loginAction(_state: { error: string }, form: FormData) {
   if (!process.env.DATABASE_URL || !process.env.AUTH_SECRET)
     return {
       error:
         "Shop setup is not finished. Ask the owner to connect the database and configure sign-in.",
     };
+  const ip = await getClientIp();
   try {
     await signIn("credentials", {
       email: form.get("email"),
       password: form.get("password"),
+      ip,
       redirectTo: "/dashboard",
     });
   } catch (error) {

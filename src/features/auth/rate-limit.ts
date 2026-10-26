@@ -2,11 +2,13 @@ import "server-only";
 import { createHash } from "node:crypto";
 import type { LoginAttempt } from "@prisma/client";
 import { db } from "@/server/db";
-const loginKey = (email: string) =>
-  createHash("sha256").update(email.toLowerCase()).digest("hex");
+
+const loginKey = (email: string, ip: string) =>
+  createHash("sha256").update(`${email.toLowerCase()}:${ip}`).digest("hex");
+
 /** Atomic insert plus locking read: simultaneous first attempts cannot race. */
-export async function consumeLoginAttempt(email: string) {
-  const key = loginKey(email);
+export async function consumeLoginAttempt(email: string, ip: string) {
+  const key = loginKey(email, ip);
   const resetsAt = new Date(Date.now() + 15 * 60_000);
   return db().$transaction(async (tx) => {
     await tx.$executeRaw`INSERT INTO LoginAttempt (\`key\`, attempts, resetsAt) VALUES (${key},0,${resetsAt}) ON DUPLICATE KEY UPDATE \`key\`=\`key\``;
@@ -22,9 +24,10 @@ export async function consumeLoginAttempt(email: string) {
     return true;
   });
 }
-export async function clearLoginAttempts(email: string) {
+
+export async function clearLoginAttempts(email: string, ip: string) {
   await db().loginAttempt.updateMany({
-    where: { key: loginKey(email) },
+    where: { key: loginKey(email, ip) },
     data: { attempts: 0 },
   });
 }

@@ -19,5 +19,5 @@ const loadContext=cache(async()=>{
  const member=memberships.find(m=>m.branchId===jar.get("medishop.branch")?.value)??memberships[0];
  return {user:{id:session.user.id,name:rows[0].userName,email:rows[0].userEmail,locale:rows[0].userLocale},role:member.role,branch:member.branch,memberships};
 });
-export async function context(permission?:PermissionName){const ctx=await loadContext();if(permission&&!can(ctx.role,permission))throw new BusinessError("You do not have permission to do that. Ask the owner for help.");return ctx;}
+export async function context(permission?:PermissionName){const ctx=await loadContext();if(permission&&!can(ctx.role,permission))throw new BusinessError("You do not have permission to do that. Ask the owner for help.", "PERMISSION_DENIED", 403);return ctx;}
 export type AppContext=Awaited<ReturnType<typeof context>>;

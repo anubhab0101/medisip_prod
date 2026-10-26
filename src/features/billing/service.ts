@@ -38,6 +38,7 @@ export async function checkout(
       if (!device)
         throw new BusinessError(
           "Offline counter is unavailable for this staff account.",
+          "UNAVAILABLE",
         );
       checkDeviceSecret(device, offline.secret);
       const [recorded] = await tx.$queryRaw<
@@ -50,12 +51,14 @@ export async function checkout(
         )
           throw new BusinessError(
             "Offline bill identity was reused with different contents.",
+            "CONFLICT",
           );
         return recorded.saleId;
       }
       if (!device.active)
         throw new BusinessError(
           "This offline counter was closed. Reconcile this bill with the owner.",
+          "EXPIRED",
         );
       if (
         input.customerId ||
@@ -65,12 +68,14 @@ export async function checkout(
       )
         throw new BusinessError(
           "Offline bills need reserved stock and walk-in payments. Customer credit and loyalty require online billing.",
+          "VALIDATION_ERROR",
         );
       if (
         input.payments.some((p) => p.method !== "CASH" && !p.reference.trim())
       )
         throw new BusinessError(
           "Enter the independently confirmed UPI/card payment reference before syncing.",
+          "VALIDATION_ERROR",
         );
     }
     const previous = await tx.sale.findUnique({
@@ -78,14 +83,15 @@ export async function checkout(
     });
     if (previous) {
       if (offline)
-        throw new BusinessError("This bill identity was already used online.");
+        throw new BusinessError("This bill identity was already used online.", "CONFLICT");
       if (previous.branchId !== ctx.branch.id)
-        throw new BusinessError("This request belongs to another shop.");
+        throw new BusinessError("This request belongs to another shop.", "CONFLICT");
       return previous.id;
     }
     if (!ctx.branch.name || !ctx.branch.address || !ctx.branch.drugLicenseNo)
       throw new BusinessError(
         "Ask the owner to finish shop details before making a bill.",
+        "VALIDATION_ERROR",
       );
     const customer = input.customerId
       ? await tx.customer.findFirst({
@@ -340,20 +346,6 @@ export async function checkout(
           },
         });
     }
-    // Durable outbox: no provider request occurs in checkout. Worker processes after commit.
-    if (customer?.consentSms && !ctx.branch.demo)
-      await tx.job.create({
-        data: {
-          key: `receipt:${sale.id}`,
-          type: "SALE_RECEIPT",
-          payload: {
-            branchId: ctx.branch.id,
-            customerId: customer.id,
-            saleId: sale.id,
-          },
-          runAt: new Date(),
-        },
-      });
     await tx.heldBill.deleteMany({
       where: {
         id: input.operationId,

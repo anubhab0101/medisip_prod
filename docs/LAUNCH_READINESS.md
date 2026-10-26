@@ -2,7 +2,7 @@
 
 ## Current result
 
-The local release candidate passes its current unit, lint, TypeScript and production-build checks. It is not deployed and is not yet cleared for live customer use. The Render Blueprint is prepared, but this workspace has no Git repository or remote, so Render cannot read or deploy it yet.
+The local release candidate passes its current unit, lint, TypeScript, Prisma schema and production-build checks. The GitHub `main` branch is pushed and synced with this checkout. It is not deployed and is not yet cleared for live customer use. The Render Blueprint is prepared. Render access is connected; the workspace currently has two unrelated web services, with no MediShop service, Postgres instance, or Key Value instance.
 
 ## Already implemented
 
@@ -26,8 +26,8 @@ The implementation log records earlier isolated TiDB/browser checks and a succes
 
 ## Launch blockers
 
-1. Create/push this project to a private GitHub, GitLab or Bitbucket repository. The current folder has no `.git` directory or remote.
-2. Configure Render's staff, worker and receipt services from `render.yaml`; attach the two separate public hostnames and set environment values in Render.
+1. Review Render pricing and approve the required MediShop service resources before creating them; the connected workspace has no MediShop resources yet.
+2. Review the service list and pricing, then configure staff, worker and receipt services from `render.yaml`; attach two separate public hostnames.
 3. Create a dedicated application database and limited runtime account in TiDB; use a separate read-only receipt account and migration account. Do not use the `sys` database or an administrative/root account for the app.
 4. Rotate the TiDB administrative password shared earlier in chat before using that account again. Keep all new credentials in Render's secret settings, never in this file or Git.
 5. Apply migrations to a fresh staging database and confirm production environment values, strict TLS, custom domains and receipt-host isolation.
@@ -39,7 +39,7 @@ The implementation log records earlier isolated TiDB/browser checks and a succes
 
 | Date | Target |
 |---|---|
-| Oct 24 | Push the private Git repo; rotate the exposed admin credential; provision staging TiDB users/database. |
+| Oct 24 | Reauthenticate Render; review service state/cost; rotate the exposed admin credential; provision staging TiDB users/database. |
 | Oct 25 | Create the three Render services from the Blueprint; add app and receipt domains and HTTPS. |
 | Oct 26 | Apply migrations; configure secrets and least-privilege grants; verify service startup and health. |
 | Oct 27 | Complete staging setup, medicine import, purchase, bill, payment, return and report workflows. |

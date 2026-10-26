@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getSecret } from "@/lib/secret-manager";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (
@@ -9,9 +10,10 @@ export async function middleware(request: NextRequest) {
     path.startsWith("/api/auth/")
   )
     return NextResponse.next();
+  const secret = await getSecret("AUTH_SECRET");
   const token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET,
+    secret,
     secureCookie:
       process.env.AUTH_URL?.startsWith("https://") ??
       request.nextUrl.protocol === "https:",

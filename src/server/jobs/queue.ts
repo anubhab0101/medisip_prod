@@ -3,6 +3,20 @@ import { randomUUID } from "node:crypto";
 import { JobStatus, type Job } from "@prisma/client";
 import { transaction } from "@/server/transaction";
 import { db } from "@/server/db";
+import { signJobPayload } from "@/lib/job-signature";
+
+export async function createJob(
+  key: string,
+  type: string,
+  payload: Record<string, unknown>,
+  runAt: Date = new Date(),
+) {
+  const signedPayload = { ...payload, _sig: signJobPayload(payload) };
+  return db().job.create({
+    data: { key, type, payload: signedPayload, runAt, status: JobStatus.PENDING },
+  });
+}
+
 export async function claimJob() {
   return transaction(async (tx) => {
     const now = new Date();
