@@ -43,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           email: user.email,
           sessionVersion: user.sessionVersion,
+          mustChangePassword: user.mustChangePassword,
         };
       },
     }),
@@ -52,6 +53,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.sub = user.id;
         token.sessionVersion = user.sessionVersion;
+        token.mustChangePassword = user.mustChangePassword;
       }
       return token;
     },
@@ -59,6 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.sub ?? "";
         session.user.sessionVersion = Number(token.sessionVersion ?? 0);
+        session.user.mustChangePassword = Boolean(token.mustChangePassword);
       }
       return session;
     },

@@ -121,6 +121,7 @@ it("submits eligible announcements once using a stable provider id", async () =>
   await workOnce();
   expect(mocks.send).toHaveBeenCalledExactlyOnceWith({
     id: job.id,
+    branchId: "shop",
     phone: "+919999999999",
     body: "Test announcement",
   });

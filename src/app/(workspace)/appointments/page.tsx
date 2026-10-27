@@ -9,6 +9,7 @@ import { ActionForm } from "@/components/shared/action-form";
 import { PageTitle, Empty } from "@/components/shared/page";
 import { doctorAction, statusAction } from "@/features/appointments/actions";
 import { BookingForm } from "@/features/appointments/booking-form";
+import { ChevronLeft, ChevronRight, CalendarDays, Clock3 } from "lucide-react";
 export default async function Appointments({
   searchParams,
 }: {
@@ -26,6 +27,13 @@ export default async function Appointments({
     : shopDate();
   const start = new Date(`${date}T00:00:00+05:30`);
   const week = params.view === "week";
+  const shiftDate = (offset: number) => {
+    const [year, month, day] = date.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day + offset))
+      .toISOString()
+      .slice(0, 10);
+  };
+  const viewQuery = week ? "view=week" : "view=day";
   const end = new Date(start.getTime() + (week ? 7 : 1) * 86400000);
   const doctors = await db().doctor.findMany({
     where: {
@@ -68,33 +76,30 @@ export default async function Appointments({
     <>
       <PageTitle
         title="Appointments"
-        description="Book a time and keep the day organised."
-        action={
-          can(ctx.role, Permission.APPOINTMENT) && (
-            <Link className="button secondary" href="/appointments/doctors">
-              <T>{"Doctors & hours"}</T>
-            </Link>
-          )
-        }
+        description="Book a visit, see who is coming, and update each appointment."
       />
-      {ctx.role === "OWNER" && (
-        <div className="toolbar">
+      <div className="appointment-shortcuts">
+        {ctx.role === "OWNER" && (
           <Link className="button secondary" href="/appointments/booking-link">
             <T>Public booking link</T>
           </Link>
-        </div>
-      )}
+        )}
+        {can(ctx.role, Permission.APPOINTMENT) && (
+          <Link className="button secondary" href="/appointments/doctors">
+            <T>{"Doctors & hours"}</T>
+          </Link>
+        )}
+      </div>
       {can(ctx.role, Permission.APPOINTMENT) && (
         <>
-          <details className="panel disclosure">
-            <summary>
-              <T>{"+ Book appointment"}</T>
-            </summary>
-            <div className="panel">
-              <BookingForm doctors={doctors} customers={customers} />
+          <section className="panel appointment-booking-card" id="appointment-booking">
+            <div className="appointment-section-heading">
+              <div className="appointment-heading-icon"><CalendarDays size={18} aria-hidden="true" /></div>
+              <div><h2><T>{"Book appointment"}</T></h2><p><T>{"Choose the doctor, customer and an available time."}</T></p></div>
             </div>
-          </details>
-          <details className="panel disclosure">
+            <BookingForm doctors={doctors} customers={customers} />
+          </section>
+          <details className="panel disclosure appointment-add-doctor">
             <summary>
               <T>{"+ Add doctor"}</T>
             </summary>
@@ -168,33 +173,37 @@ export default async function Appointments({
           </details>
         </>
       )}
-      <form className="toolbar">
-        <label>
-          <T>{"Date"}</T>
-          <input name="date" type="date" defaultValue={date} />
-        </label>
-        <label>
-          <T>{"View"}</T>
-          <select name="view" defaultValue={week ? "week" : "day"}>
-            <option value="day">
-              <T>{"Day"}</T>
-            </option>
-            <option value="week">
-              <T>{"7 days"}</T>
-            </option>
-          </select>
-        </label>
-        <button className="button secondary">
-          <T>{"Show"}</T>
-        </button>
-      </form>
+      <section className="panel appointment-schedule">
+        <div className="appointment-schedule-heading">
+          <div className="appointment-section-heading">
+            <div className="appointment-heading-icon"><Clock3 size={18} aria-hidden="true" /></div>
+            <div><h2><T>{"Schedule"}</T></h2><p><T>{"Appointments for "}</T>{date}</p></div>
+          </div>
+          <div className="appointment-date-nav">
+            <Link className="button secondary appointment-arrow" href={`/appointments?date=${shiftDate(week ? -7 : -1)}&${viewQuery}`} aria-label="Previous period"><ChevronLeft size={18} /></Link>
+            <Link className="button secondary appointment-today" href={`/appointments?date=${shopDate()}&view=day`}><T>{"Today"}</T></Link>
+            <Link className="button secondary appointment-arrow" href={`/appointments?date=${shiftDate(week ? 7 : 1)}&${viewQuery}`} aria-label="Next period"><ChevronRight size={18} /></Link>
+          </div>
+        </div>
+        <form className="toolbar appointment-filters">
+          <label>
+            <T>{"Date"}</T>
+            <input name="date" type="date" defaultValue={date} />
+          </label>
+          <label>
+            <T>{"View"}</T>
+            <select name="view" defaultValue={week ? "week" : "day"}>
+              <option value="day"><T>{"Day"}</T></option>
+              <option value="week"><T>{"7 days"}</T></option>
+            </select>
+          </label>
+          <button className="button secondary"><T>{"Show"}</T></button>
+        </form>
       {!appointments.length ? (
-        <Empty>
-          <T>{"No appointments on this date."}</T>
-        </Empty>
+        <Empty><T>{"No appointments on this date."}</T></Empty>
       ) : (
         <div className="table-wrap">
-          <table>
+          <table className="appointments-table">
             <thead>
               <tr>
                 <th>
@@ -214,7 +223,7 @@ export default async function Appointments({
             <tbody>
               {appointments.map((a) => (
                 <tr key={a.id}>
-                  <td>
+                  <td data-label="Time">
                     {new Intl.DateTimeFormat("en-IN", {
                       timeZone: "Asia/Kolkata",
                       weekday: week ? "short" : undefined,
@@ -224,12 +233,12 @@ export default async function Appointments({
                       minute: "2-digit",
                     }).format(a.startsAt)}
                   </td>
-                  <td>
+                  <td data-label="Customer">
                     {patients.find((c) => c.id === a.customerId)?.name ??
                       "Archived customer"}
                   </td>
-                  <td>{a.doctor.name}</td>
-                  <td>
+                  <td data-label="Doctor">{a.doctor.name}</td>
+                  <td data-label="Status" className="appointment-status-cell">
                     {can(ctx.role, Permission.APPOINTMENT) ? (
                       <ActionForm action={statusAction} label="Update">
                         <input type="hidden" name="id" value={a.id} />
@@ -260,6 +269,7 @@ export default async function Appointments({
           </table>
         </div>
       )}
+      </section>
     </>
   );
 }

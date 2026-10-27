@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 import { cookies, headers } from "next/headers";
 import { context } from "@/server/context";
 import { redirect } from "next/navigation";
+import { platformAdminEmails } from "@/lib/platform-admin";
 async function getClientIp(): Promise<string> {
   const h = await headers();
   const forwarded = h.get("x-forwarded-for");
@@ -17,12 +18,13 @@ export async function loginAction(_state: { error: string }, form: FormData) {
         "Shop setup is not finished. Ask the owner to connect the database and configure sign-in.",
     };
   const ip = await getClientIp();
+  const destination = platformAdminEmails().has(String(form.get("email") ?? "").trim().toLowerCase()) ? "/platform" : "/dashboard";
   try {
     await signIn("credentials", {
       email: form.get("email"),
       password: form.get("password"),
       ip,
-      redirectTo: "/dashboard",
+      redirect: false,
     });
   } catch (error) {
     if (error instanceof AuthError)
@@ -32,7 +34,7 @@ export async function loginAction(_state: { error: string }, form: FormData) {
       };
     throw error;
   }
-  return { error: "" };
+  redirect(destination);
 }
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });

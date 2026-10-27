@@ -27,7 +27,7 @@ export function ShareReceiptPanel({
   const [queued, setQueued] = useState<string[]>([]);
   const requestId = useRef(crypto.randomUUID());
   return (
-    <details className="panel disclosure no-print">
+    <details className="panel disclosure no-print receipt-share-panel">
       <summary>
         <T>{"Share receipt securely"}</T>
       </summary>
@@ -178,7 +178,7 @@ export function ShareReceiptPanel({
             )}
           </>
         )}
-        {message && <p role="status">{message}</p>}
+        {message && <p role="status" aria-live="polite" className="receipt-share-status">{message}</p>}
       </div>
     </details>
   );

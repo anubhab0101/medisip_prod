@@ -66,12 +66,18 @@ enum Channel {
   EMAIL
 }
 
+enum ProviderKind {
+  SMSGATE
+  EVOLUTION_GO
+}
+
 model User {
   id             String       @id @default(cuid())
   email          String       @unique @db.VarChar(191)
   name           String
   passwordHash   String
   active         Boolean      @default(true)
+  mustChangePassword Boolean   @default(false)
   sessionVersion Int          @default(1)
   locale         String       @default("en")
   createdAt      DateTime     @default(now())
@@ -100,6 +106,23 @@ model Branch {
   doctors            Doctor[]
   invoices           InvoiceCounter[]
   publicBookingLink  PublicBookingLink?
+  providerIntegrations ProviderIntegration[]
+}
+
+model ProviderIntegration {
+  id                String       @id @default(cuid())
+  branchId          String
+  provider          ProviderKind
+  enabled           Boolean      @default(false)
+  encryptedConfig   String       @db.Text
+  lastTestAt        DateTime?
+  lastTestStatus    String?      @db.VarChar(32)
+  lastTestMessage   String?      @db.VarChar(255)
+  updatedAt         DateTime     @updatedAt
+  branch            Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, provider])
+  @@index([branchId, enabled])
 }
 
 model PublicBookingLink {

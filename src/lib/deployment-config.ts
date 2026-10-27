@@ -41,6 +41,13 @@ export function deploymentProblems(env: Record<string, string | undefined>) {
       problems.push(
         `${key}: configure a new strong secret of at least 32 characters.`,
       );
+  if (!env.PLATFORM_ADMIN_EMAILS?.split(",").some((email) => {
+    const normalized = email.trim().toLowerCase();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) && !/(example\.(com|net|org)|\.test)$/.test(normalized);
+  }))
+    problems.push("PLATFORM_ADMIN_EMAILS: add at least one administrator email.");
+  if (!/^[A-Za-z0-9+/]{43}=$/.test(env.INTEGRATION_ENCRYPTION_KEY ?? ""))
+    problems.push("INTEGRATION_ENCRYPTION_KEY: configure the same base64 32-byte key on staff and worker services.");
   try {
     const database = new URL(env.DATABASE_URL ?? "");
     if (
@@ -75,20 +82,6 @@ export function deploymentProblems(env: Record<string, string | undefined>) {
     problems.push(
       "Backups require DAILY_BACKUP_ENABLED=true, durable BACKUP_DIRECTORY and a 32-byte base64 BACKUP_KEY.",
     );
-  if (env.SMS_SEND_ENABLED !== "true")
-    problems.push(
-      "Live SMS is disabled; provider delivery remains unverified.",
-    );
-  if (!env.SMSGATE_USERNAME || !env.SMSGATE_PASSWORD)
-    problems.push("SMSGate account credentials are missing.");
-  try {
-    if (
-      new URL(env.SMSGATE_URL ?? "https://api.sms-gate.app/3rdparty/v1")
-        .protocol !== "https:"
-    )
-      throw new Error();
-  } catch {
-    problems.push("SMSGATE_URL must use HTTPS.");
-  }
+  // Provider kill switches may intentionally remain off until a shop is configured and tested.
   return problems;
 }

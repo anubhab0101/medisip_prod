@@ -4,6 +4,9 @@ import { db } from "@/server/db";
 import { Permission } from "@/lib/permissions";
 import { ActionForm } from "@/components/shared/action-form";
 import { bookingLinkAction } from "@/features/public-booking/actions";
+import { PageTitle } from "@/components/shared/page";
+import Link from "next/link";
+import { ExternalLink, ShieldCheck } from "lucide-react";
 export default async function BookingLink() {
   const ctx = await context(Permission.SETTINGS);
   const link = await db().publicBookingLink.findUnique({
@@ -12,10 +15,8 @@ export default async function BookingLink() {
   const origin = new URL(process.env.APP_URL ?? "http://127.0.0.1:3000").origin;
   return (
     <>
-      <h1>
-        <T>{"Public booking link"}</T>
-      </h1>
-      <p>
+      <PageTitle title="Public booking link" description="Let customers request an appointment without signing in." action={<Link className="button secondary" href="/appointments"><T>{"Appointments"}</T></Link>} />
+      <p className="booking-link-intro">
         <T>
           {
             "Customers can book a doctor visit without signing in. Staff pages remain protected. Only enable this when you are ready to accept bookings."
@@ -27,24 +28,26 @@ export default async function BookingLink() {
           <T>{"Public booking is disabled in practice shops."}</T>
         </p>
       ) : (
-        <section className="panel stack">
-          <p>
-            <T>{"Status: "}</T>
-            <T>{link?.active ? "Enabled" : "Disabled"}</T>
-          </p>
+        <section className="panel public-link-panel">
+          <div className="public-link-status">
+            <span className="public-link-status-icon"><ExternalLink size={19} aria-hidden="true" /></span>
+            <div><strong><T>{"Customer booking page"}</T></strong><small><T>{"Status: "}</T><span className={link?.active ? "booking-status enabled" : "booking-status"}><T>{link?.active ? "Enabled" : "Disabled"}</T></span></small></div>
+          </div>
           {link?.active && (
             <label>
-              <T>{"Customer booking link"}</T>
+              <T>{"Share this link with customers"}</T>
               <input readOnly value={`${origin}/booking/${link.token}`} />
             </label>
           )}
-          <p>
+          <div className="booking-link-safety"><ShieldCheck size={17} aria-hidden="true" /><p>
             <T>
               {
                 "Bookings appear in Appointments. Phone numbers are not verified; confirm the visit with the customer. Public requests do not enable messaging consent or send automatic SMS."
               }
             </T>
-          </p>
+          </p></div>
+          <details className="booking-link-controls">
+            <summary><T>{"Change booking link"}</T></summary>
           <ActionForm action={bookingLinkAction} label="Update booking link">
             <label>
               <T>{"Action"}</T>
@@ -68,6 +71,7 @@ export default async function BookingLink() {
               <T>{"I confirm this change."}</T>
             </label>
           </ActionForm>
+          </details>
         </section>
       )}
     </>

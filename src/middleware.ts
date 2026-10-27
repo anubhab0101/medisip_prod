@@ -26,6 +26,10 @@ export async function middleware(request: NextRequest) {
       );
     return NextResponse.redirect(new URL("/login", request.url));
   }
+  if (token.mustChangePassword && path !== "/password/change" && !path.startsWith("/api/auth/")) {
+    if (path.startsWith("/api/")) return NextResponse.json({ error: "Password change required." }, { status: 403 });
+    return NextResponse.redirect(new URL("/password/change", request.url));
+  }
   // Pages and actions still reload active membership and role from the database.
   return NextResponse.next();
 }

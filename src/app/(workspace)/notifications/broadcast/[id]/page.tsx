@@ -1,7 +1,7 @@
 import { T } from "@/lib/i18n/provider";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Channel } from "@prisma/client";
+import { Channel, ProviderKind } from "@prisma/client";
 import { context } from "@/server/context";
 import { db } from "@/server/db";
 import { Permission } from "@/lib/permissions";
@@ -10,6 +10,8 @@ import { PageTitle, Pagination } from "@/components/shared/page";
 import { ActionForm } from "@/components/shared/action-form";
 import { confirmBroadcastAction } from "@/features/notifications/broadcast-actions";
 import { ManualBroadcastButton } from "@/features/notifications/manual-broadcast-button";
+import { branchProviderEnabled } from "@/lib/provider-integrations";
+import { evolutionGoSendingEnabled } from "@/features/notifications/evolution-go";
 export default async function BroadcastDetail({
   params,
   searchParams,
@@ -42,11 +44,12 @@ export default async function BroadcastDetail({
     },
     select: { id: true, name: true, phone: true },
   });
-  const smsReady =
-    process.env.SMS_SEND_ENABLED === "true" &&
-    !!process.env.SMSGATE_USERNAME &&
-    !!process.env.SMSGATE_PASSWORD;
-  const whatsappReady = process.env.EVOLUTION_GO_SEND_ENABLED === "true";
+  const [smsConfigured, whatsappConfigured] = await Promise.all([
+    branchProviderEnabled(ctx.branch.id, ProviderKind.SMSGATE),
+    branchProviderEnabled(ctx.branch.id, ProviderKind.EVOLUTION_GO),
+  ]);
+  const smsReady = process.env.SMS_SEND_ENABLED === "true" && smsConfigured;
+  const whatsappReady = evolutionGoSendingEnabled() && whatsappConfigured;
   return (
     <>
       <PageTitle

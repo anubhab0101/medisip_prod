@@ -1,5 +1,5 @@
 import "server-only";
-import { Channel, JobStatus } from "@prisma/client";
+import { Channel, JobStatus, ProviderKind } from "@prisma/client";
 import { z } from "zod";
 import { context } from "@/server/context";
 import { db } from "@/server/db";
@@ -9,6 +9,7 @@ import { BusinessError } from "@/lib/errors";
 import { signJobPayload } from "@/lib/job-signature";
 import { id } from "@/lib/validation";
 import { evolutionGoSendingEnabled } from "@/features/notifications/evolution-go";
+import { branchProviderEnabled } from "@/lib/provider-integrations";
 import { issueReceipt } from "./issuance";
 
 const inputSchema = z.object({
@@ -22,11 +23,13 @@ export async function queueReceiptDelivery(raw: unknown) {
   const input = inputSchema.parse(raw);
   if (ctx.branch.demo)
     throw new BusinessError("Messages are disabled in practice mode.");
-  if (input.channel === Channel.SMS && process.env.SMS_SEND_ENABLED !== "true")
+  const provider = input.channel === Channel.SMS ? ProviderKind.SMSGATE : ProviderKind.EVOLUTION_GO;
+  const shopProviderEnabled = await branchProviderEnabled(ctx.branch.id, provider);
+  if (input.channel === Channel.SMS && (process.env.SMS_SEND_ENABLED !== "true" || !shopProviderEnabled))
     throw new BusinessError("SMS sending is not enabled yet.", "UNAVAILABLE");
   if (
     input.channel === Channel.WHATSAPP &&
-    !evolutionGoSendingEnabled()
+    (!evolutionGoSendingEnabled() || !shopProviderEnabled)
   )
     throw new BusinessError("WhatsApp sending is not enabled yet.", "UNAVAILABLE");
 

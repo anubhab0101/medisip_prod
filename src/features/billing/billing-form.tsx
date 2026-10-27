@@ -1,5 +1,6 @@
 "use client";
 import { T } from "@/lib/i18n/provider";
+import { formatMoney } from "@/lib/money";
 
 import { LoyaltyPicker } from "@/features/loyalty/picker";
 import { useEffect, useRef } from "react";
@@ -86,14 +87,17 @@ export function BillingForm({
         className="billing-fieldset"
         disabled={bill.pending || bill.draftNotice}
       >
-        <MedicineSearch onAdd={addMedicine} />
-        <OcrPanel onAdd={addMedicine} />
         <form ref={formRef} onSubmit={bill.save}>
           <div className="billing-grid">
-            <section className="panel">
-              <CartTable cart={bill.cart} setCart={bill.setCart} />
-            </section>
-            <section className="panel stack">
+            <div className="billing-work-column">
+              <MedicineSearch onAdd={addMedicine} />
+              <OcrPanel onAdd={addMedicine} />
+              <section className="panel billing-cart-panel">
+                <h2><T>{"Items on this bill"}</T></h2>
+                <CartTable cart={bill.cart} setCart={bill.setCart} />
+              </section>
+            </div>
+            <section className="panel stack billing-checkout">
               <CustomerPicker
                 initial={customers}
                 value={bill.customerId}
@@ -138,19 +142,19 @@ export function BillingForm({
                   rate={loyalty.rate}
                 />
               )}
+              {bill.totals && <BillTotals totals={bill.totals} />}
               <PaymentFields
                 value={bill.payment}
                 onChange={bill.setPayment}
                 totalPaise={bill.totals?.totalPaise ?? 0}
               />
-              {bill.totals && <BillTotals totals={bill.totals} />}
               {(bill.error || bill.calculationError) && (
                 <p role="alert" className="error">
                   {bill.error || bill.calculationError}
                 </p>
               )}
               <button
-                className="button"
+                className="button billing-desktop-submit"
                 disabled={
                   bill.pending || !bill.totals || !!bill.calculationError
                 }
@@ -161,6 +165,19 @@ export function BillingForm({
                 <T>{"Prices and stock are checked again when you save."}</T>
               </small>
             </section>
+          </div>
+          <div className="billing-mobile-bar">
+            <div>
+              <span><T>{"Total"}</T></span>
+              <strong>{formatMoney(bill.totals?.totalPaise ?? 0)}</strong>
+            </div>
+            <button
+              type="submit"
+              className="button"
+              disabled={bill.pending || !bill.totals || !!bill.calculationError}
+            >
+              <T>{bill.pending ? "Saving…" : "Save bill"}</T>
+            </button>
           </div>
         </form>
       </fieldset>

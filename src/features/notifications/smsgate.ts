@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { getSmsGateConfig } from "@/lib/secret-manager";
+import { getBranchProviderConfig, validateProviderConfig } from "@/lib/provider-integrations";
+import { ProviderKind } from "@prisma/client";
 export class ProviderError extends Error {
   constructor(
     message: string,
@@ -23,14 +24,34 @@ const resultSchema = z.object({
   ]),
 });
 export type SmsResult = z.infer<typeof resultSchema>;
-async function getConfig() {
-  return getSmsGateConfig();
+export type SmsConfig = { username: string; password: string; deviceId?: string; baseUrl?: string };
+async function safeProviderRejection(response: Response, phone: string) {
+  const payload: unknown = await response.json().catch(() => null);
+  const data = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
+  const message = typeof data.message === "string" ? data.message : typeof data.error === "string" ? data.error : "";
+  if (!message) return "";
+  return message
+    .replace(/\+?\d[\d\s()-]{8,}\d/g, (value) => `***${value.replace(/\D/g, "").slice(-4)}`)
+    .replaceAll(phone, `***${phone.replace(/\D/g, "").slice(-4)}`)
+    .replace(/[\r\n\t]/g, " ")
+    .slice(0, 160);
+}
+async function getConfig(branchId: string, supplied?: SmsConfig) {
+  const source = supplied ?? await getBranchProviderConfig<SmsConfig>(branchId, ProviderKind.SMSGATE);
+  const saved = validateProviderConfig(ProviderKind.SMSGATE, source);
+  return {
+    base: (saved.baseUrl ?? "https://api.sms-gate.app/3rdparty/v1").replace(/\/$/, ""),
+    authorization: `Basic ${Buffer.from(`${saved.username}:${saved.password}`).toString("base64")}`,
+    deviceId: saved.deviceId,
+  };
 }
 export async function smsStatus(
   id: string,
+  branchId: string,
   request: typeof fetch = fetch,
+  suppliedConfig?: SmsConfig,
 ): Promise<SmsResult | null> {
-  const { base, authorization } = await getConfig();
+  const { base, authorization } = await getConfig(branchId, suppliedConfig);
   const response = await request(`${base}/messages/${encodeURIComponent(id)}`, {
     headers: { Authorization: authorization },
     signal: AbortSignal.timeout(15000),
@@ -41,12 +62,13 @@ export async function smsStatus(
   return resultSchema.parse(await response.json());
 }
 export async function sendSms(
-  input: { id: string; phone: string; body: string },
+  input: { id: string; branchId: string; phone: string; body: string },
   request: typeof fetch = fetch,
+  suppliedConfig?: SmsConfig,
 ): Promise<SmsResult> {
   if (process.env.SMS_SEND_ENABLED !== "true")
     throw new ProviderError("Live SMS sending is disabled.", false);
-  const { base, authorization } = await getConfig();
+  const { base, authorization, deviceId } = await getConfig(input.branchId, suppliedConfig);
   let response: Response;
   try {
     response = await request(`${base}/messages`, {
@@ -59,7 +81,7 @@ export async function sendSms(
         id: input.id,
         textMessage: { text: input.body },
         phoneNumbers: [input.phone],
-        deviceId: process.env.SMSGATE_DEVICE_ID || undefined,
+        deviceId: deviceId || undefined,
         withDeliveryReport: true,
         ttl: 86400,
       }),
@@ -73,7 +95,7 @@ export async function sendSms(
     );
   }
   if (response.status === 409) {
-    const existing = await smsStatus(input.id, request);
+    const existing = await smsStatus(input.id, input.branchId, request, suppliedConfig);
     if (existing) return existing;
     throw new ProviderError(
       "SMS request already exists; verify its status.",
@@ -81,11 +103,13 @@ export async function sendSms(
       true,
     );
   }
-  if (!response.ok)
+  if (!response.ok) {
+    const detail = await safeProviderRejection(response, input.phone);
     throw new ProviderError(
-      `SMS provider rejected the request (${response.status}).`,
+      `SMS provider rejected the request (${response.status}).${detail ? ` ${detail}` : ""}`,
       response.status === 429 || response.status >= 500,
     );
+  }
   try {
     return resultSchema.parse(await response.json());
   } catch {

@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { Channel, Prisma, type Broadcast, type Customer } from "@prisma/client";
+import { Channel, Prisma, ProviderKind, type Broadcast, type Customer } from "@prisma/client";
 import { context } from "@/server/context";
 import { db } from "@/server/db";
 import { transaction } from "@/server/transaction";
@@ -107,14 +107,14 @@ export async function confirmBroadcast(raw: unknown) {
     if (!broadcast)
       throw new BusinessError("Broadcast not found in this shop.");
     if (broadcast.status !== "DRAFT") return broadcast.id;
-    if (
-      broadcast.channel === Channel.SMS &&
-      (process.env.SMS_SEND_ENABLED !== "true" ||
-        !process.env.SMSGATE_USERNAME ||
-        !process.env.SMSGATE_PASSWORD)
-    )
+    const integration = broadcast.channel === Channel.SMS
+      ? await tx.providerIntegration.findUnique({ where: { branchId_provider: { branchId: ctx.branch.id, provider: ProviderKind.SMSGATE } }, select: { enabled: true } })
+      : broadcast.channel === Channel.WHATSAPP
+        ? await tx.providerIntegration.findUnique({ where: { branchId_provider: { branchId: ctx.branch.id, provider: ProviderKind.EVOLUTION_GO } }, select: { enabled: true } })
+        : null;
+    if (broadcast.channel === Channel.SMS && (process.env.SMS_SEND_ENABLED !== "true" || !integration?.enabled))
       throw new BusinessError(
-        "SMS sending is not configured yet. Ask the owner to connect SMSGate.",
+        "SMS sending is not enabled for this shop. Ask the platform admin to connect and test SMSGate.",
       );
     const runAt = promotionalSendAt();
     if (broadcast.expiresAt && broadcast.expiresAt <= runAt)
@@ -150,7 +150,7 @@ export async function confirmBroadcast(raw: unknown) {
       );
     const automatic =
       broadcast.channel === Channel.SMS ||
-      (broadcast.channel === Channel.WHATSAPP && evolutionGoSendingEnabled());
+      (broadcast.channel === Channel.WHATSAPP && evolutionGoSendingEnabled() && Boolean(integration?.enabled));
     const status = automatic ? "QUEUED" : "READY_FOR_MANUAL_SEND";
     await tx.notificationLog.updateMany({
       where: { id: { in: [...eligibleIds] } },

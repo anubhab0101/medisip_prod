@@ -7,11 +7,9 @@ import {
   renderTemplate,
 } from "../src/features/notifications/content";
 import { sendSms } from "../src/features/notifications/smsgate";
-import { SecretManager } from "@/lib/secret-manager";
 vi.mock("server-only", () => ({}));
 afterEach(() => {
   vi.unstubAllEnvs();
-  SecretManager.getInstance().clearCache();
 });
 describe("partial returns", () => {
   it("returns every paise exactly once across three refunds", () =>
@@ -74,17 +72,22 @@ describe("message controls", () => {
     vi.stubEnv("SMS_SEND_ENABLED", "false");
     const request = vi.fn();
     await expect(
-      sendSms({ id: "x", phone: "+919999999999", body: "Test" }, request),
+      sendSms({ id: "x", branchId: "shop-a", phone: "+919999999999", body: "Test" }, request),
     ).rejects.toThrow("disabled");
     expect(request).not.toHaveBeenCalled();
   });
+  it("shows a safe provider rejection reason without exposing the recipient", async () => {
+    vi.stubEnv("SMS_SEND_ENABLED", "true");
+    const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ message: "Invalid destination +919999999999" }), { status: 400 }));
+    await expect(
+      sendSms({ id: "x", branchId: "shop-a", phone: "+919999999999", body: "Test" }, request, { username: "test-user", password: "test-password-16-chars" }),
+    ).rejects.toThrow("Invalid destination ***9999");
+  });
   it("marks a timeout as uncertain, not safely retryable", async () => {
     vi.stubEnv("SMS_SEND_ENABLED", "true");
-    vi.stubEnv("SMSGATE_USERNAME", "test-user");
-    vi.stubEnv("SMSGATE_PASSWORD", "test-password-16-chars");
     const request = vi.fn().mockRejectedValue(new Error("timeout"));
     await expect(
-      sendSms({ id: "x", phone: "+919999999999", body: "Test" }, request),
+      sendSms({ id: "x", branchId: "shop-a", phone: "+919999999999", body: "Test" }, request, { username: "test-user", password: "test-password-16-chars" }),
     ).rejects.toMatchObject({ uncertain: true, retryable: false });
   });
 });

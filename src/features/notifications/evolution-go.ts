@@ -1,17 +1,21 @@
 import "server-only";
 import { z } from "zod";
 import { ProviderError } from "./smsgate";
-import { getEvolutionGoConfig } from "@/lib/secret-manager";
+import { getBranchProviderConfig, validateProviderConfig } from "@/lib/provider-integrations";
+import { ProviderKind } from "@prisma/client";
 
 export function evolutionGoSendingEnabled() {
   return process.env.EVOLUTION_GO_SEND_ENABLED === "true";
 }
 
-async function getConfig() {
+export type EvolutionConfig = { baseUrl: string; token: string };
+async function getConfig(branchId: string, supplied?: EvolutionConfig) {
   if (!evolutionGoSendingEnabled()) {
     throw new ProviderError("WhatsApp sending is disabled.", false);
   }
-  return getEvolutionGoConfig();
+  const source = supplied ?? await getBranchProviderConfig<EvolutionConfig>(branchId, ProviderKind.EVOLUTION_GO);
+  const saved = validateProviderConfig(ProviderKind.EVOLUTION_GO, source) as EvolutionConfig;
+  return { url: `${saved.baseUrl.replace(/\/$/, "")}/send/text`, apiKey: saved.token };
 }
 
 export function evolutionGoPhoneNumber(phone: string) {
@@ -35,10 +39,11 @@ const responseSchema = z.object({
 });
 
 export async function sendEvolutionGoText(
-  input: { phone: string; text: string },
+  input: { branchId: string; phone: string; text: string },
   request: typeof fetch = fetch,
+  suppliedConfig?: EvolutionConfig,
 ) {
-  const config = await getConfig();
+  const config = await getConfig(input.branchId, suppliedConfig);
   const number = evolutionGoPhoneNumber(input.phone);
   if (!input.text.trim() || input.text.length > 4096)
     throw new ProviderError("WhatsApp message length is invalid.", false);

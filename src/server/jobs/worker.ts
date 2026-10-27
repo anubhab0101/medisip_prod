@@ -204,7 +204,7 @@ async function deliver(job: Job) {
   }
   // Recover provider outcome before considering another submission after a worker crash.
   if (log.status === "SUBMITTING" || log.status === "UNKNOWN") {
-    const known = await smsStatus(job.id);
+    const known = await smsStatus(job.id, branch.id);
     if (known) {
       await db().notificationLog.update({
         where: { id: log.id },
@@ -224,7 +224,7 @@ async function deliver(job: Job) {
     data: { status: "SUBMITTING" },
   });
   try {
-    const result = await sendSms({ id: job.id, phone: customer.phone, body });
+    const result = await sendSms({ id: job.id, branchId: branch.id, phone: customer.phone, body });
     await db().notificationLog.update({
       where: { id: log.id },
       data: {
@@ -369,7 +369,7 @@ async function deliverWhatsApp(job: Job) {
     data: { status: "SUBMITTING", error: null },
   });
   try {
-    const result = await sendEvolutionGoText({ phone: customer.phone, text: body });
+    const result = await sendEvolutionGoText({ branchId: branch.id, phone: customer.phone, text: body });
     await db().notificationLog.update({
       where: { id: log.id },
       data: {
@@ -461,7 +461,7 @@ export async function pollStatuses() {
   });
   for (const log of logs) {
     try {
-      const result = await smsStatus(log.providerId!);
+      const result = await smsStatus(log.providerId!, log.branchId);
       if (result)
         await db().notificationLog.update({
           where: { id: log.id },

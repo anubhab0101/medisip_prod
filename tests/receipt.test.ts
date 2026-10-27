@@ -143,3 +143,34 @@ it("requires a different production hostname and HTTPS", () => {
     ),
   ).toBe("https://receipts.example.net");
 });
+
+it("allows opt-in private LAN HTTP only during development", () => {
+  const old = process.env.RECEIPT_ALLOW_LAN_HTTP;
+  process.env.RECEIPT_ALLOW_LAN_HTTP = "true";
+  try {
+    expect(
+      receiptOrigin(
+        "http://192.168.1.8:3002",
+        "http://127.0.0.1:3000",
+        false,
+      ),
+    ).toBe("http://192.168.1.8:3002");
+    expect(() =>
+      receiptOrigin(
+        "http://192.168.1.8:3002",
+        "http://127.0.0.1:3000",
+        true,
+      ),
+    ).toThrow("HTTPS");
+    expect(() =>
+      receiptOrigin(
+        "http://8.8.8.8:3002",
+        "http://127.0.0.1:3000",
+        false,
+      ),
+    ).toThrow("HTTPS");
+  } finally {
+    if (old === undefined) delete process.env.RECEIPT_ALLOW_LAN_HTTP;
+    else process.env.RECEIPT_ALLOW_LAN_HTTP = old;
+  }
+});

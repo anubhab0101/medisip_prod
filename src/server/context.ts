@@ -12,6 +12,7 @@ import { BusinessError } from "@/lib/errors";
 const loadContext=cache(async()=>{
  const [session,jar]=await Promise.all([auth(),cookies()]);
  if(!session?.user?.id)redirect("/login");
+ if(session.user.mustChangePassword)redirect("/password/change");
  type Row=Branch&{memberRole:Role;userName:string;userEmail:string;userLocale:string};
  const rows=await db().$queryRaw<Row[]>`SELECT b.*,m.role AS memberRole,u.name AS userName,u.email AS userEmail,u.locale AS userLocale FROM User u JOIN Membership m ON m.userId=u.id JOIN Branch b ON b.id=m.branchId WHERE u.id=${session.user.id} AND u.active=1 AND u.sessionVersion=${session.user.sessionVersion} AND b.active=1 ORDER BY b.createdAt,b.id`;
  if(!rows.length)redirect("/login");

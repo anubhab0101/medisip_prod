@@ -29,18 +29,15 @@ services:
         sync: false
       - key: AUTH_SECRET
         sync: false
+      - key: PLATFORM_ADMIN_EMAILS
+        sync: false
+      - key: INTEGRATION_ENCRYPTION_KEY
+        sync: false
       - key: RECEIPT_PUBLIC_URL
         sync: false
       - key: RECEIPT_TOKEN_SECRET
         sync: false
-      - key: SMSGATE_URL
-        value: https://api.sms-gate.app/3rdparty/v1
-      - key: SMSGATE_USERNAME
-        sync: false
-      - key: SMSGATE_PASSWORD
-        sync: false
-      - key: SMSGATE_DEVICE_ID
-        sync: false
+      # Deployment-wide emergency switches; provider accounts are configured per shop in /platform.
       - key: SMS_SEND_ENABLED
         value: "false"
       - key: EVOLUTION_GO_SEND_ENABLED
@@ -69,23 +66,12 @@ services:
         sync: false
       - key: RECEIPT_TOKEN_SECRET
         sync: false
-      - key: SMSGATE_URL
-        value: https://api.sms-gate.app/3rdparty/v1
-      - key: SMSGATE_USERNAME
-        sync: false
-      - key: SMSGATE_PASSWORD
-        sync: false
-      - key: SMSGATE_DEVICE_ID
+      # Use the same encryption key as the staff service to decrypt shop integrations.
+      - key: INTEGRATION_ENCRYPTION_KEY
         sync: false
       - key: SMS_SEND_ENABLED
         value: "false"
       - key: EVOLUTION_GO_SEND_ENABLED
-        value: "false"
-      - key: EVOLUTION_GO_BASE_URL
-        sync: false
-      - key: EVOLUTION_GO_INSTANCE_TOKEN
-        sync: false
-      - key: EVOLUTION_GO_ALLOW_PRIVATE_HTTP
         value: "false"
       - key: DAILY_BACKUP_ENABLED
         value: "true"

@@ -11,6 +11,9 @@ import { formatMoney } from "@/lib/money";
 import { PrintButton } from "@/components/shared/print-button";
 import { ShareReceiptPanel } from "@/features/receipts/share-panel";
 import { DeliveryForm } from "@/features/delivery/create-form";
+import { ProviderKind } from "@prisma/client";
+import { branchProviderEnabled } from "@/lib/provider-integrations";
+import { evolutionGoSendingEnabled } from "@/features/notifications/evolution-go";
 const shopSchema = z.object({
   name: z.string(),
   address: z.string(),
@@ -30,6 +33,10 @@ export default async function Invoice({
     include: { items: true, payments: true, returns: true, customer: true },
   });
   if (!sale) notFound();
+  const [smsConfigured, whatsappConfigured] = await Promise.all([
+    branchProviderEnabled(ctx.branch.id, ProviderKind.SMSGATE),
+    branchProviderEnabled(ctx.branch.id, ProviderKind.EVOLUTION_GO),
+  ]);
   const shop = shopSchema.parse(sale.shopSnapshot);
   return (
     <>
@@ -158,8 +165,8 @@ export default async function Invoice({
         saleId={sale.id}
         canSendSms={Boolean(sale.customer?.active && sale.customer.consentSms)}
         canSendWhatsapp={Boolean(sale.customer?.active && sale.customer.consentWhatsapp)}
-        smsReady={process.env.SMS_SEND_ENABLED === "true" && !ctx.branch.demo}
-        whatsappReady={process.env.EVOLUTION_GO_SEND_ENABLED === "true" && !ctx.branch.demo}
+        smsReady={process.env.SMS_SEND_ENABLED === "true" && smsConfigured && !ctx.branch.demo}
+        whatsappReady={evolutionGoSendingEnabled() && whatsappConfigured && !ctx.branch.demo}
       />
       {!["VOID", "RETURNED"].includes(sale.status) && (
         <DeliveryForm saleId={sale.id} />

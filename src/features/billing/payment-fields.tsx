@@ -25,27 +25,28 @@ export function PaymentFields({
   } catch {}
   return (
     <>
-      <label>
-        <T>{"Payment"}</T>
-        <select
-          value={value.method}
-          onChange={(e) => patch({ method: e.target.value, cashReceived: "" })}
-        >
-          <option value="CASH">
-            <T>{"Cash"}</T>
-          </option>
-          <option value="UPI">UPI</option>
-          <option value="CARD">
-            <T>{"Card"}</T>
-          </option>
-          <option value="CREDIT">
-            <T>{"Credit / udhar"}</T>
-          </option>
-          <option value="SPLIT">
-            <T>{"Cash + another method"}</T>
-          </option>
-        </select>
-      </label>
+      <fieldset className="payment-method-fieldset">
+        <legend><T>{"Payment"}</T></legend>
+        <div className="payment-methods" aria-label="Payment method">
+          {([
+            ["CASH", "Cash"],
+            ["UPI", "UPI"],
+            ["CARD", "Card"],
+            ["CREDIT", "Credit"],
+            ["SPLIT", "Split"],
+          ] as const).map(([method, label]) => (
+            <button
+              type="button"
+              key={method}
+              className={value.method === method ? "payment-method selected" : "payment-method"}
+              onClick={() => patch({ method, cashReceived: "" })}
+              aria-pressed={value.method === method}
+            >
+              <T>{label}</T>
+            </button>
+          ))}
+        </div>
+      </fieldset>
       {value.method === "SPLIT" && (
         <>
           <label>

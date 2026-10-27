@@ -26,6 +26,7 @@ vi.mock("@/features/receipts/issuance", () => ({
   issueReceipt: mocks.issueReceipt,
 }));
 vi.mock("@/lib/job-signature", () => ({ signJobPayload: () => "test-signature" }));
+vi.mock("@/lib/provider-integrations", () => ({ branchProviderEnabled: async (_branchId: string, provider: string) => provider === "SMSGATE" }));
 import { queueReceiptDelivery } from "../src/features/receipts/delivery";
 
 const requestId = "f0c7a4f6-a247-4a0c-9d4d-b87ef5c0b6aa";

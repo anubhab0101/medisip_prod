@@ -13,9 +13,9 @@ const configured = {
   DAILY_BACKUP_ENABLED: "true",
   BACKUP_DIRECTORY: "/backups",
   BACKUP_KEY: Buffer.alloc(32).toString("base64"),
+  PLATFORM_ADMIN_EMAILS: "admin@pharmacy.in",
+  INTEGRATION_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString("base64"),
   SMS_SEND_ENABLED: "true",
-  SMSGATE_USERNAME: "user",
-  SMSGATE_PASSWORD: "password",
 };
 it("accepts structurally configured deployment without claiming external verification", () =>
   expect(deploymentProblems(configured)).toEqual([]));
@@ -48,14 +48,14 @@ it("rejects local origins, same-host receipts, root accounts and missing TLS", (
     }).join(" "),
   ).toContain("strict TLS");
 });
-it("reports missing messaging and backup configuration without leaking secrets", () => {
+it("reports missing encryption and backup configuration without leaking secrets", () => {
   const problems = deploymentProblems({
     ...configured,
     SMS_SEND_ENABLED: "false",
     BACKUP_KEY: "private-invalid-secret",
-    SMSGATE_PASSWORD: "",
+    INTEGRATION_ENCRYPTION_KEY: "private-invalid-secret",
   }).join(" ");
-  expect(problems).toContain("Live SMS is disabled");
-  expect(problems).toContain("credentials are missing");
+  expect(problems).toContain("INTEGRATION_ENCRYPTION_KEY");
   expect(problems).not.toContain("private-invalid-secret");
+  expect(deploymentProblems({ ...configured, PLATFORM_ADMIN_EMAILS: "admin@example.com" }).join(" ")).toContain("PLATFORM_ADMIN_EMAILS");
 });
