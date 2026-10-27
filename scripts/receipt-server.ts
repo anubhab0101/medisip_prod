@@ -1,10 +1,29 @@
 import { createServer } from "node:http";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { parseEnv } from "node:util";
 import { PrismaClient } from "@prisma/client";
 import { receiptHandler } from "../src/features/receipts/http";
-// Never load the staff app's environment or credentials into this process.
-try {
-  process.loadEnvFile(".env.receipts.local");
-} catch {}
+// Read only receipt settings from the shared file; never import staff credentials.
+const localEnvPath = resolve(".env.local");
+if (existsSync(localEnvPath)) {
+  const localEnv = parseEnv(readFileSync(localEnvPath, "utf8"));
+  for (const key of [
+    "RECEIPT_DATABASE_URL",
+    "RECEIPT_PUBLIC_URL",
+    "RECEIPT_PORT",
+    "RECEIPT_BIND",
+  ]) {
+    if (process.env[key] === undefined && localEnv[key] !== undefined) {
+      process.env[key] = localEnv[key];
+    }
+  }
+} else {
+  // Keep compatibility with the dedicated receipt service deployment.
+  try {
+    process.loadEnvFile(".env.receipts.local");
+  } catch {}
+}
 const rawDatabaseUrl = process.env.RECEIPT_DATABASE_URL;
 const publicUrl = process.env.RECEIPT_PUBLIC_URL;
 if (!rawDatabaseUrl || !publicUrl)
