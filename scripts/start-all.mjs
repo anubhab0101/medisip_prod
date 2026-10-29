@@ -113,6 +113,7 @@ if (singleService) {
 const node = process.execPath;
 const portApp = singleService ? 3100 : 3000;
 const portReceipts = singleService ? 3200 : 3002;
+const portWorkerHealth = singleService ? 3301 : 0;
 const staffEnv = {
   ...env,
   NODE_ENV: "production",
@@ -123,6 +124,7 @@ const staffEnv = {
 const workerEnv = {
   ...env,
   NODE_ENV: "production",
+  ...(singleService ? { WORKER_HEALTH_PORT: String(portWorkerHealth) } : {}),
   ...(singleService ? { HOME: "/home/node", TMPDIR: "/tmp" } : {}),
 };
 // Keep the receipt reader's database credential out of the staff and worker processes.
@@ -271,6 +273,7 @@ if (singleService) {
     await Promise.all([
       waitForPort(portApp, "Staff app"),
       waitForPort(portReceipts, "Receipt service"),
+      waitForPort(portWorkerHealth, "Worker health endpoint"),
     ]);
   } catch (error) {
     console.error(
@@ -286,12 +289,32 @@ if (singleService) {
       try {
         hostname = new URL(`http://${rawHost}`).hostname.toLowerCase();
       } catch {}
-      const targetPort =
-        hostname === receiptHost
-          ? portReceipts
-          : staffHosts.has(hostname)
-            ? portApp
-            : 0;
+      let requestPath = incoming.url ?? "/";
+      let targetPort = hostname === receiptHost ? portReceipts : 0;
+      let upstreamHost = rawHost;
+      if (staffHosts.has(hostname)) {
+        let pathname = "";
+        try {
+          pathname = new URL(requestPath, "http://gateway.internal").pathname;
+        } catch {}
+        const healthRoutes = {
+          "/health/staff": { port: portApp, path: "/api/health" },
+          "/health/worker": { port: portWorkerHealth, path: "/health" },
+          "/health/receipt": {
+            port: portReceipts,
+            path: "/health",
+            host: receiptHost,
+          },
+        };
+        const healthRoute = healthRoutes[pathname];
+        if (healthRoute) {
+          targetPort = healthRoute.port;
+          requestPath = healthRoute.path;
+          upstreamHost = healthRoute.host ?? rawHost;
+        } else {
+          targetPort = portApp;
+        }
+      }
       if (!targetPort) {
         outgoing.writeHead(421, {
           "Cache-Control": "no-store",
@@ -314,12 +337,13 @@ if (singleService) {
         "upgrade",
       ])
         delete headers[key];
+      headers.host = upstreamHost;
       const upstream = httpRequest(
         {
           hostname: "127.0.0.1",
           port: targetPort,
           method: incoming.method,
-          path: incoming.url,
+          path: requestPath,
           headers,
           timeout: 60000,
         },
@@ -356,6 +380,60 @@ if (singleService) {
       console.log(
         "Staff and receipt requests are routed by hostname; the receipt host never falls back to the staff app.",
       );
+      const appOrigin = new URL(env.APP_URL).origin;
+      const healthPaths = [
+        "/health/staff",
+        "/health/worker",
+        "/health/receipt",
+      ];
+      console.log(
+        `Health URLs: ${healthPaths.map((path) => `${appOrigin}${path}`).join(" · ")} · ${new URL(env.RECEIPT_PUBLIC_URL).origin}/health`,
+      );
+      console.log("Health checks run at startup and every 60 seconds.");
+      let checkingHealth = false;
+      const pingHealth = (path) =>
+        new Promise((resolvePing) => {
+          let settled = false;
+          const finish = (ok, detail = "") => {
+            if (settled) return;
+            settled = true;
+            resolvePing({ path, ok, detail });
+          };
+          const request = httpRequest(
+            {
+              hostname: "127.0.0.1",
+              port: publicPort,
+              method: "GET",
+              path,
+              headers: { host: new URL(env.APP_URL).host },
+            },
+            (response) => {
+              response.resume();
+              finish(
+                response.statusCode === 200,
+                `HTTP ${response.statusCode ?? "unknown"}`,
+              );
+            },
+          );
+          request.setTimeout(5000, () => request.destroy(new Error("timeout")));
+          request.on("error", (error) => finish(false, error.message));
+          request.end();
+        });
+      const checkServices = async () => {
+        if (checkingHealth || stopping) return;
+        checkingHealth = true;
+        try {
+          const results = await Promise.all(healthPaths.map(pingHealth));
+          for (const result of results)
+            if (!result.ok)
+              console.error(`[health] ${result.path} failed: ${result.detail}`);
+        } finally {
+          checkingHealth = false;
+        }
+      };
+      void checkServices();
+      const healthTimer = setInterval(checkServices, 60000);
+      healthTimer.unref();
     });
   }
 } else {

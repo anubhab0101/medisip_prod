@@ -4,9 +4,13 @@ import { getSecret } from "@/lib/secret-manager";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (
-    path.startsWith("/booking/") || path.startsWith("/offline-shell/") || path === "/robots.txt" || path === "/sitemap.xml" ||
+    path.startsWith("/booking/") ||
+    path.startsWith("/offline-shell/") ||
+    path === "/robots.txt" ||
+    path === "/sitemap.xml" ||
     path === "/" ||
     path === "/login" ||
+    path === "/api/health" ||
     path.startsWith("/api/auth/")
   )
     return NextResponse.next();
@@ -26,8 +30,16 @@ export async function middleware(request: NextRequest) {
       );
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (token.mustChangePassword && path !== "/password/change" && !path.startsWith("/api/auth/")) {
-    if (path.startsWith("/api/")) return NextResponse.json({ error: "Password change required." }, { status: 403 });
+  if (
+    token.mustChangePassword &&
+    path !== "/password/change" &&
+    !path.startsWith("/api/auth/")
+  ) {
+    if (path.startsWith("/api/"))
+      return NextResponse.json(
+        { error: "Password change required." },
+        { status: 403 },
+      );
     return NextResponse.redirect(new URL("/password/change", request.url));
   }
   // Pages and actions still reload active membership and role from the database.

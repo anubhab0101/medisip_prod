@@ -13,7 +13,11 @@ export const receiptHeaders = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
 type Lookup = (hash: string) => Promise<unknown | null>;
-export function receiptHandler(lookup: Lookup, expectedHost: string) {
+export function receiptHandler(
+  lookup: Lookup,
+  expectedHost: string,
+  healthCheck: () => Promise<void> = async () => {},
+) {
   const attempts = new Map<string, { count: number; resets: number }>();
   return async (req: IncomingMessage, res: ServerResponse) => {
     for (const [key, value] of Object.entries(receiptHeaders))
@@ -31,6 +35,34 @@ export function receiptHandler(lookup: Lookup, expectedHost: string) {
     }
     if (req.method !== "GET" && req.method !== "HEAD") {
       reject(405);
+      return;
+    }
+    let pathname = "";
+    try {
+      pathname = new URL(req.url ?? "/", "http://receipt.internal").pathname;
+    } catch {
+      reject(404);
+      return;
+    }
+    if (pathname === "/health") {
+      try {
+        await healthCheck();
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(
+          req.method === "HEAD"
+            ? undefined
+            : JSON.stringify({ service: "receipt", status: "ok" }),
+        );
+      } catch {
+        res.statusCode = 503;
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(
+          req.method === "HEAD"
+            ? undefined
+            : JSON.stringify({ service: "receipt", status: "unavailable" }),
+        );
+      }
       return;
     }
     const match = /^\/r\/([A-Za-z0-9_-]{43})$/.exec(req.url ?? "");

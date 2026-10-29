@@ -1,6 +1,34 @@
+import { createServer } from "node:http";
+
 try {
   process.loadEnvFile(".env.local");
 } catch {}
+
+let stopping = false;
+let healthy = false;
+let healthServer: ReturnType<typeof createServer> | undefined;
+if (process.env.WORKER_HEALTH_PORT) {
+  healthServer = createServer((req, res) => {
+    if (req.method !== "GET" || req.url !== "/health") {
+      res.writeHead(404, { "Cache-Control": "no-store" }).end();
+      return;
+    }
+    const ready = healthy && !stopping;
+    res.writeHead(ready ? 200 : 503, {
+      "Cache-Control": "no-store",
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+    });
+    res.end(
+      JSON.stringify({
+        service: "worker",
+        status: ready ? "ok" : "unavailable",
+      }),
+    );
+  });
+  healthServer.listen(Number(process.env.WORKER_HEALTH_PORT), "127.0.0.1");
+}
+
 async function main() {
   const { workOnce, pollStatuses } = await import("../src/server/jobs/worker");
   const { db } = await import("../src/server/db");
@@ -19,13 +47,14 @@ async function main() {
     await db().$disconnect();
     return;
   }
-  let stopping = false;
   let maintenanceAt = 0;
   process.on("SIGINT", () => {
     stopping = true;
+    healthServer?.close();
   });
   process.on("SIGTERM", () => {
     stopping = true;
+    healthServer?.close();
   });
   console.log(
     "MediShop worker started. SMS sending follows the local configuration.",
@@ -50,16 +79,20 @@ async function main() {
         worked = true;
       }
       if (!maintenanceOnly) await pollStatuses();
+      healthy = true;
     } catch {
+      healthy = false;
       console.error(
         "Worker task failed. Check database, backup storage and job status. Retrying shortly.",
       );
     }
     await new Promise((resolve) => setTimeout(resolve, worked ? 1000 : 10000));
   }
+  healthServer?.close();
   await db().$disconnect();
 }
 main().catch(() => {
   console.error("Worker startup failed. Check configuration.");
+  healthServer?.close();
   process.exitCode = 1;
 });

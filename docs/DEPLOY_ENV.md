@@ -8,6 +8,8 @@
 - `RECEIPT_PUBLIC_URL` goes only to the receipt viewer. `/login`, `/dashboard`, `/api` and any non-receipt path return 404 from that host; they never fall through to the staff app.
 - Unrecognized hosts receive 421.
 
+The staff hostname exposes `/health/staff`, `/health/worker` and `/health/receipt`; the receipt hostname also exposes `/health`. The startup supervisor checks the three internal health URLs immediately after startup and every 60 seconds, logging only failures. Render's health check uses `/health/staff`.
+
 Set `APP_URL` and `AUTH_URL` to the staff origin. Set `RECEIPT_PUBLIC_URL` to a DIFFERENT HTTPS hostname. The Render `onrender.com` address can serve staff; add a separate receipt hostname as a custom domain on the same Render service. That hostname needs a domain and DNS you control. Without it, do not enable receipt sharing; the app fails closed instead of making receipts public on the staff host.
 
 ## Free-tier limits
@@ -20,6 +22,8 @@ Render Free web instances currently have 512 MB RAM and 0.1 CPU, spin down after
 - Keep `SMS_SEND_ENABLED=false` and `EVOLUTION_GO_SEND_ENABLED=false` until you deliberately configure and verify provider sending. Jobs can remain queued while the free service is asleep.
 
 These limits are Render platform behavior and may change; check Render's current [Free instance limits](https://render.com/docs/free) and [compute plans](https://render.com/docs/compute-plans) before deploying.
+
+The one-minute checks verify the three processes while the container is running. They are loopback requests, not external traffic, and do not prevent a Free service from sleeping after 15 minutes without inbound requests.
 
 ## Deploy from this repository
 

@@ -31,21 +31,34 @@ if (!rawDatabaseUrl || !publicUrl)
 function enforceTls(url: string): string {
   try {
     const u = new URL(url);
-    if (!u.searchParams.has("sslmode")) u.searchParams.set("sslmode", "verify-full");
-    if (!u.searchParams.has("sslaccept")) u.searchParams.set("sslaccept", "strict");
+    if (!u.searchParams.has("sslmode"))
+      u.searchParams.set("sslmode", "verify-full");
+    if (!u.searchParams.has("sslaccept"))
+      u.searchParams.set("sslaccept", "strict");
     return u.toString();
-  } catch { return url; }
+  } catch {
+    return url;
+  }
 }
-const databaseUrl = process.env.NODE_ENV === "production" ? enforceTls(rawDatabaseUrl) : rawDatabaseUrl;
+const databaseUrl =
+  process.env.NODE_ENV === "production"
+    ? enforceTls(rawDatabaseUrl)
+    : rawDatabaseUrl;
 const prisma = new PrismaClient({ datasourceUrl: databaseUrl });
-const handler = receiptHandler(async (tokenHash) => {
-  const row = await prisma.receiptShare.findFirst({
-    where: { tokenHash, revokedAt: null, expiresAt: { gt: new Date() } },
-    select: { snapshot: true, id: true },
-  });
-  if (!row) return null;
-  return row.snapshot;
-}, new URL(publicUrl).host);
+const handler = receiptHandler(
+  async (tokenHash) => {
+    const row = await prisma.receiptShare.findFirst({
+      where: { tokenHash, revokedAt: null, expiresAt: { gt: new Date() } },
+      select: { snapshot: true, id: true },
+    });
+    if (!row) return null;
+    return row.snapshot;
+  },
+  new URL(publicUrl).host,
+  async () => {
+    await prisma.$queryRaw`SELECT 1`;
+  },
+);
 const server = createServer(handler);
 server.requestTimeout = 15000;
 server.headersTimeout = 10000;
