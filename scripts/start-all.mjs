@@ -1,38 +1,150 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { parseEnv } from "node:util";
+import { createServer, request as httpRequest } from "node:http";
+import { createConnection } from "node:net";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const requiredFiles = [".env.local", ".next/BUILD_ID"];
-const missing = requiredFiles.filter((file) => !existsSync(resolve(root, file)));
-
+const envFile = resolve(root, ".env.local");
+const fileEnv = existsSync(envFile)
+  ? parseEnv(readFileSync(envFile, "utf8"))
+  : {};
+const env = { ...fileEnv, ...process.env };
+const singleService = env.SINGLE_SERVICE_MODE === "true";
+const requiredFiles = singleService
+  ? [".next/BUILD_ID"]
+  : [".env.local", ".next/BUILD_ID"];
+const missing = requiredFiles.filter(
+  (file) => !existsSync(resolve(root, file)),
+);
 if (missing.length) {
   console.error(`Cannot start MediShop. Missing: ${missing.join(", ")}`);
-  console.error("Create .env.local and build the app first (npm run build).");
-  process.exit(1);
-}
-
-const localEnv = parseEnv(readFileSync(resolve(root, ".env.local"), "utf8"));
-const missingReceiptSettings = ["RECEIPT_DATABASE_URL", "RECEIPT_PUBLIC_URL"].filter(
-  (key) => !localEnv[key],
-);
-if (missingReceiptSettings.length) {
   console.error(
-    `Add ${missingReceiptSettings.join(" and ")} to .env.local (use the receipt-only database account).`,
+    singleService
+      ? "Build the app first (npm run build)."
+      : "Create .env.local and build the app first (npm run build).",
   );
   process.exit(1);
 }
 
+const required = [
+  "DATABASE_URL",
+  "APP_URL",
+  "AUTH_URL",
+  "AUTH_SECRET",
+  "RECEIPT_DATABASE_URL",
+  "RECEIPT_PUBLIC_URL",
+];
+const unset = required.filter((key) => !env[key]);
+if (unset.length) {
+  console.error(
+    `Configure these environment values before starting: ${unset.join(", ")}`,
+  );
+  process.exit(1);
+}
+
+let staffHosts = new Set();
+let receiptHost = "";
+if (singleService) {
+  try {
+    const app = new URL(env.APP_URL);
+    const auth = new URL(env.AUTH_URL);
+    const receipt = new URL(env.RECEIPT_PUBLIC_URL);
+    if (
+      app.protocol !== "https:" ||
+      app.pathname !== "/" ||
+      app.search ||
+      app.hash ||
+      app.username ||
+      app.password ||
+      auth.protocol !== "https:" ||
+      auth.pathname !== "/" ||
+      auth.search ||
+      auth.hash ||
+      auth.username ||
+      auth.password ||
+      auth.origin !== app.origin ||
+      receipt.protocol !== "https:" ||
+      receipt.pathname !== "/" ||
+      receipt.search ||
+      receipt.hash ||
+      receipt.username ||
+      receipt.password ||
+      app.hostname === receipt.hostname
+    ) {
+      throw new Error(
+        "Use separate HTTPS staff and receipt hostnames; AUTH_URL must match APP_URL.",
+      );
+    }
+    staffHosts.add(app.hostname.toLowerCase());
+    if (env.RENDER_EXTERNAL_HOSTNAME)
+      staffHosts.add(env.RENDER_EXTERNAL_HOSTNAME.toLowerCase());
+    for (const alias of (env.STAFF_HOST_ALIASES ?? "")
+      .split(",")
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean))
+      staffHosts.add(alias);
+    receiptHost = receipt.hostname.toLowerCase();
+    if (staffHosts.has(receiptHost))
+      throw new Error(
+        "Receipt hostname must be separate from every staff hostname.",
+      );
+  } catch (error) {
+    console.error(
+      error instanceof Error
+        ? error.message
+        : "Invalid public host configuration.",
+    );
+    process.exit(1);
+  }
+} else {
+  const missingReceipt = ["RECEIPT_DATABASE_URL", "RECEIPT_PUBLIC_URL"].filter(
+    (key) => !env[key],
+  );
+  if (missingReceipt.length) {
+    console.error(
+      `Add ${missingReceipt.join(" and ")} to .env.local (use the receipt-only database account).`,
+    );
+    process.exit(1);
+  }
+}
+
 const node = process.execPath;
+const portApp = singleService ? 3100 : 3000;
+const portReceipts = singleService ? 3200 : 3002;
+const staffEnv = {
+  ...env,
+  NODE_ENV: "production",
+  PORT: String(portApp),
+  NEXT_TELEMETRY_DISABLED: "1",
+  ...(singleService ? { HOME: "/home/node", TMPDIR: "/tmp" } : {}),
+};
+const workerEnv = {
+  ...env,
+  NODE_ENV: "production",
+  ...(singleService ? { HOME: "/home/node", TMPDIR: "/tmp" } : {}),
+};
+// Keep the receipt reader's database credential out of the staff and worker processes.
+delete staffEnv.RECEIPT_DATABASE_URL;
+delete workerEnv.RECEIPT_DATABASE_URL;
 const services = [
   {
     name: "staff app",
-    args: ["node_modules/next/dist/bin/next", "start", "--hostname", "127.0.0.1", "--port", "3000"],
+    args: [
+      "node_modules/next/dist/bin/next",
+      "start",
+      "--hostname",
+      "127.0.0.1",
+      "--port",
+      String(portApp),
+    ],
+    env: staffEnv,
   },
   {
     name: "message worker",
     args: ["--conditions=react-server", "--import", "tsx", "scripts/worker.ts"],
+    env: workerEnv,
   },
   {
     name: "receipt service",
@@ -59,20 +171,27 @@ const services = [
           "PATHEXT",
           "ComSpec",
         ]
-          .filter((key) => process.env[key] !== undefined)
-          .map((key) => [key, process.env[key]]),
+          .filter((key) => env[key] !== undefined)
+          .map((key) => [key, env[key]]),
       ),
       NODE_ENV: "production",
+      HOME: "/tmp",
+      TMPDIR: "/tmp",
+      RECEIPT_DATABASE_URL: env.RECEIPT_DATABASE_URL,
+      RECEIPT_PUBLIC_URL: env.RECEIPT_PUBLIC_URL,
+      RECEIPT_PORT: String(portReceipts),
+      RECEIPT_BIND: "127.0.0.1",
     },
   },
 ];
 
 const children = new Map();
 let stopping = false;
-
+let gateway;
 function stopAll(code = 0) {
   if (stopping) return;
   stopping = true;
+  gateway?.close();
   for (const child of children.values()) child.kill("SIGTERM");
   const forceStop = setTimeout(() => {
     for (const child of children.values()) child.kill("SIGKILL");
@@ -84,29 +203,34 @@ function stopAll(code = 0) {
 for (const service of services) {
   const child = spawn(node, service.args, {
     cwd: root,
-    env:
-      service.env ?? {
-        ...process.env,
-        NODE_ENV: "production",
-        NEXT_TELEMETRY_DISABLED: "1",
-      },
-    stdio: ["inherit", "pipe", "pipe"],
+    env: service.env,
+    ...(singleService && service.name === "receipt service"
+      ? {
+          uid: Number(env.RECEIPT_UID ?? 1001),
+          gid: Number(env.RECEIPT_GID ?? 1001),
+        }
+      : singleService
+        ? {
+            uid: Number(env.STAFF_UID ?? 1000),
+            gid: Number(env.STAFF_GID ?? 1000),
+          }
+        : {}),
+    stdio: ["ignore", "pipe", "pipe"],
   });
   children.set(service.name, child);
-
   for (const stream of [child.stdout, child.stderr]) {
     stream.setEncoding("utf8");
     let remainder = "";
     stream.on("data", (chunk) => {
       const lines = (remainder + chunk).split(/\r?\n/);
       remainder = lines.pop() ?? "";
-      for (const line of lines) if (line) console.log(`[${service.name}] ${line}`);
+      for (const line of lines)
+        if (line) console.log(`[${service.name}] ${line}`);
     });
     stream.on("end", () => {
       if (remainder) console.log(`[${service.name}] ${remainder}`);
     });
   }
-
   child.on("error", (error) => {
     console.error(`[${service.name}] Could not start: ${error.message}`);
     stopAll(1);
@@ -122,7 +246,127 @@ for (const service of services) {
   });
 }
 
-console.log("Starting staff app, message worker, and isolated receipt service.");
-console.log("Press Ctrl+C to stop all three.");
+if (singleService) {
+  async function waitForPort(port, serviceName, timeoutMs = 90000) {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (stopping) throw new Error("Startup interrupted.");
+      for (const [name, child] of children)
+        if (child.exitCode !== null)
+          throw new Error(`${name} exited before startup completed.`);
+      const ready = await new Promise((resolveReady) => {
+        const socket = createConnection({ host: "127.0.0.1", port });
+        socket.once("connect", () => {
+          socket.destroy();
+          resolveReady(true);
+        });
+        socket.once("error", () => resolveReady(false));
+      });
+      if (ready) return;
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 250));
+    }
+    throw new Error(`${serviceName} did not become ready in time.`);
+  }
+  try {
+    await Promise.all([
+      waitForPort(portApp, "Staff app"),
+      waitForPort(portReceipts, "Receipt service"),
+    ]);
+  } catch (error) {
+    console.error(
+      error instanceof Error ? error.message : "Service startup failed.",
+    );
+    stopAll(1);
+  }
+  if (!stopping) {
+    const publicPort = Number(env.PORT ?? 10000);
+    gateway = createServer((incoming, outgoing) => {
+      const rawHost = incoming.headers.host ?? "";
+      let hostname = "";
+      try {
+        hostname = new URL(`http://${rawHost}`).hostname.toLowerCase();
+      } catch {}
+      const targetPort =
+        hostname === receiptHost
+          ? portReceipts
+          : staffHosts.has(hostname)
+            ? portApp
+            : 0;
+      if (!targetPort) {
+        outgoing.writeHead(421, {
+          "Cache-Control": "no-store",
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Content-Type-Options": "nosniff",
+        });
+        outgoing.end("This host is not configured.");
+        return;
+      }
+      const headers = { ...incoming.headers };
+      for (const key of [
+        "connection",
+        "proxy-connection",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailer",
+        "transfer-encoding",
+        "upgrade",
+      ])
+        delete headers[key];
+      const upstream = httpRequest(
+        {
+          hostname: "127.0.0.1",
+          port: targetPort,
+          method: incoming.method,
+          path: incoming.url,
+          headers,
+          timeout: 60000,
+        },
+        (response) => {
+          outgoing.writeHead(
+            response.statusCode ?? 502,
+            response.statusMessage,
+            response.headers,
+          );
+          response.pipe(outgoing);
+        },
+      );
+      upstream.on("timeout", () =>
+        upstream.destroy(new Error("Upstream timeout")),
+      );
+      upstream.on("error", () => {
+        if (!outgoing.headersSent)
+          outgoing.writeHead(503, {
+            "Cache-Control": "no-store",
+            "Content-Type": "text/plain; charset=utf-8",
+          });
+        outgoing.end("Service temporarily unavailable.");
+      });
+      incoming.pipe(upstream);
+    });
+    gateway.headersTimeout = 70000;
+    gateway.requestTimeout = 65000;
+    gateway.on("error", (error) => {
+      console.error(`Public gateway failed: ${error.message}`);
+      stopAll(1);
+    });
+    gateway.listen(publicPort, "0.0.0.0", () => {
+      console.log(`Unified MediShop service listening on port ${publicPort}.`);
+      console.log(
+        "Staff and receipt requests are routed by hostname; the receipt host never falls back to the staff app.",
+      );
+    });
+  }
+} else {
+  console.log(
+    "Starting staff app, message worker, and isolated receipt service.",
+  );
+  console.log(
+    "Staff: http://127.0.0.1:3000 · Receipt viewer: http://127.0.0.1:3002",
+  );
+  console.log("Press Ctrl+C to stop all three.");
+}
+
 process.on("SIGINT", () => stopAll(0));
 process.on("SIGTERM", () => stopAll(0));

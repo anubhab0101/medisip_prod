@@ -13,6 +13,7 @@ export const Permission = {
   MESSAGES: "messages",
   RETURN: "return",
   DOCTOR_OWN: "doctor.own",
+  PRESCRIPTION: "prescription.review",
 } as const;
 export type PermissionName = (typeof Permission)[keyof typeof Permission];
 const policies: Record<Role, readonly PermissionName[]> = {
@@ -27,6 +28,7 @@ const policies: Record<Role, readonly PermissionName[]> = {
     Permission.APPOINTMENT,
     Permission.MESSAGES,
     Permission.RETURN,
+    Permission.PRESCRIPTION,
   ],
   CASHIER: [
     Permission.DASHBOARD,

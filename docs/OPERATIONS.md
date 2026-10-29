@@ -2,9 +2,9 @@
 
 ## Separate services
 
-Run staff, worker and receipt viewer as separate processes. `compose.yaml` and the two Dockerfiles provide deployment scaffolding. Docker is not installed on the current workstation, so container builds are not yet verified. No live deployment has been performed.
+Run staff, worker and receipt viewer as separate processes. `compose.yaml` and the Dockerfiles provide local/paid deployment scaffolding. `npm run start:all` starts the processes together locally; the Render Free preview uses one container and hostname gateway from `render.yaml`. Docker image execution has not yet been verified here. No live deployment has been performed.
 
-Create ignored `.env.production` for staff/worker and `.env.receipts.production` for the viewer. Never put the staff database credential, AUTH_SECRET or RECEIPT_TOKEN_SECRET into the receipt service. Use separate HTTPS hostnames; preserve Host headers and never route a receipt-host miss to staff. See RECEIPT_ISOLATION.md. Application cookies must remain host-only.
+For separate/paid services, create ignored `.env.production` for staff/worker and `.env.receipts.production` for the viewer. In the one-container preview, use separate HTTPS hostnames and the allowlisted process environment; never put the staff DB credential, AUTH_SECRET or RECEIPT_TOKEN_SECRET into the receipt process. Preserve Host headers and never route a receipt-host miss to staff. See RECEIPT_ISOLATION.md. Application cookies must remain host-only.
 
 Before deployment, run `npm run check:deployment -- .env.production`. It checks origin separation, strict database TLS configuration, root-account usage, secret presence/length, backup and SMS settings without printing their values. It does not connect to providers or prove grants, secret randomness, TLS certificates, durable/off-host storage or delivery. Verify those separately. Sitemap and robots are generated from APP_URL at runtime, so the same build can be configured for the real hostname without carrying a build-time localhost sitemap.
 
@@ -37,6 +37,5 @@ The worker schedules stock scans at 07:00 and encrypted backups at 02:00 Asia/Ko
 `npm run worker -- --maintenance-only` runs the scheduler without sending or polling customer messages. Add `--once` for one due-work pass. Database leases prevent concurrent workers from claiming the same daily run; expired leases recover after ten minutes. Failed tasks retry up to three times. Check Job records for DAILY_STOCK_SCAN / DAILY_BACKUP and worker error logs when troubleshooting. Backup filenames include run and attempt identifiers, so retries never overwrite existing encrypted files.
 
 Local daily backups are enabled in the ignored environment. Scheduling requires the maintenance process and computer to remain running; Windows login/startup registration is not configured. Configure off-host copies, retention, monitoring and deployment restart policy before launch. No automatic backup deletion is implemented. Rehearse restoring regularly and record recovery time.
-
 
 Local hardening completed: a restricted application account is configured; `.env.migration.local` retains the separate administrative migration URL. `scripts/prisma.mjs migrate ...` loads that URL only for migration commands. The production preview uses loopback HTTP with LOCAL_PREVIEW=true for receipt testing; deployed services must use HTTPS and LOCAL_PREVIEW=false.

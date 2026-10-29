@@ -3,6 +3,7 @@ import { T } from "@/lib/i18n/provider";
 import { formatMoney } from "@/lib/money";
 
 import { LoyaltyPicker } from "@/features/loyalty/picker";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { MedicineSearch } from "./medicine-search";
 import { PaymentFields } from "./payment-fields";
@@ -15,11 +16,13 @@ import type { CatalogItem } from "./types";
 import { useBill } from "./use-bill";
 export function BillingForm({
   customers,
+  prescriptions,
   branchId,
   userId,
   loyalty,
 }: {
   customers: { id: string; name: string; phone: string }[];
+  prescriptions: { id: string; customerId: string; doctorName: string; reference: string }[];
   branchId: string;
   userId: string;
   loyalty: { enabled: boolean; rate: number };
@@ -103,27 +106,33 @@ export function BillingForm({
                 value={bill.customerId}
                 onChange={(id) => {
                   bill.setCustomerId(id);
+                  bill.setPrescriptionId("");
                   bill.setLoyaltyPoints(0);
                 }}
               />
               {bill.cart.some((l) => l.medicine.schedule !== "NONE") && (
                 <>
                   <label>
-                    <T>{"Doctor name"}</T>
-                    <input
+                    <T>{"Approved prescription"}</T>
+                    <select
                       required
-                      value={bill.doctorName}
-                      onChange={(e) => bill.setDoctor(e.target.value)}
-                    />
+                      value={bill.prescriptionId}
+                      onChange={(event) => {
+                        const chosen = prescriptions.find((p) => p.id === event.target.value);
+                        bill.setPrescriptionId(chosen?.id ?? "");
+                        bill.setDoctor(chosen?.doctorName ?? "");
+                        bill.setPrescription(chosen?.reference ?? "");
+                      }}
+                    >
+                      <option value=""><T>{"Choose an approved prescription"}</T></option>
+                      {prescriptions.filter((p) => p.customerId === bill.customerId).map((p) => (
+                        <option key={p.id} value={p.id}>{p.doctorName} · {p.reference}</option>
+                      ))}
+                    </select>
                   </label>
-                  <label>
-                    <T>{"Prescription reference"}</T>
-                    <input
-                      required
-                      value={bill.prescriptionRef}
-                      onChange={(e) => bill.setPrescription(e.target.value)}
-                    />
-                  </label>
+                  {!bill.customerId || !prescriptions.some((p) => p.customerId === bill.customerId) ? (
+                    <p className="notice"><T>{"Link a customer with an approved prescription before billing this medicine."}</T> <Link href="/prescriptions" className="text-link"><T>{"Open prescriptions"}</T></Link></p>
+                  ) : null}
                 </>
               )}
               <label>

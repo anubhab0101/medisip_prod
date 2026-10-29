@@ -27,7 +27,7 @@ EVOLUTION_GO_INSTANCE_TOKEN=YOUR_INSTANCE_TOKEN
 EVOLUTION_GO_ALLOW_PRIVATE_HTTP=false
 ```
 
-In Render, set `EVOLUTION_GO_BASE_URL` to the private URL of the Evolution Go service, and set the instance token as a secret on `medishop-worker`. If that private URL uses HTTP, set `EVOLUTION_GO_ALLOW_PRIVATE_HTTP=true` on the worker only. Keep the flag false for public URLs, which must use HTTPS. On `medishop-staff`, only the send-enabled flag is required.
+For separate/paid Render services, set `EVOLUTION_GO_BASE_URL` and the instance token on the worker. For the one-service preview, put the same settings in the unified service environment. If a private URL uses HTTP, set `EVOLUTION_GO_ALLOW_PRIVATE_HTTP=true` only in that deployment; keep it false for public HTTPS URLs. Keep the deployment-wide send switch off until the shop is configured and sending is explicitly enabled.
 
 Leave `EVOLUTION_GO_SEND_ENABLED=false` while setting up. Once the service is activated, the phone is connected, and the worker can reach its private API, set the flag to `true` on the staff and worker services and restart/redeploy both. Keep `SMS_SEND_ENABLED` independent.
 

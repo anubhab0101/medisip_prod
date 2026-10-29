@@ -48,6 +48,7 @@ const config: NextConfig = {
         "customers",
         "purchases",
         "appointments",
+        "prescriptions",
         "notifications",
         "reports",
         "settings",

@@ -27,6 +27,10 @@ const sections = [
     "Appointments supports daily and seven-day views. Edit recurring hours in Doctors & hours. Existing bookings are protected. Customer profiles show credit, purchase history, loyalty and reminder scheduling.",
   ],
   [
+    "Prescription review",
+    "Owners and pharmacists can upload a PDF, JPEG or PNG up to 2 MB in Prescriptions, link a customer, and approve or reject it with a review note. Prescription files are private to the shop. Prescription-only medicines in a bill need that customer’s approved prescription; the system checks it again when saving the bill.",
+  ],
+  [
     "Send announcements",
     "Messages > Broadcast lets you preview a doctor visit or custom update for all or selected customers. Only consented contacts are eligible. SMS needs the configured sending phone; WhatsApp and email open for staff to send manually.",
   ],

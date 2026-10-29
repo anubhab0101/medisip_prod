@@ -19,9 +19,13 @@ New owners can use **Settings → Setup guide**: enter shop details, add the fir
 
 For the faster production preview, use `npm run build` once, then `npm run start`; stop the existing preview before building again. Saved bills offer A4/PDF and compact 80mm receipt layouts. For thermal printing, select 80mm paper in the printer dialog and disable browser headers/footers. PDF currently uses the browser's Save as PDF option; physical printer output has not been tested.
 
-To start all three local services together after building, put the staff/worker settings and `RECEIPT_DATABASE_URL` plus `RECEIPT_PUBLIC_URL` in one `.env.local`, then run `npm run start:all`. `RECEIPT_DATABASE_URL` must use the receipt-only database account; the receipt process receives only its receipt settings. It starts the staff app on port 3000, worker, and receipt viewer on port 3002; `Ctrl+C` stops all three. The worker follows its configured send switches and may deliver queued messages when enabled.
+To start all three local processes after building, put app/worker settings plus `RECEIPT_DATABASE_URL` and `RECEIPT_PUBLIC_URL` in `.env.local`, then run `npm run start:all`. Locally, staff listens on 3000 and receipts on 3002. The receipt process receives only its receipt settings and uses the receipt-only DB account. Press Ctrl+C to stop all three.
+
+The Render Blueprint uses one Free Web Service. It runs staff, worker and receipt processes behind a hostname gateway: the staff hostname reaches only Next.js; the separate receipt hostname reaches only the receipt viewer. Add the receipt hostname as a custom domain on that same Render service and set `RECEIPT_PUBLIC_URL` to it. Without a separate hostname, receipt sharing stays unavailable. Render Free sleeps after inactivity, has no persistent disk, and is a preview setup only: queued jobs can pause and local backup files are not durable.
 
 Messages → Message templates lets you save reusable wording with `{name}`, `{shop}`, `{date}`, `{time}`, `{doctor}` and `{amount}`. Select a saved template on Messages, choose the customer, fill the remaining values and review the message. Saving a template never sends it; WhatsApp is queued only when the optional Evolution Go integration is enabled, otherwise it opens for staff to send manually. Email remains manual. Disabling a template removes it from new messages without changing already prepared messages.
+
+Prescriptions → Upload a prescription copy (PDF/JPEG/PNG up to 2 MB) for private, branch-scoped pharmacist review. Only owners and pharmacists can access the page and file route. Every upload and review is audited. Prescription-only medicines in billing require an approved prescription linked to the selected customer; the approval is checked again on the server and recorded on the sale. This stores sensitive health documents in the application database; restrict database access and backups accordingly.
 
 For a personal test, open a saved template and choose **Test with my contact**. Add your own customer record with consent first if needed, select it, enter your own number and confirm. Email tests must use your staff sign-in email. Tests are labelled [TEST]; SMS tests expire after 15 minutes and still respect promotional sending hours. WhatsApp/email test links require you to send manually. Ownership is declared by the staff member; this flow does not verify phone ownership with an OTP.
 
@@ -67,7 +71,7 @@ Open **Messages > Broadcast** to announce a doctor visit or write a custom updat
 
 ## Customer receipts and offline counter
 
-Run `npm run receipts` in a separate terminal before receipt browser tests. Receipt links use the isolated viewer on port 3002 locally; staff stays on port 3000. See [receipt isolation](docs/RECEIPT_ISOLATION.md) for production hostname and restricted database-account requirements.
+Receipt links use a separate receipt hostname and a receipt-only DB login. In the one-service Render setup, the gateway routes that hostname to a separate receipt process and never falls back to the staff app. See [receipt isolation](docs/RECEIPT_ISOLATION.md).
 
 Saved bills and Reports have **Download PDF** for a direct A4 download. Long bills repeat table headings and keep medicine/batch rows together; saved shop details, totals and recorded returns are retained. Fonts for English, Hindi and Odia are embedded locally. Invoice PDFs have no staff-site links, customer contact fields or prescription references. Staff sign-in, current branch and role checks protect the download endpoint; invoice downloads are disabled in practice mode. The existing print button still supports 80mm paper.
 
@@ -77,7 +81,7 @@ See [operations and backup/restore](docs/OPERATIONS.md). A real encrypted restor
 
 ## Important limits
 
-The core workflows and approved extras are implemented, with isolated test evidence recorded in the implementation log. Remaining release gates include pushing a Git remote, Render service setup, production database grants and migrations, container/runtime validation, off-host backup recovery and a supervised real-shop rehearsal. The latest launch checklist separates current evidence from these external gates; the project is not yet cleared for live customer use.
+The free Render setup is a limited preview, not production-ready hosting. It has no durable local backups and its worker can pause when Render sleeps the service. Use a paid always-on worker and durable/off-host backups for reliable live operations. Production database grants, migrations, domain/DNS routing, runtime validation and a supervised shop rehearsal remain separate launch gates.
 
 ## Add real medicines
 

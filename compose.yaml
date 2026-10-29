@@ -1,18 +1,27 @@
 services:
   staff:
     build: .
+    user: node
     env_file: .env.production
     ports: ["127.0.0.1:3000:3000"]
     restart: unless-stopped
     init: true
   worker:
     build: .
+    user: node
     env_file: .env.production
     environment:
       BACKUP_DIRECTORY: /app/backups
     volumes:
       - backup-data:/app/backups
-    command: ["node", "--conditions=react-server", "--import", "tsx", "scripts/worker.ts"]
+    command:
+      [
+        "node",
+        "--conditions=react-server",
+        "--import",
+        "tsx",
+        "scripts/worker.ts",
+      ]
     restart: unless-stopped
     init: true
   receipts:

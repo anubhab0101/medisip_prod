@@ -1,136 +1,83 @@
-# Deployment environment and launch decision
+# Render deployment: one Free Web Service
 
-Current decision: staging/personal testing is suitable; full live-customer launch is not yet verified. The production build passes. The user confirmed a successful live SMS test; staging and production messaging must still be configured separately. Container execution, real HTTPS routing/cookie isolation, durable off-host backups and final broader-flow verification remain launch gates. Translation coverage and some offline modes are incomplete; see IMPLEMENTATION_STATUS.md and I18N_STATUS.md.
+## What this setup does
 
-## Render setup (user-selected host)
+`render.yaml` defines one Free Render Web Service from this repository. It runs the staff Next.js app, the background job worker and the receipt-only viewer as separate processes in the same container. The gateway listens on Render's `PORT` and routes requests by hostname:
 
-This project is already in a Git repository with a GitHub `origin`; the current `main` checkout is synced with `origin/main`. Keep `.env*`, `.local`, `node_modules` and `.next` out of Git. Do not upload the original credential-bearing screenshot or connection string. The connected Render workspace has no MediShop services or database yet; provision them only after reviewing the service list and displayed charges.
+- `APP_URL` and Render's `RENDER_EXTERNAL_HOSTNAME` go only to the staff app.
+- `RECEIPT_PUBLIC_URL` goes only to the receipt viewer. `/login`, `/dashboard`, `/api` and any non-receipt path return 404 from that host; they never fall through to the staff app.
+- Unrecognized hosts receive 421.
 
-Create these services from the SAME repository in the Render Dashboard. Choose Docker runtime and Singapore region, close to the existing TiDB endpoint:
+Set `APP_URL` and `AUTH_URL` to the staff origin. Set `RECEIPT_PUBLIC_URL` to a DIFFERENT HTTPS hostname. The Render `onrender.com` address can serve staff; add a separate receipt hostname as a custom domain on the same Render service. That hostname needs a domain and DNS you control. Without it, do not enable receipt sharing; the app fails closed instead of making receipts public on the staff host.
 
-| Service | Render type | Dockerfile path | Docker Command override | Environment |
-|---|---|---|---|---|
-| medishop-staff | Web Service | ./Dockerfile | Leave blank (image starts port 3000 on 0.0.0.0) | Staff/worker block below |
-| medishop-worker | Background Worker | ./Dockerfile | node --conditions=react-server --import tsx scripts/worker.ts | Same staff/worker block |
-| medishop-receipts | Web Service | ./Dockerfile.receipts | Leave blank (image starts receipt viewer on port 3002) | Receipt-only block below |
+## Free-tier limits
 
-Use always-on paid services for a real shop and a persistent worker disk; review Render's displayed charges before creating resources. A free web-only setup does not provide this architecture. Select a disk for the worker mounted at /app/backups, initially 1 GB, matching BACKUP_DIRECTORY. Confirm the worker can write there after deployment; disk setup and image execution are not yet tested here. Disk storage needs off-host backup copies and retention too.
+Render Free web instances currently have 512 MB RAM and 0.1 CPU, spin down after 15 minutes without inbound traffic, and have ephemeral local files. A spun-down service can take about a minute to wake. A free web instance cannot have a persistent disk. Therefore:
 
-Render handles Docker build commands automatically; do not put npm start in Docker Command for the staff service because the package's local-preview start binds to loopback. Use the image default. Set staff health-check path to /login. Leave receipt HTTP health-check path unset: / intentionally returns 404; Render can use its default port check. Do not change receipt / into a staff-app redirect to make a health check pass.
+- The worker runs inside the web service but sleeps/restarts with it; queued SMS, WhatsApp and scheduled jobs are not reliably immediate.
+- `DAILY_BACKUP_ENABLED=false`. Do not treat files inside this service as backups. Configure and verify independent off-host backups for TiDB before storing real business data.
+- This is for preview/testing, not a dependable live pharmacy service. A successful build does not remove these limits.
+- Keep `SMS_SEND_ENABLED=false` and `EVOLUTION_GO_SEND_ENABLED=false` until you deliberately configure and verify provider sending. Jobs can remain queued while the free service is asleep.
 
-Once Render assigns public HTTPS URLs (or after connecting custom domains), set APP_URL and AUTH_URL to the EXACT staff origin, and RECEIPT_PUBLIC_URL in all services to the EXACT receipt origin. No trailing paths. Do not put .internal/private hostnames here. Update/redeploy the services after changing origins. Keep SMS_SEND_ENABLED=false for staging; change only the worker to true when real customer messaging should run.
+These limits are Render platform behavior and may change; check Render's current [Free instance limits](https://render.com/docs/free) and [compute plans](https://render.com/docs/compute-plans) before deploying.
 
-Apply database migrations using the separate migration credential from a trusted local/release environment before starting this version. Do not store MIGRATION_DATABASE_URL in the staff or receipt runtime merely to run a migration. Existing populated database: do not run seed. Fresh empty database: seed the owner once as described below.
+## Deploy from this repository
 
-Check Render logs for healthy staff/worker/receipt startup, daily-job failures and successful backup writes. Test staff login, an isolated receipt URL, guest denial on staff routes, medicine-to-bill flow and recovery in staging before live-customer use. Configure TiDB network access for the services' actual outbound access as required by your TiDB project.
+1. In Render choose **New > Blueprint** and connect this GitHub repository. Render reads the single-service `render.yaml`; confirm the service plan says **Free** before applying it.
+2. Enter the requested secrets in the service environment. Do not add `.env.local` to Git or paste secrets into chat.
+3. Add your separate receipt hostname under the same web service's **Settings > Custom Domains** and configure its DNS to the target Render shows. Wait for HTTPS/TLS verification before sharing links.
+4. Use the actual service `onrender.com` URL for `APP_URL` and the identical origin for `AUTH_URL`, unless you have also attached a staff custom hostname.
+5. Keep `RECEIPT_PUBLIC_URL` set to the separate receipt hostname. The gateway validates the staff/receipt host separation during startup.
+6. Apply database migrations from a trusted environment using the separate migration credential before staff begins using the new schema. Do not run migrations automatically from the public startup process and do not seed a populated database.
+7. Check Render logs for the three process startup messages and the public gateway. Verify both hostnames: staff routes work only on the staff host; only `/r/<token>` works on the receipt host. Then smoke-test a bill and receipt with synthetic data.
 
-Official references: [Render Docker](https://render.com/docs/docker), [persistent disks](https://render.com/docs/disks), [Blueprint/service fields](https://render.com/docs/blueprint-spec).
+## Environment values
 
-## Three services
-
-1. Staff web application: Dockerfile, port 3000, public HTTPS hostname such as app.yourdomain.com.
-2. Persistent background worker: same Dockerfile, command below, no public hostname. Needs a persistent backup volume and SMSGate access.
-3. Receipt-only web application: Dockerfile.receipts, port 3002, DIFFERENT public HTTPS hostname such as receipts.yourdomain.com. Supply only its restricted environment.
-
-Do not deploy only the web application: queued messages and daily jobs require the worker. Receipt routes must never fall through to the staff service. Use host-only cookies and preserve the original Host header through the proxy. Domains below are placeholders, not purchased/configured domains.
-
-## Staff and worker environment
-
-The existing compose.yaml shares .env.production between staff and worker. Enter values in the host's secret/environment settings; do not commit them.
+Set these in the single Render service. `sync: false` entries in `render.yaml` are entered as secrets/config during Blueprint setup.
 
 ```dotenv
 NODE_ENV=production
-DATABASE_URL=mysql://APP_USER:URL_ENCODED_PASSWORD@YOUR_TIDB_HOST:4000/YOUR_APP_DATABASE?sslaccept=strict&connection_limit=5&connect_timeout=15&pool_timeout=15
-APP_URL=https://app.yourdomain.com
-AUTH_URL=https://app.yourdomain.com
-AUTH_SECRET=REPLACE_WITH_NEW_RANDOM_SECRET
+SINGLE_SERVICE_MODE=true
 LOCAL_PREVIEW=false
 ALLOW_DEMO_SEED=false
-
-RECEIPT_PUBLIC_URL=https://receipts.yourdomain.com
-RECEIPT_TOKEN_SECRET=REPLACE_WITH_DIFFERENT_RANDOM_SECRET
-
-SMSGATE_URL=https://api.sms-gate.app/3rdparty/v1
-SMSGATE_USERNAME=YOUR_SMSGATE_USERNAME
-SMSGATE_PASSWORD=YOUR_SMSGATE_PASSWORD
-SMSGATE_DEVICE_ID=YOUR_ANDROID_DEVICE_ID
-SMS_SEND_ENABLED=false
-
-DAILY_BACKUP_ENABLED=true
-BACKUP_DIRECTORY=/app/backups
-BACKUP_KEY=REPLACE_WITH_32_RANDOM_BYTES_IN_BASE64
-```
-
-Set SMS_SEND_ENABLED=true in the worker only when that environment should actually send queued customer messages. The user has reported a successful SMS test, but staging should stay false by default. Keep the Android gateway online with its SMS permissions/connectivity. No API keys are needed for the current manual WhatsApp/email redirects. There is no Redis requirement.
-
-Use a dedicated application database, never sys. Its runtime user needs SELECT, INSERT, UPDATE and DELETE on the application tables, not administrative privileges. Use the SAME database for staff and worker. The receipt viewer needs SELECT on `ReceiptShare` only. The existing local application's database name is medishop_dev_20261008; changing the URL to a new name does not create a database or grant access. A separate staging database is preferable to sharing real business data.
-
-If using a persistent disk mounted elsewhere, replace BACKUP_DIRECTORY with that path. Ephemeral container storage is insufficient. Copy encrypted backups off-host and keep the recovery key separately. Preserve the BACKUP_KEY for any backups you need to restore. Preserve RECEIPT_TOKEN_SECRET when migrating existing receipt links; changing it can invalidate issuance retries. Rotate AUTH_SECRET intentionally: it signs users out.
-
-## Receipt service only
-
-```dotenv
-NODE_ENV=production
+DATABASE_URL=mysql://APP_USER:URL_ENCODED_PASSWORD@YOUR_TIDB_HOST:4000/YOUR_APP_DATABASE?sslaccept=strict&connection_limit=5&connect_timeout=15&pool_timeout=15
+APP_URL=https://YOUR_RENDER_SERVICE.onrender.com
+AUTH_URL=https://YOUR_RENDER_SERVICE.onrender.com
+AUTH_SECRET=NEW_RANDOM_SECRET_AT_LEAST_32_CHARACTERS
+PLATFORM_ADMIN_EMAILS=YOUR_ADMIN_EMAIL
+INTEGRATION_ENCRYPTION_KEY=BASE64_32_BYTE_KEY
+RECEIPT_PUBLIC_URL=https://receipts.YOUR_DOMAIN
 RECEIPT_DATABASE_URL=mysql://RECEIPT_READER:URL_ENCODED_PASSWORD@YOUR_TIDB_HOST:4000/YOUR_APP_DATABASE?sslaccept=strict&connection_limit=2&connect_timeout=15&pool_timeout=15
-RECEIPT_PUBLIC_URL=https://receipts.yourdomain.com
-RECEIPT_BIND=0.0.0.0
-RECEIPT_PORT=3002
+RECEIPT_TOKEN_SECRET=DIFFERENT_RANDOM_SECRET_AT_LEAST_32_CHARACTERS
+SMS_SEND_ENABLED=false
+EVOLUTION_GO_SEND_ENABLED=false
+DAILY_BACKUP_ENABLED=false
 ```
 
-Do not give this service DATABASE_URL, AUTH_SECRET, RECEIPT_TOKEN_SECRET, SMS credentials, migration credentials or backup keys. Configure its platform ingress to port 3002 (or set RECEIPT_PORT to the required port). The separate receipt hostname must serve only receipt requests; /login, /dashboard and /api must not route to the staff app.
+`RECEIPT_DATABASE_URL` must be a distinct TiDB login with `SELECT` on `ReceiptShare` only. The receipt process runs under a separate unprivileged Linux UID and receives only receipt settings; it does not receive `DATABASE_URL`, staff auth, provider or migration secrets. The staff/worker processes do not receive the receipt DB URL. The supervisor must hold both DB URLs to start both processes, so this single-container topology has a weaker isolation boundary than separate Render services. Use separate always-on services for higher-assurance production.
 
-## One-time migration/setup secrets
+The staff/worker runtime database account needs only the application table permissions it uses, not root/admin grants. The receipt DB grant and TLS must be verified independently. The migration account belongs only in a trusted release environment. The local database is a development DB; create/use a separate production TiDB database and never use `sys`.
 
-```dotenv
-MIGRATION_DATABASE_URL=mysql://MIGRATION_USER:URL_ENCODED_PASSWORD@YOUR_TIDB_HOST:4000/YOUR_APP_DATABASE?sslaccept=strict
-```
+## Migrations and checks
 
-Supply this only to a trusted release/migration step, not the running web/worker/receipt services. Run npm run db:migrate before starting the new version. There are currently six checked-in migrations.
+Use the migration-only environment locally (never add it to the Render service):
 
-On an EMPTY new database only, temporarily set SEED_OWNER_EMAIL and SEED_OWNER_PASSWORD (12-72 characters), keep ALLOW_DEMO_SEED=false, and run npm run db:seed once. Remove those seed secrets afterward. Never reseed the existing populated database; its owner account already exists. SEED_SAMPLE_PASSWORD and RESTORE_DATABASE_URL are not normal production runtime variables.
-
-Generate three independent secrets locally, one invocation per value:
-
-```sh
-node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"
-```
-
-Use separate outputs for AUTH_SECRET, RECEIPT_TOKEN_SECRET and BACKUP_KEY. Do not paste generated secrets into chat. Existing deployed/backup secrets may need to be preserved as explained above.
-
-## Commands
-
-Dockerfiles handle dependency installation, Prisma generation and OCR packaging. Compose starts the correct processes. For a non-Docker Linux host using Node 24:
-
-```sh
-npm ci
-npm run db:generate
-npm run ocr:prepare
+```powershell
 npm run db:migrate
-npm run build
-```
-
-Staff web start (use the platform's assigned port in place of 3000 when necessary):
-
-```sh
-node node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port 3000
-```
-
-Worker start:
-
-```sh
-node --conditions=react-server --import tsx scripts/worker.ts
-```
-
-Receipt start for a source checkout (the dedicated Docker image already starts receipt-server.cjs):
-
-```sh
-node --import tsx scripts/receipt-server.ts
-```
-
-Configuration check:
-
-```sh
 npm run check:deployment -- .env.production
 ```
 
-It reports disabled SMS in staging; this is intentional until real sending is enabled. Passing is configuration evidence only, not a substitute for container, HTTPS, access-control, receipt-isolation, messaging and recovery tests. Never run sample-writing suites against the real shop. No public deployment has been made by the agent.
+There are seven checked-in migrations. The latest adds private prescription records and their bill link. Back up the database before migration. Do not run `db:seed` on an existing shop database.
+
+A passing config check is not proof of domain routing, provider delivery, database grants, backups or recovery. The free deployment does not satisfy the durable-backup launch gate. Test DNS/TLS and receipt-host isolation from an external browser before issuing any customer link.
+
+## Local single-repo run
+
+For local development, build once, keep app and receipt settings in `.env.local`, then run:
+
+```powershell
+npm run build
+npm run start:all
+```
+
+The local runner starts staff on port 3000, worker, and receipt viewer on port 3002. The Render one-service gateway mode is enabled only by `SINGLE_SERVICE_MODE=true`.

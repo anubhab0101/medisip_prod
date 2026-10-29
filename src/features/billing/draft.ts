@@ -16,6 +16,7 @@ export const draftSchema = z.object({
     .min(1)
     .max(100),
   customerId: z.string().max(100).default(""),
+  prescriptionId: z.string().max(100).default(""),
   discount: z.string().max(30).default("0"),
   doctorName: z.string().max(150).default(""),
   prescriptionRef: z.string().max(200).default(""),

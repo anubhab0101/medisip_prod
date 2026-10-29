@@ -2,7 +2,7 @@
 
 ## Current result
 
-The local release candidate passes its current unit, lint, TypeScript, Prisma schema and production-build checks. The GitHub `main` branch is pushed and synced with this checkout. It is not deployed and is not yet cleared for live customer use. The Render Blueprint is prepared. Render access is connected; the workspace currently has two unrelated web services, with no MediShop service, Postgres instance, or Key Value instance.
+The local release candidate passes earlier isolated checks. This checkout is not deployed and is not cleared for live customer use. The Render Blueprint is now being changed to one Free Web Service that runs the staff app, worker and receipt viewer under a hostname gateway. The free plan has no persistent disk and does not provide an always-on worker; this is a preview design, not dependable live-pharmacy hosting. No MediShop service has been deployed from this checkout.
 
 ## Already implemented
 
@@ -21,31 +21,31 @@ The implementation log records earlier isolated TiDB/browser checks and a succes
 - `npm run lint` and `npm run typecheck`: passed.
 - Optimized production build: passed before and after updating Next.js to 15.5.28.
 - Runtime dependency audit: zero vulnerabilities after the Next.js security update.
-- `render.yaml`: parsed and checked for the three services and worker backup disk.
+- Previous release check: `render.yaml` was checked for a three-service paid setup. That configuration is superseded by the current one-service Free preview blueprint and must be revalidated.
 - Docker image build, real Render operation, custom-domain/TLS checks, production database grants, off-host restore, and full live browser acceptance are not verified.
 
 ## Launch blockers
 
-1. Review Render pricing and approve the required MediShop service resources before creating them; the connected workspace has no MediShop resources yet.
-2. Review the service list and pricing, then configure staff, worker and receipt services from `render.yaml`; attach two separate public hostnames.
+1. Connect the repository to Render and confirm the Blueprint creates one Free Web Service.
+2. Attach a separate HTTPS receipt hostname to the same service; the service's `onrender.com` hostname can remain the staff host.
 3. Create a dedicated application database and limited runtime account in TiDB; use a separate read-only receipt account and migration account. Do not use the `sys` database or an administrative/root account for the app.
 4. Rotate the TiDB administrative password shared earlier in chat before using that account again. Keep all new credentials in Render's secret settings, never in this file or Git.
 5. Apply migrations to a fresh staging database and confirm production environment values, strict TLS, custom domains and receipt-host isolation.
 6. Re-run isolated billing, returns, broadcast consent, booking, offline sync, roles, receipt revocation and restore checks. Test actual thermal printer output with the shop's printer.
-7. Configure off-host encrypted backup copies, retention and monitoring. Keep SMS disabled until staging is accepted and the owner explicitly approves real-customer sending.
+7. Configure off-host encrypted backup copies, retention and monitoring. Render Free has no persistent disk. Keep SMS disabled until staging is accepted and the owner explicitly approves real-customer sending.
 8. Run a supervised shop pilot and reconcile bills, stock and payments before a general launch.
 
 ## Eight-day target: 2026-10-24 to 2026-10-31
 
-| Date | Target |
-|---|---|
+| Date   | Target                                                                                                                        |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | Oct 24 | Reauthenticate Render; review service state/cost; rotate the exposed admin credential; provision staging TiDB users/database. |
-| Oct 25 | Create the three Render services from the Blueprint; add app and receipt domains and HTTPS. |
-| Oct 26 | Apply migrations; configure secrets and least-privilege grants; verify service startup and health. |
-| Oct 27 | Complete staging setup, medicine import, purchase, bill, payment, return and report workflows. |
-| Oct 28 | Verify staff roles, booking, broadcast consent/quiet hours and receipt isolation on desktop/mobile. |
-| Oct 29 | Rehearse offline sync, backup restore to a separate database, worker recovery and off-host backup copy. |
-| Oct 30 | Test the actual printer, train staff and run supervised transactions in the real shop setup. |
-| Oct 31 | Review evidence and unresolved defects; start a controlled launch only if every gate passes. |
+| Oct 25 | Create the three Render services from the Blueprint; add app and receipt domains and HTTPS.                                   |
+| Oct 26 | Apply migrations; configure secrets and least-privilege grants; verify service startup and health.                            |
+| Oct 27 | Complete staging setup, medicine import, purchase, bill, payment, return and report workflows.                                |
+| Oct 28 | Verify staff roles, booking, broadcast consent/quiet hours and receipt isolation on desktop/mobile.                           |
+| Oct 29 | Rehearse offline sync, backup restore to a separate database, worker recovery and off-host backup copy.                       |
+| Oct 30 | Test the actual printer, train staff and run supervised transactions in the real shop setup.                                  |
+| Oct 31 | Review evidence and unresolved defects; start a controlled launch only if every gate passes.                                  |
 
 The date is a target, not a guarantee: it depends on repository access, domain control, TiDB permissions and the owner's staging/live-business availability. Do not label the system production-ready solely because the build passes.

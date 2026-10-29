@@ -126,12 +126,21 @@ export async function checkout(
       throw new BusinessError(
         "A medicine in this bill is no longer available.",
       );
-    if (
-      medicines.some((m) => m.schedule !== Schedule.NONE) &&
-      (!input.doctorName || !input.prescriptionRef)
-    )
+    const requiresPrescription = medicines.some((m) => m.schedule !== Schedule.NONE);
+    const approvedPrescription = requiresPrescription && input.prescriptionId
+      ? await tx.prescription.findFirst({
+          where: {
+            id: input.prescriptionId,
+            branchId: ctx.branch.id,
+            customerId: customer?.id ?? "",
+            status: "APPROVED",
+          },
+          select: { id: true, doctorName: true, reference: true },
+        })
+      : null;
+    if (requiresPrescription && (!customer || !approvedPrescription))
       throw new BusinessError(
-        "Enter the doctor’s name and prescription reference for this medicine.",
+        "Choose this customer’s approved prescription before billing prescription medicine.",
       );
     // Use the locking read's values. A later ordinary read may see an older
     // repeatable-read snapshot after another transaction has sold the last unit.
@@ -243,8 +252,9 @@ export async function checkout(
         userId: ctx.user.id,
         creditPaise,
         status: creditPaise ? SaleStatus.PARTIAL : SaleStatus.PAID,
-        doctorName: input.doctorName,
-        prescriptionRef: input.prescriptionRef,
+        doctorName: approvedPrescription?.doctorName ?? input.doctorName,
+        prescriptionRef: approvedPrescription?.reference ?? input.prescriptionRef,
+        prescriptionId: approvedPrescription?.id,
         shopSnapshot: {
           name: ctx.branch.name,
           address: ctx.branch.address,

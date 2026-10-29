@@ -16,6 +16,7 @@ const links = [
   { href: "/bills", label: "Bills", group: "daily", permission: Permission.BILL },
   { href: "/customers", label: "Customers", group: "daily", permission: Permission.CUSTOMER },
   { href: "/appointments", label: "Appointments", group: "daily", permission: Permission.APPOINTMENT },
+  { href: "/prescriptions", label: "Prescriptions", group: "daily", permission: Permission.PRESCRIPTION },
   { href: "/medicines", label: "Medicines", group: "stock", permission: Permission.STOCK_READ },
   { href: "/stock", label: "Stock", group: "stock", permission: Permission.STOCK_READ },
   {

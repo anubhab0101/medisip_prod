@@ -12,6 +12,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [cart, setCart] = useState<CartLine[]>([]);
   const [customerId, setCustomerId] = useState("");
+  const [prescriptionId, setPrescriptionId] = useState("");
   const [discount, setDiscount] = useState("0");
   const [payment, setPayment] = useState(initialPayment);
   const [doctorName, setDoctor] = useState("");
@@ -37,6 +38,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
     cart,
     loyaltyPoints,
     customerId,
+    prescriptionId,
     discount,
     doctorName,
     prescriptionRef,
@@ -55,6 +57,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
               cart,
               loyaltyPoints,
               customerId,
+              prescriptionId,
               discount,
               doctorName,
               prescriptionRef,
@@ -68,6 +71,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
     cart,
     loyaltyPoints,
     customerId,
+    prescriptionId,
     discount,
     doctorName,
     prescriptionRef,
@@ -80,6 +84,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
     setCart([]);
     setLoyaltyPoints(0);
     setCustomerId("");
+    setPrescriptionId("");
     setDiscount("0");
     setDoctor("");
     setPrescription("");
@@ -109,6 +114,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
     operation.current = parsed.operationId;
     setCart(restored);
     setCustomerId(parsed.customerId);
+    setPrescriptionId(parsed.prescriptionId);
     setLoyaltyPoints(parsed.loyaltyPoints);
     setDiscount(parsed.discount);
     setDoctor(parsed.doctorName);
@@ -165,6 +171,7 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
           discountBasisPoints: l.discountBasisPoints,
         })),
         customerId: customerId || undefined,
+        prescriptionId: prescriptionId || undefined,
         loyaltyPoints,
         billDiscountPaise: parseMoney(discount),
         doctorName,
@@ -191,6 +198,8 @@ export function useBill(branchId: string, userId: string, loyaltyRate = 0) {
     setLoyaltyPoints,
     customerId,
     setCustomerId,
+    prescriptionId,
+    setPrescriptionId,
     discount,
     setDiscount,
     payment,

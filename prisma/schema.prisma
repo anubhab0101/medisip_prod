@@ -71,6 +71,12 @@ enum ProviderKind {
   EVOLUTION_GO
 }
 
+enum PrescriptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id             String       @id @default(cuid())
   email          String       @unique @db.VarChar(191)
@@ -107,6 +113,7 @@ model Branch {
   invoices           InvoiceCounter[]
   publicBookingLink  PublicBookingLink?
   providerIntegrations ProviderIntegration[]
+  prescriptions        Prescription[]
 }
 
 model ProviderIntegration {
@@ -270,6 +277,7 @@ model Customer {
   createdAt       DateTime @default(now())
   branch          Branch   @relation(fields: [branchId], references: [id])
   sales           Sale[]
+  prescriptions   Prescription[]
 
   @@unique([branchId, phone])
   @@index([branchId, name])
@@ -310,10 +318,37 @@ model Sale {
   items            SaleItem[]
   payments         Payment[]
   returns          SaleReturn[]
+  prescriptionId   String?
+  prescription     Prescription? @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
 
   @@unique([branchId, invoiceNo])
   @@index([branchId, createdAt])
   @@index([customerId])
+  @@index([prescriptionId])
+}
+
+model Prescription {
+  id          String             @id @default(cuid())
+  branchId    String
+  customerId  String?
+  doctorName  String             @db.VarChar(150)
+  reference   String             @db.VarChar(200)
+  fileName    String             @db.VarChar(255)
+  mimeType    String             @db.VarChar(100)
+  fileData    Bytes              @db.LongBlob
+  status      PrescriptionStatus @default(PENDING)
+  reviewNote  String             @default("") @db.VarChar(500)
+  uploadedBy  String             @db.VarChar(191)
+  reviewedBy  String?            @db.VarChar(191)
+  reviewedAt  DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  branch      Branch             @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  customer    Customer?          @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  sales       Sale[]
+
+  @@index([branchId, status, createdAt])
+  @@index([branchId, customerId, createdAt])
 }
 
 model SaleItem {

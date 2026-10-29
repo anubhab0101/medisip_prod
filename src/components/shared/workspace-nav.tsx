@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   BarChart3,
   CalendarDays,
+  ClipboardPlus,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -34,6 +35,7 @@ const icons: Record<string, LucideIcon> = {
   "/purchases": ShoppingCart,
   "/bills": ReceiptText,
   "/appointments": CalendarDays,
+  "/prescriptions": ClipboardPlus,
   "/notifications": MessageSquareText,
   "/reports": BarChart3,
   "/settings": Settings2,

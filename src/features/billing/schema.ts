@@ -5,6 +5,7 @@ export const checkoutSchema = z.object({
   operationId,
   loyaltyPoints: z.number().int().min(0).max(1000000).default(0),
   customerId: id.optional(),
+  prescriptionId: id.optional(),
   doctorName: z.string().trim().max(150).default(""),
   prescriptionRef: z.string().trim().max(200).default(""),
   billDiscountPaise: paise.default(0),
