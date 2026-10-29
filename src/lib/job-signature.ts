@@ -1,11 +1,13 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-const JOB_SIGNATURE_KEY = process.env.JOB_SIGNATURE_KEY;
-if (!JOB_SIGNATURE_KEY || JOB_SIGNATURE_KEY.length < 32) {
-  throw new Error("JOB_SIGNATURE_KEY must be set and at least 32 characters");
+function signingKey(): string {
+  const key = process.env.JOB_SIGNATURE_KEY;
+  if (!key || key.length < 32) {
+    throw new Error("JOB_SIGNATURE_KEY must be set and at least 32 characters");
+  }
+  return key;
 }
-const KEY: string = JOB_SIGNATURE_KEY;
 
 function canonicalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -23,7 +25,7 @@ function canonicalize(value: unknown): unknown {
 
 export function signJobPayload(payload: unknown): string {
   const data = JSON.stringify(canonicalize(payload));
-  return createHmac("sha256", KEY).update(data).digest("base64url");
+  return createHmac("sha256", signingKey()).update(data).digest("base64url");
 }
 
 export function verifyJobSignature(payload: unknown, signature: string): boolean {

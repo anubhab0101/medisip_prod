@@ -6,6 +6,7 @@ const configured = {
   RECEIPT_PUBLIC_URL: "https://receipts.pharmacy.in",
   AUTH_SECRET: "a".repeat(48),
   RECEIPT_TOKEN_SECRET: "b".repeat(48),
+  JOB_SIGNATURE_KEY: "c".repeat(48),
   DATABASE_URL:
     "mysql://tenant.app:password@db.pharmacy.test:4000/pharmacy?sslaccept=strict",
   LOCAL_PREVIEW: "false",

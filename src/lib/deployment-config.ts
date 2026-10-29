@@ -33,7 +33,7 @@ export function deploymentProblems(env: Record<string, string | undefined>) {
     problems.push(
       "Receipts require a separate hostname from the staff application.",
     );
-  for (const key of ["AUTH_SECRET", "RECEIPT_TOKEN_SECRET"])
+  for (const key of ["AUTH_SECRET", "RECEIPT_TOKEN_SECRET", "JOB_SIGNATURE_KEY"])
     if (
       (env[key]?.length ?? 0) < 32 ||
       /placeholder|change.?me/i.test(env[key] ?? "")
